@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import {
   useListAudios,
   useDownloadAudios,
-  useGetAuthStatus,
   getListAudiosQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,10 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Download, Music, Loader2, ExternalLink,
-  Upload, HardDriveUpload, FolderOpen, Tag,
+  Download, Music, Loader2, ExternalLink, Upload,
+  HardDriveUpload, FolderOpen, Tag, HardDrive,
+  CheckCircle2, Trash2, ChevronDown, ChevronRight,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 import { VIDEO_CATEGORIES } from "@/lib/categories";
 
 export function AudioTab() {
@@ -28,23 +27,23 @@ export function AudioTab() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [urls, setUrls] = useState("");
-  const [category, setCategory] = useState<string>("satisfying");
-
+  const [category, setCategory] = useState("satisfying");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadCategory, setUploadCategory] = useState<string>("satisfying");
+  const [uploadCategory, setUploadCategory] = useState("satisfying");
   const [uploadTitle, setUploadTitle] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-
   const [savingToDriveId, setSavingToDriveId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const { data: auth } = useGetAuthStatus();
   const { data: audios, isLoading } = useListAudios();
   const downloadMutation = useDownloadAudios();
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: getListAudiosQueryKey() });
+
   const handleDownload = () => {
     const urlList = urls.split("\n").map((u) => u.trim()).filter(Boolean);
-    if (urlList.length === 0) {
+    if (!urlList.length) {
       toast({ title: "Error", description: "Enter at least one URL", variant: "destructive" });
       return;
     }
@@ -52,50 +51,30 @@ export function AudioTab() {
       { data: { urls: urlList, category } },
       {
         onSuccess: () => {
-          toast({
-            title: "Download Started",
-            description: `${urlList.length} audio file(s) queued. Metadata (title, tags, description) will be auto-extracted.`,
-          });
+          toast({ title: "Download Started", description: "Title, tags, and description will be auto-extracted." });
           setUrls("");
-          setTimeout(() => queryClient.invalidateQueries({ queryKey: getListAudiosQueryKey() }), 3000);
+          setTimeout(invalidate, 5000);
         },
-        onError: (err: any) => {
-          toast({ title: "Error", description: err.message || "Failed to start download", variant: "destructive" });
-        },
+        onError: (err: any) => toast({ title: "Error", description: err.message, variant: "destructive" }),
       }
     );
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    setSelectedFile(file);
-    if (file && !uploadTitle) {
-      setUploadTitle(file.name.replace(/\.[^.]+$/, ""));
-    }
-  };
-
   const handleDeviceUpload = async () => {
-    if (!selectedFile) {
-      toast({ title: "No file selected", description: "Pick an audio file first.", variant: "destructive" });
-      return;
-    }
+    if (!selectedFile) return;
     setIsUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("category", uploadCategory);
-      formData.append("title", uploadTitle.trim() || selectedFile.name.replace(/\.[^.]+$/, ""));
-
-      const res = await fetch("/api/upload/audio", { method: "POST", body: formData });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error((err as any).error || "Upload failed");
-      }
-      toast({ title: "Uploaded", description: `${selectedFile.name} added to audio library.` });
+      const form = new FormData();
+      form.append("file", selectedFile);
+      form.append("category", uploadCategory);
+      form.append("title", uploadTitle.trim() || selectedFile.name.replace(/\.[^.]+$/, ""));
+      const res = await fetch("/api/upload/audio", { method: "POST", body: form });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Upload failed");
+      toast({ title: "Uploaded", description: `${selectedFile.name} saved to library.` });
       setSelectedFile(null);
       setUploadTitle("");
       if (fileInputRef.current) fileInputRef.current.value = "";
-      queryClient.invalidateQueries({ queryKey: getListAudiosQueryKey() });
+      invalidate();
     } catch (err: any) {
       toast({ title: "Upload Failed", description: err.message, variant: "destructive" });
     } finally {
@@ -104,44 +83,52 @@ export function AudioTab() {
   };
 
   const handleSaveToDrive = async (id: string) => {
-    if (!auth?.authenticated) {
-      toast({ title: "Not connected", description: "Click 'Connect Google' in the sidebar first.", variant: "destructive" });
-      return;
-    }
     setSavingToDriveId(id);
     try {
       const res = await fetch(`/api/drive/save-audio/${id}`, { method: "POST" });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error((data as any).error || "Save to Drive failed");
-      toast({ title: "Saved to Drive", description: "Audio is now in your Google Drive folder." });
-      queryClient.invalidateQueries({ queryKey: getListAudiosQueryKey() });
+      if (!res.ok) throw new Error((data as any).error || "Save failed");
+      toast({ title: "Saved to Drive", description: "Audio copied to your Google Drive folder." });
+      invalidate();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Drive Save Failed", description: err.message, variant: "destructive" });
     } finally {
       setSavingToDriveId(null);
     }
   };
 
-  const fmt = (s: number) => {
-    if (!s) return "—";
-    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+  const handleDelete = async (id: string, title: string) => {
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/audios/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Delete failed");
+      toast({ title: "Deleted", description: `"${title}" removed from library.` });
+      invalidate();
+    } catch (err: any) {
+      toast({ title: "Delete Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setDeletingId(null);
+    }
   };
+
+  const fmt = (s: number) => s ? `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}` : "—";
+  const fmtSize = (bytes: number | null) => bytes ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : null;
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Audio</h2>
-        <p className="text-muted-foreground">Download audio tracks — title, description, and hashtags are auto-extracted for YouTube upload</p>
+        <p className="text-muted-foreground">
+          Download audio from any URL — title, tags, and description are auto-extracted and stored for YouTube uploads. Saved locally, no Google needed.
+        </p>
       </div>
 
       {/* Download from URL */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Download className="w-4 h-4" /> Download from URL
-          </CardTitle>
+          <CardTitle className="flex items-center gap-2"><Download className="w-4 h-4" /> Download from URL</CardTitle>
           <CardDescription>
-            YouTube, SoundCloud, or any yt-dlp supported URL. Title, description, and hashtags are automatically extracted and stored for later YouTube upload.
+            Any yt-dlp supported URL (YouTube, SoundCloud, etc.). Metadata extracted automatically.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -149,26 +136,20 @@ export function AudioTab() {
             placeholder={"https://youtu.be/dQw4w9WgXcQ\nhttps://soundcloud.com/..."}
             value={urls}
             onChange={(e) => setUrls(e.target.value)}
-            className="min-h-[100px] font-mono text-sm"
+            className="min-h-[90px] font-mono text-sm"
           />
-          <div className="flex items-end gap-4">
-            <div className="flex-1 space-y-2">
+          <div className="flex items-end gap-3">
+            <div className="flex-1 space-y-1.5">
               <label className="text-sm font-medium">Category</label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {VIDEO_CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-                  ))}
+                  {VIDEO_CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={handleDownload} disabled={downloadMutation.isPending || !urls.trim()} className="w-36">
-              {downloadMutation.isPending
-                ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                : <Download className="w-4 h-4 mr-2" />}
+            <Button onClick={handleDownload} disabled={downloadMutation.isPending || !urls.trim()} className="w-32">
+              {downloadMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
               Download
             </Button>
           </div>
@@ -178,51 +159,45 @@ export function AudioTab() {
       {/* Upload from Device */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="w-4 h-4" /> Upload from Device
-          </CardTitle>
-          <CardDescription>MP3, M4A, WAV, FLAC, OGG — up to 200 MB</CardDescription>
+          <CardTitle className="flex items-center gap-2"><Upload className="w-4 h-4" /> Upload from Device</CardTitle>
+          <CardDescription>MP3, M4A, WAV, FLAC — up to 200 MB. Saved locally.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <input ref={fileInputRef} type="file" accept="audio/*" className="hidden" onChange={handleFileSelect} />
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
-          >
+          <input ref={fileInputRef} type="file" accept="audio/*" className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0] ?? null;
+              setSelectedFile(f);
+              if (f && !uploadTitle) setUploadTitle(f.name.replace(/\.[^.]+$/, ""));
+            }} />
+          <div onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors">
             {selectedFile ? (
-              <div className="flex items-center justify-center gap-3 text-sm">
-                <Music className="w-5 h-5 text-primary" />
-                <span className="font-medium truncate max-w-[300px]">{selectedFile.name}</span>
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <Music className="w-4 h-4 text-primary" />
+                <span className="font-medium truncate max-w-[260px]">{selectedFile.name}</span>
                 <span className="text-muted-foreground">({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)</span>
               </div>
             ) : (
-              <div className="space-y-2">
-                <FolderOpen className="w-8 h-8 mx-auto text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Click to browse audio files</p>
-              </div>
+              <div className="space-y-1"><FolderOpen className="w-7 h-7 mx-auto text-muted-foreground" /><p className="text-sm text-muted-foreground">Click to browse audio files</p></div>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
               <label className="text-sm font-medium">Title</label>
               <Input placeholder="Track title" value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label className="text-sm font-medium">Category</label>
               <Select value={uploadCategory} onValueChange={setUploadCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {VIDEO_CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-                  ))}
+                  {VIDEO_CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="flex justify-end">
-            <Button onClick={handleDeviceUpload} disabled={isUploading || !selectedFile} className="w-32">
+            <Button onClick={handleDeviceUpload} disabled={isUploading || !selectedFile} className="w-28">
               {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
               Upload
             </Button>
@@ -230,42 +205,46 @@ export function AudioTab() {
         </CardContent>
       </Card>
 
-      {/* Audio Library */}
+      {/* Library */}
       <Card>
         <CardHeader>
-          <CardTitle>Audio Library</CardTitle>
-          <CardDescription>Click a row to see extracted title, description, and hashtags</CardDescription>
+          <CardTitle>Audio Library ({audios?.length ?? 0})</CardTitle>
+          <CardDescription>Click a row to view extracted metadata. "Save to Drive" is an optional backup.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
-            </div>
+            <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
           ) : audios && audios.length > 0 ? (
             <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-5"></TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Duration</TableHead>
-                    <TableHead>Tags</TableHead>
+                    <TableHead>Storage</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {audios.map((audio) => (
+                  {(audios as any[]).map((audio) => (
                     <>
-                      <TableRow
-                        key={audio.id}
-                        className="cursor-pointer"
-                        onClick={() => setExpandedId(expandedId === audio.id ? null : audio.id)}
-                      >
-                        <TableCell className="font-medium">
+                      <TableRow key={audio.id} className="cursor-pointer hover:bg-accent/30"
+                        onClick={() => setExpandedId(expandedId === audio.id ? null : audio.id)}>
+                        <TableCell className="pr-0">
+                          {expandedId === audio.id
+                            ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                            : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+                        </TableCell>
+                        <TableCell>
                           <div className="flex items-center gap-2">
                             <Music className="w-4 h-4 shrink-0 text-muted-foreground" />
-                            <span className="truncate max-w-[200px]" title={audio.title}>{audio.title}</span>
+                            <div className="min-w-0">
+                              <p className="truncate max-w-[180px] font-medium text-sm" title={audio.title}>{audio.title}</p>
+                              {audio.fileSize && <p className="text-xs text-muted-foreground">{fmtSize(audio.fileSize)}</p>}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -275,12 +254,18 @@ export function AudioTab() {
                         </TableCell>
                         <TableCell className="text-muted-foreground tabular-nums">{fmt(audio.duration)}</TableCell>
                         <TableCell>
-                          <div className="flex flex-wrap gap-1 max-w-[160px]">
-                            {audio.tags.slice(0, 3).map((tag, i) => (
-                              <Badge key={i} variant="outline" className="text-[10px]">#{tag}</Badge>
-                            ))}
-                            {audio.tags.length > 3 && (
-                              <Badge variant="outline" className="text-[10px]">+{audio.tags.length - 3}</Badge>
+                          <div className="flex items-center gap-1">
+                            {audio.localExists ? (
+                              <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 text-xs">
+                                <HardDrive className="w-3 h-3" /> Local
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 text-xs">Missing</Badge>
+                            )}
+                            {audio.driveLink && (
+                              <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 gap-1 text-xs">
+                                <CheckCircle2 className="w-3 h-3" /> Drive
+                              </Badge>
                             )}
                           </div>
                         </TableCell>
@@ -291,53 +276,64 @@ export function AudioTab() {
                         </TableCell>
                         <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end gap-1">
-                            {!audio.driveLink && (
-                              <Button
-                                size="sm" variant="outline" className="h-8 gap-1.5 text-xs"
+                            {audio.localExists && (
+                              <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" asChild>
+                                <a href={`/api/audios/${audio.id}/file`} target="_blank" rel="noopener noreferrer">
+                                  <Music className="w-3 h-3" /> Play
+                                </a>
+                              </Button>
+                            )}
+                            {!audio.driveLink && audio.localExists && (
+                              <Button size="sm" variant="outline" className="h-8 gap-1 text-xs"
                                 disabled={savingToDriveId === audio.id}
-                                onClick={() => handleSaveToDrive(audio.id)}
-                              >
-                                {savingToDriveId === audio.id
-                                  ? <Loader2 className="w-3 h-3 animate-spin" />
-                                  : <HardDriveUpload className="w-3 h-3" />}
+                                onClick={() => handleSaveToDrive(audio.id)}>
+                                {savingToDriveId === audio.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <HardDriveUpload className="w-3 h-3" />}
                                 Drive
                               </Button>
                             )}
                             {audio.driveLink && (
                               <Button size="icon" variant="ghost" className="h-8 w-8" asChild>
-                                <a href={audio.driveLink} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="w-4 h-4" />
-                                </a>
+                                <a href={audio.driveLink} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
                               </Button>
                             )}
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                              disabled={deletingId === audio.id}
+                              onClick={() => handleDelete(audio.id, audio.title)}>
+                              {deletingId === audio.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
+
                       {expandedId === audio.id && (
-                        <TableRow key={`${audio.id}-expanded`} className="bg-muted/30">
-                          <TableCell colSpan={6} className="p-4">
-                            <div className="space-y-3 text-sm">
-                              {audio.description && (
+                        <TableRow key={`${audio.id}-exp`} className="bg-muted/20 hover:bg-muted/20">
+                          <TableCell colSpan={7} className="px-6 py-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              {audio.description ? (
                                 <div>
-                                  <p className="font-medium text-xs text-muted-foreground mb-1 uppercase tracking-wider">Description (YouTube)</p>
-                                  <p className="text-foreground/80 whitespace-pre-wrap line-clamp-4">{audio.description}</p>
+                                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">YouTube Description</p>
+                                  <p className="text-foreground/80 whitespace-pre-wrap line-clamp-5 text-xs leading-relaxed">{audio.description}</p>
                                 </div>
+                              ) : (
+                                <div><p className="text-xs text-muted-foreground italic">No description extracted</p></div>
                               )}
-                              {audio.tags.length > 0 && (
-                                <div>
-                                  <p className="font-medium text-xs text-muted-foreground mb-1 uppercase tracking-wider flex items-center gap-1">
-                                    <Tag className="w-3 h-3" /> Tags ({audio.tags.length})
-                                  </p>
+                              <div>
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                                  <Tag className="w-3 h-3" /> Tags ({audio.tags?.length ?? 0})
+                                </p>
+                                {audio.tags?.length > 0 ? (
                                   <div className="flex flex-wrap gap-1">
-                                    {audio.tags.map((tag, i) => (
+                                    {audio.tags.map((tag: string, i: number) => (
                                       <Badge key={i} variant="secondary" className="text-xs">#{tag}</Badge>
                                     ))}
                                   </div>
-                                </div>
-                              )}
-                              {audio.uploader && (
-                                <p className="text-xs text-muted-foreground">Uploader: {audio.uploader}</p>
-                              )}
+                                ) : (
+                                  <p className="text-xs text-muted-foreground italic">No tags extracted</p>
+                                )}
+                                {audio.uploader && (
+                                  <p className="text-xs text-muted-foreground mt-2">Uploader: {audio.uploader}</p>
+                                )}
+                              </div>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -348,10 +344,11 @@ export function AudioTab() {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <Music className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p>No audio yet. Download from a URL or upload from your device.</p>
-              <p className="text-sm mt-1">Metadata (title, tags, description) is automatically extracted from YouTube/SoundCloud.</p>
+            <div className="text-center py-16 text-muted-foreground">
+              <Music className="w-12 h-12 mx-auto mb-3 opacity-20" />
+              <p className="font-medium">No audio yet</p>
+              <p className="text-sm mt-1">Download from a YouTube or SoundCloud URL, or upload from your device.</p>
+              <p className="text-sm mt-1 text-green-600 font-medium">✓ No Google connection needed — title, tags, and description are auto-extracted.</p>
             </div>
           )}
         </CardContent>

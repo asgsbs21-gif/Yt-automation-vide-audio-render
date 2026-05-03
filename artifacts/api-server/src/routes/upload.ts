@@ -19,16 +19,18 @@ import { getSessionTokens } from "../middlewares/auth.js";
 
 const router = Router();
 
-// Local storage dirs
-const VIDEO_LOCAL_DIR = path.resolve(process.cwd(), "data", "videos");
-const AUDIO_LOCAL_DIR = path.resolve(process.cwd(), "data", "audios");
-fs.mkdirSync(VIDEO_LOCAL_DIR, { recursive: true });
-fs.mkdirSync(AUDIO_LOCAL_DIR, { recursive: true });
+// ── Local storage dirs ────────────────────────────────────────────────────────
 
-// Multer config — disk storage, 500MB limit
+const VIDEO_DIR = path.resolve(process.cwd(), "data", "videos");
+const AUDIO_DIR = path.resolve(process.cwd(), "data", "audios");
+fs.mkdirSync(VIDEO_DIR, { recursive: true });
+fs.mkdirSync(AUDIO_DIR, { recursive: true });
+
+// ── Multer config ─────────────────────────────────────────────────────────────
+
 const videoUpload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, VIDEO_LOCAL_DIR),
+    destination: (_req, _file, cb) => cb(null, VIDEO_DIR),
     filename: (_req, file, cb) => {
       const ext = path.extname(file.originalname) || ".mp4";
       cb(null, `video_${Date.now()}_${uuidv4().slice(0, 8)}${ext}`);
@@ -43,7 +45,7 @@ const videoUpload = multer({
 
 const audioUpload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, AUDIO_LOCAL_DIR),
+    destination: (_req, _file, cb) => cb(null, AUDIO_DIR),
     filename: (_req, file, cb) => {
       const ext = path.extname(file.originalname) || ".mp3";
       cb(null, `audio_${Date.now()}_${uuidv4().slice(0, 8)}${ext}`);
@@ -56,7 +58,8 @@ const audioUpload = multer({
   },
 });
 
-// ── POST /api/upload/video ────────────────────────────────────────────────────
+// ── POST /api/upload/video — device upload ────────────────────────────────────
+// Always saves locally. Drive upload is a separate manual step.
 
 router.post("/upload/video", videoUpload.single("file"), async (req, res) => {
   const file = req.file;
@@ -66,42 +69,24 @@ router.post("/upload/video", videoUpload.single("file"), async (req, res) => {
   }
 
   const category = (req.body.category as string) || "Uncategorized";
-  const settings = getSettings();
-  const tokens = getSessionTokens(req);
-
-  let driveId = file.path;
-  let driveLink: string | null = null;
-
-  // If Drive folder configured and user is connected, upload there
-  const folderId = settings.driveVideoFolderId;
-  if (folderId && tokens) {
-    try {
-      const auth = createAuthenticatedClient(tokens);
-      const driveFile = await uploadFileToDrive(auth, file.path, folderId, file.mimetype, file.filename);
-      driveId = driveFile.id;
-      driveLink = driveFile.webViewLink;
-      fs.unlinkSync(file.path); // remove local copy after Drive upload
-    } catch (err) {
-      addLog("upload", "warn", "Drive upload failed, keeping local copy", String(err));
-    }
-  }
 
   const video = addVideo({
-    driveId,
+    driveId: file.path,   // local path
     filename: file.filename,
     category,
     usedCount: 0,
     lastUsed: null,
     available: true,
-    driveLink,
+    driveLink: null,
     status: "available",
   });
 
-  addLog("download_video", "success", `Uploaded from device: ${file.filename}`);
+  addLog("download_video", "success", `Uploaded from device: ${file.filename} (${(file.size / 1024 / 1024).toFixed(1)} MB)`);
   res.json(video);
 });
 
-// ── POST /api/upload/audio ────────────────────────────────────────────────────
+// ── POST /api/upload/audio — device upload ────────────────────────────────────
+// Always saves locally. Drive upload is a separate manual step.
 
 router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
   const file = req.file;
@@ -111,28 +96,10 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
   }
 
   const category = (req.body.category as string) || null;
-  const title = (req.body.title as string) || path.parse(file.originalname).name;
-  const settings = getSettings();
-  const tokens = getSessionTokens(req);
-
-  let driveId = file.path;
-  let driveLink: string | null = null;
-
-  const folderId = settings.driveAudioFolderId;
-  if (folderId && tokens) {
-    try {
-      const auth = createAuthenticatedClient(tokens);
-      const driveFile = await uploadFileToDrive(auth, file.path, folderId, file.mimetype, file.filename);
-      driveId = driveFile.id;
-      driveLink = driveFile.webViewLink;
-      fs.unlinkSync(file.path);
-    } catch (err) {
-      addLog("upload", "warn", "Drive upload failed, keeping local copy", String(err));
-    }
-  }
+  const title = (req.body.title as string)?.trim() || path.parse(file.originalname).name;
 
   const audio = addAudio({
-    driveId,
+    driveId: file.path,   // local path
     title,
     description: "",
     tags: [],
@@ -140,113 +107,94 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
     category,
     uploader: null,
     used: false,
-    driveLink,
+    driveLink: null,
   });
 
   addLog("download_audio", "success", `Uploaded from device: ${file.filename}`);
   res.json(audio);
 });
 
-// ── POST /api/drive/save-video/:id ────────────────────────────────────────────
+// ── POST /api/drive/save-video/:id ───────────────────────────────────────────
+// Uploads local file to Drive, adds driveLink — local file is KEPT.
 
 router.post("/drive/save-video/:id", async (req, res) => {
   const tokens = getSessionTokens(req);
   if (!tokens) {
-    res.status(401).json({
-      error: "Google account not connected. Click 'Connect Google' in the sidebar first.",
-      requiresAuth: true,
-    });
+    res.status(401).json({ error: "Google account not connected. Click 'Connect Google' in the sidebar.", requiresAuth: true });
     return;
   }
 
-  const { id } = req.params;
-  const videos = getVideos();
-  const video = videos.find((v) => v.id === id);
-  if (!video) {
-    res.status(404).json({ error: "Video not found" });
-    return;
-  }
+  const video = getVideos().find((v) => v.id === req.params.id);
+  if (!video) { res.status(404).json({ error: "Video not found" }); return; }
+  if (video.driveLink) { res.status(400).json({ error: "Already saved to Drive" }); return; }
 
-  if (video.driveLink) {
-    res.status(400).json({ error: "Video is already saved to Drive" });
-    return;
-  }
-
-  if (!fs.existsSync(video.driveId)) {
-    res.status(404).json({ error: "Local file not found" });
+  // driveId here is the local path (always set after download/upload)
+  const localPath = video.driveId;
+  if (!fs.existsSync(localPath)) {
+    res.status(404).json({ error: "Local file not found — the file may have been deleted from the server." });
     return;
   }
 
   const settings = getSettings();
   const folderId = settings.driveVideoFolderId;
   if (!folderId) {
-    res.status(400).json({ error: "No Drive video folder configured. Set it in Settings." });
+    res.status(400).json({ error: "No Drive video folder configured. Set it in Settings → Google Drive Folder IDs." });
     return;
   }
 
   try {
     const auth = createAuthenticatedClient(tokens);
-    const driveFile = await uploadFileToDrive(auth, video.driveId, folderId, "video/mp4", video.filename);
-    const updated = updateVideo(id, { driveId: driveFile.id, driveLink: driveFile.webViewLink });
-    // Clean up local file after upload
-    try { fs.unlinkSync(video.driveId); } catch {}
+    const driveFile = await uploadFileToDrive(auth, localPath, folderId, "video/mp4", video.filename);
+
+    // Only update the driveLink — keep driveId as local path, keep local file
+    const updated = updateVideo(req.params.id, { driveLink: driveFile.webViewLink });
     addLog("upload", "success", `Saved to Drive: ${video.filename}`);
     res.json(updated);
   } catch (err) {
     addLog("upload", "error", `Drive save failed: ${video.filename}`, String(err));
-    res.status(500).json({ error: "Failed to upload to Drive", details: String(err) });
+    res.status(500).json({ error: "Drive upload failed", details: String(err) });
   }
 });
 
-// ── POST /api/drive/save-audio/:id ────────────────────────────────────────────
+// ── POST /api/drive/save-audio/:id ───────────────────────────────────────────
+// Uploads local file to Drive, adds driveLink — local file is KEPT.
 
 router.post("/drive/save-audio/:id", async (req, res) => {
   const tokens = getSessionTokens(req);
   if (!tokens) {
-    res.status(401).json({
-      error: "Google account not connected. Click 'Connect Google' in the sidebar first.",
-      requiresAuth: true,
-    });
+    res.status(401).json({ error: "Google account not connected. Click 'Connect Google' in the sidebar.", requiresAuth: true });
     return;
   }
 
-  const { id } = req.params;
-  const audios = getAudios();
-  const audio = audios.find((a) => a.id === id);
-  if (!audio) {
-    res.status(404).json({ error: "Audio not found" });
-    return;
-  }
+  const audio = getAudios().find((a) => a.id === req.params.id);
+  if (!audio) { res.status(404).json({ error: "Audio not found" }); return; }
+  if (audio.driveLink) { res.status(400).json({ error: "Already saved to Drive" }); return; }
 
-  if (audio.driveLink) {
-    res.status(400).json({ error: "Audio is already saved to Drive" });
-    return;
-  }
-
-  if (!fs.existsSync(audio.driveId)) {
-    res.status(404).json({ error: "Local file not found" });
+  const localPath = audio.driveId;
+  if (!fs.existsSync(localPath)) {
+    res.status(404).json({ error: "Local file not found." });
     return;
   }
 
   const settings = getSettings();
   const folderId = settings.driveAudioFolderId;
   if (!folderId) {
-    res.status(400).json({ error: "No Drive audio folder configured. Set it in Settings." });
+    res.status(400).json({ error: "No Drive audio folder configured. Set it in Settings → Google Drive Folder IDs." });
     return;
   }
 
   try {
     const auth = createAuthenticatedClient(tokens);
-    const ext = path.extname(audio.driveId) || ".mp3";
-    const filename = `${audio.title}${ext}`;
-    const driveFile = await uploadFileToDrive(auth, audio.driveId, folderId, "audio/mpeg", filename);
-    const updated = updateAudio(id, { driveId: driveFile.id, driveLink: driveFile.webViewLink });
-    try { fs.unlinkSync(audio.driveId); } catch {}
+    const ext = path.extname(localPath) || ".mp3";
+    const driveFile = await uploadFileToDrive(auth, localPath, folderId, "audio/mpeg", `${audio.title}${ext}`);
+
+    // Only update the driveLink — keep local file
+    const updated = updateAudio(req.params.id, { driveLink: driveFile.webViewLink });
     addLog("upload", "success", `Saved to Drive: ${audio.title}`);
     res.json(updated);
   } catch (err) {
     addLog("upload", "error", `Drive save failed: ${audio.title}`, String(err));
-    res.status(500).json({ error: "Failed to upload to Drive", details: String(err) });
+    res.status(500).json({ error: "Drive upload failed", details: String(err) });
   }
 });
 
