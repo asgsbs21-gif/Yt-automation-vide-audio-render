@@ -23,6 +23,10 @@ import { v4 as uuidv4 } from "uuid";
 
 let schedulerTask: cron.ScheduledTask | null = null;
 
+// Permanent output directory — same as process.ts, for preview streaming
+const OUTPUT_DIR = path.resolve(process.cwd(), "data", "output");
+fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
 // Track which slots have already fired today: "YYYY-MM-DD-slotId"
 const firedSlots = new Set<string>();
 
@@ -38,19 +42,11 @@ export async function processQueueItem(
 
   updateQueueItem(itemId, { status: "uploading" });
   addLog("upload", "info", `Starting upload: ${item.title}`);
-
-  emitJobUpdate({
-    jobId: itemId,
-    jobType: "upload",
-    status: "running",
-    message: `Uploading: ${item.title}`,
-    progress: 10,
-  });
+  emitJobUpdate({ jobId: itemId, jobType: "upload", status: "running", message: `Uploading: ${item.title}`, progress: 10 });
 
   const auth = createAuthenticatedClient(tokens);
   const settings = getSettings();
-  const tmpDir = os.tmpdir();
-  const tmpFile = path.join(tmpDir, `output_${Date.now()}.mp4`);
+  const tmpFile = path.join(os.tmpdir(), `upload_${Date.now()}.mp4`);
 
   try {
     if (!item.driveId.startsWith("/")) {
@@ -58,6 +54,7 @@ export async function processQueueItem(
       emitJobUpdate({ jobId: itemId, jobType: "upload", status: "running", message: "Downloading from Drive…", progress: 30 });
       await downloadFromDrive(auth, item.driveId, tmpFile);
     } else {
+      // Local file — copy to tmp for YouTube upload (keeps original for preview)
       fs.copyFileSync(item.driveId, tmpFile);
     }
 
@@ -86,7 +83,7 @@ export async function processQueueItem(
   }
 }
 
-// ── Auto cycle: pick videos + audio, merge, queue + upload ────────────────────
+// ── Auto cycle: pick videos + audio, merge, save to /data/output/, upload ─────
 
 async function runAutoCycle(
   tokens: { access_token: string; refresh_token?: string | null },
@@ -139,26 +136,28 @@ async function runAutoCycle(
 
     emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Merging…`, progress: 40 });
 
-    const outputPath = path.join(tmpDir, `output_${jobId}.mp4`);
+    // Save output permanently to /data/output/ for preview
+    const outputFilename = `output_${jobId}.mp4`;
+    const outputPath = path.join(OUTPUT_DIR, outputFilename);
     await mergeVideoWithAudio(videoPaths, audioDest, outputPath, (pct, msg) => {
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 40 + Math.round(pct * 0.4) });
     });
 
-    let outputDriveId = outputPath;
-
+    // Optional Drive upload (on top of local copy)
     if (settings.driveOutputFolderId) {
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading output to Drive…`, progress: 85 });
-      const driveFile = await uploadFileToDrive(
-        auth, outputPath, settings.driveOutputFolderId, "video/mp4", `output_${jobId}.mp4`
-      );
-      outputDriveId = driveFile.id;
+      try {
+        await uploadFileToDrive(auth, outputPath, settings.driveOutputFolderId, "video/mp4", outputFilename);
+      } catch (e) {
+        addLog("schedule", "warn", "Drive output upload failed (local copy kept)", String(e));
+      }
     }
 
     markVideosUsed(videos.map((v) => v.id));
     markAudioUsed(audio.id);
 
     const queueItem = addQueueItem({
-      driveId: outputDriveId,
+      driveId: outputPath,    // permanent /data/output/ path — previewable
       title: audio.title,
       description: audio.description,
       tags: audio.tags,
@@ -192,10 +191,9 @@ export function startScheduler(): void {
     const tokens = getGlobalTokens();
     const now = new Date();
 
-    // Key for today: "YYYY-MM-DD"
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    // Clean up fired-slots from previous days on midnight
+    // Clean up stale fired-slot keys from previous days
     if (now.getHours() === 0 && now.getMinutes() === 0) {
       for (const key of firedSlots) {
         if (!key.startsWith(today)) firedSlots.delete(key);
@@ -204,7 +202,7 @@ export function startScheduler(): void {
 
     if (!tokens) return;
 
-    // ── Process manually scheduled queue items ────────────────────────────────
+    // Process manually scheduled queue items
     const queue = getQueue();
     const due = queue.filter((item) => {
       if (item.status !== "scheduled" || !item.scheduledAt) return false;
@@ -214,7 +212,6 @@ export function startScheduler(): void {
       try { await processQueueItem(item.id, tokens); } catch {}
     }
 
-    // ── Auto-cycle: fire each enabled slot whose time matches now ─────────────
     if (!settings.autoCycleEnabled) return;
 
     for (const slot of (settings.uploadSlots ?? [])) {
@@ -224,10 +221,7 @@ export function startScheduler(): void {
       if (firedSlots.has(slotKey)) continue;
 
       const [hStr, mStr] = (slot.time || "09:00").split(":");
-      const slotH = parseInt(hStr, 10);
-      const slotM = parseInt(mStr, 10);
-
-      if (now.getHours() === slotH && now.getMinutes() === slotM) {
+      if (now.getHours() === parseInt(hStr, 10) && now.getMinutes() === parseInt(mStr, 10)) {
         firedSlots.add(slotKey);
         const label = `${slot.label} / ${slot.labelBn} ${slot.time}`;
         runAutoCycle(tokens, label).catch((err) => {

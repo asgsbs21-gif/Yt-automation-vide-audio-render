@@ -21,7 +21,11 @@ import { emitJobUpdate } from "../lib/socket.js";
 
 const router = Router();
 
-// POST /api/process/preview
+// Permanent output directory — survives restarts, streamable for preview
+const OUTPUT_DIR = path.resolve(process.cwd(), "data", "output");
+fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+// POST /api/process/preview — plan without running FFmpeg
 router.post("/process/preview", (req, res) => {
   const { audioId, categoryFilter } = req.body as {
     audioId?: string | null;
@@ -38,16 +42,10 @@ router.post("/process/preview", (req, res) => {
   }
 
   const videos = pickVideosForDuration(categoryFilter ?? null, audio.duration);
-
-  res.json({
-    audio,
-    videos,
-    estimatedDuration: audio.duration,
-    videoCount: videos.length,
-  });
+  res.json({ audio, videos, estimatedDuration: audio.duration, videoCount: videos.length });
 });
 
-// POST /api/process
+// POST /api/process — merge video + audio, save to /data/output/, add to queue
 router.post("/process", async (req, res) => {
   const { audioId, categoryFilter, addToQueue = true } = req.body as {
     audioId?: string | null;
@@ -55,15 +53,11 @@ router.post("/process", async (req, res) => {
     addToQueue?: boolean;
   };
 
-  const audios = getAudios();
   const audio = audioId
-    ? audios.find((a) => a.id === audioId) ?? null
+    ? getAudios().find((a) => a.id === audioId) ?? null
     : getRandomUnusedAudio(categoryFilter);
 
-  if (!audio) {
-    res.status(404).json({ error: "No audio available" });
-    return;
-  }
+  if (!audio) { res.status(404).json({ error: "No audio available" }); return; }
 
   const videos = pickVideosForDuration(categoryFilter ?? null, audio.duration);
   if (videos.length === 0) {
@@ -75,20 +69,13 @@ router.post("/process", async (req, res) => {
   addLog("process", "info", `Process job [${jobId}]: ${videos.length} clip(s) + "${audio.title}"`);
   res.json({ jobId, message: "Processing started", status: "started" });
 
-  emitJobUpdate({
-    jobId,
-    jobType: "process",
-    status: "running",
-    message: `Starting: ${videos.length} clip(s) + "${audio.title}"`,
-    progress: 2,
-  });
+  emitJobUpdate({ jobId, jobType: "process", status: "running", message: `Starting: ${videos.length} clip(s) + "${audio.title}"`, progress: 2 });
 
   (async () => {
     const settings = getSettings();
     const tokens = getSessionTokens(req);
     const tmpDir = path.join(os.tmpdir(), `process_${jobId}`);
     fs.mkdirSync(tmpDir, { recursive: true });
-
     const auth = tokens ? createAuthenticatedClient(tokens) : null;
 
     try {
@@ -118,29 +105,25 @@ router.post("/process", async (req, res) => {
 
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Merging with FFmpeg…", progress: 25 });
 
-      const outputPath = path.join(tmpDir, `output_${jobId}.mp4`);
+      // Merge directly into /data/output/ — permanent, previewable
+      const outputFilename = `output_${jobId}.mp4`;
+      const outputPath = path.join(OUTPUT_DIR, outputFilename);
       await mergeVideoWithAudio(videoPaths, audioDest, outputPath, (pct, message) => {
-        emitJobUpdate({
-          jobId,
-          jobType: "process",
-          status: "running",
-          message,
-          progress: 25 + Math.round(pct * 0.65),
-        });
+        emitJobUpdate({ jobId, jobType: "process", status: "running", message, progress: 25 + Math.round(pct * 0.65) });
       });
 
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Saving output…", progress: 92 });
 
-      let outputDriveId = outputPath;
+      // driveId = permanent local path (always); Drive upload is optional on top
       let outputDriveLink: string | null = null;
       const outputFolderId = settings.driveOutputFolderId;
-
       if (auth && outputFolderId) {
-        const driveFile = await uploadFileToDrive(
-          auth, outputPath, outputFolderId, "video/mp4", `output_${jobId}.mp4`
-        );
-        outputDriveId = driveFile.id;
-        outputDriveLink = driveFile.webViewLink;
+        try {
+          const driveFile = await uploadFileToDrive(auth, outputPath, outputFolderId, "video/mp4", outputFilename);
+          outputDriveLink = driveFile.webViewLink;
+        } catch (e) {
+          addLog("process", "warn", "Drive output upload failed (local copy kept)", String(e));
+        }
       }
 
       markVideosUsed(videos.map((v) => v.id));
@@ -148,7 +131,7 @@ router.post("/process", async (req, res) => {
 
       if (addToQueue) {
         addQueueItem({
-          driveId: outputDriveId,
+          driveId: outputPath,        // always the local /data/output/ path
           title: audio.title,
           description: audio.description,
           tags: audio.tags,
@@ -160,13 +143,14 @@ router.post("/process", async (req, res) => {
         });
       }
 
-      addLog("process", "success", `Complete: "${audio.title}"`);
+      addLog("process", "success", `Complete: "${audio.title}" → ${outputFilename}`);
       emitJobUpdate({ jobId, jobType: "process", status: "done", message: `Done! "${audio.title}" added to queue.`, progress: 100 });
 
+      // Clean up only the temp working files, NOT the output
       try {
-        for (const p of videoPaths) fs.unlinkSync(p);
-        fs.unlinkSync(audioDest);
-        if (outputDriveLink) fs.unlinkSync(outputPath);
+        for (const p of videoPaths) { try { fs.unlinkSync(p); } catch {} }
+        try { fs.unlinkSync(audioDest); } catch {}
+        fs.rmSync(tmpDir, { recursive: true, force: true });
       } catch {}
     } catch (err) {
       addLog("process", "error", `Process job failed [${jobId}]`, String(err));
