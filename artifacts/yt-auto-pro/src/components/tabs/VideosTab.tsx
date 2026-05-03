@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useListVideos, useDownloadVideos, useUpdateVideoCategory, getListVideosQueryKey } from "@workspace/api-client-react";
+import { useState, useRef } from "react";
+import { useListVideos, useDownloadVideos, useUpdateVideoCategory, useGetAuthStatus, getListVideosQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,17 +9,28 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, Edit2, Check, X, Loader2, PlayCircle, ExternalLink } from "lucide-react";
+import { Download, Edit2, Check, X, Loader2, PlayCircle, ExternalLink, Upload, HardDriveUpload, FolderOpen } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 export function VideosTab() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [urls, setUrls] = useState("");
   const [category, setCategory] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editCategory, setEditCategory] = useState("");
 
+  // Device upload state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadCategory, setUploadCategory] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Per-row save-to-drive state
+  const [savingToDriveId, setSavingToDriveId] = useState<string | null>(null);
+
+  const { data: auth } = useGetAuthStatus();
   const { data: videos, isLoading } = useListVideos();
   const downloadMutation = useDownloadVideos();
   const updateCategoryMutation = useUpdateVideoCategory();
@@ -29,9 +40,7 @@ export function VideosTab() {
       toast({ title: "Error", description: "Please enter at least one URL", variant: "destructive" });
       return;
     }
-    
     const urlList = urls.split("\n").map(u => u.trim()).filter(Boolean);
-    
     downloadMutation.mutate(
       { data: { urls: urlList, category: category.trim() || "Uncategorized" } },
       {
@@ -39,13 +48,67 @@ export function VideosTab() {
           toast({ title: "Download Started", description: `Queued ${urlList.length} videos for download.` });
           setUrls("");
           setCategory("");
-          queryClient.invalidateQueries({ queryKey: getListVideosQueryKey() });
+          setTimeout(() => queryClient.invalidateQueries({ queryKey: getListVideosQueryKey() }), 2000);
         },
         onError: (err: any) => {
           toast({ title: "Error", description: err.message || "Failed to start download", variant: "destructive" });
-        }
+        },
       }
     );
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setSelectedFile(file);
+  };
+
+  const handleDeviceUpload = async () => {
+    if (!selectedFile) {
+      toast({ title: "No file selected", description: "Please pick a video file first.", variant: "destructive" });
+      return;
+    }
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("category", uploadCategory.trim() || "Uncategorized");
+
+      const res = await fetch("/api/upload/video", { method: "POST", body: formData });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as any).error || "Upload failed");
+      }
+      toast({ title: "Uploaded", description: `${selectedFile.name} added to your library.` });
+      setSelectedFile(null);
+      setUploadCategory("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      queryClient.invalidateQueries({ queryKey: getListVideosQueryKey() });
+    } catch (err: any) {
+      toast({ title: "Upload Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSaveToDrive = async (id: string) => {
+    if (!auth?.authenticated) {
+      toast({ title: "Not connected", description: "Click 'Connect Google' in the sidebar first.", variant: "destructive" });
+      return;
+    }
+    setSavingToDriveId(id);
+    try {
+      const res = await fetch(`/api/drive/save-video/${id}`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error((data as any).error || "Save to Drive failed");
+      }
+      toast({ title: "Saved to Drive", description: "Video is now in your Google Drive folder." });
+      queryClient.invalidateQueries({ queryKey: getListVideosQueryKey() });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingToDriveId(null);
+    }
   };
 
   const saveCategory = (id: string) => {
@@ -59,7 +122,7 @@ export function VideosTab() {
         },
         onError: (err: any) => {
           toast({ title: "Error", description: err.message || "Failed to update category", variant: "destructive" });
-        }
+        },
       }
     );
   };
@@ -75,21 +138,23 @@ export function VideosTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Videos</h2>
-          <p className="text-muted-foreground">Manage your Kuaishou video library</p>
-        </div>
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Videos</h2>
+        <p className="text-muted-foreground">Manage your Kuaishou video library</p>
       </div>
 
+      {/* Download from URL */}
       <Card>
         <CardHeader>
-          <CardTitle>Download New Videos</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="w-4 h-4" />
+            Download from URL
+          </CardTitle>
           <CardDescription>Enter Kuaishou URLs (one per line) to download and add to your library.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Textarea 
-            placeholder="https://v.kuaishou.com/..." 
+          <Textarea
+            placeholder="https://v.kuaishou.com/..."
             value={urls}
             onChange={(e) => setUrls(e.target.value)}
             className="min-h-[100px] font-mono text-sm"
@@ -97,14 +162,14 @@ export function VideosTab() {
           <div className="flex items-end gap-4">
             <div className="flex-1 space-y-2">
               <label className="text-sm font-medium">Category (Optional)</label>
-              <Input 
-                placeholder="e.g., Gaming, Funny, Motivation" 
+              <Input
+                placeholder="e.g., Gaming, Funny, Motivation"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />
             </div>
-            <Button 
-              onClick={handleDownload} 
+            <Button
+              onClick={handleDownload}
               disabled={downloadMutation.isPending || !urls.trim()}
               className="w-32"
             >
@@ -119,6 +184,69 @@ export function VideosTab() {
         </CardContent>
       </Card>
 
+      {/* Upload from Device */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="w-4 h-4" />
+            Upload from Device
+          </CardTitle>
+          <CardDescription>
+            Pick a video file from your gallery or storage. It will be saved locally{auth?.authenticated ? " and uploaded to Google Drive if a folder is configured." : ". Connect Google to also sync to Drive."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
+          >
+            {selectedFile ? (
+              <div className="flex items-center justify-center gap-3 text-sm">
+                <PlayCircle className="w-5 h-5 text-primary" />
+                <span className="font-medium text-foreground truncate max-w-[300px]">{selectedFile.name}</span>
+                <span className="text-muted-foreground">({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)</span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <FolderOpen className="w-8 h-8 mx-auto text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Click to browse gallery / storage</p>
+                <p className="text-xs text-muted-foreground">MP4, MOV, AVI, WEBM — up to 500 MB</p>
+              </div>
+            )}
+          </div>
+          <div className="flex items-end gap-4">
+            <div className="flex-1 space-y-2">
+              <label className="text-sm font-medium">Category (Optional)</label>
+              <Input
+                placeholder="e.g., Gaming, Funny, Motivation"
+                value={uploadCategory}
+                onChange={(e) => setUploadCategory(e.target.value)}
+              />
+            </div>
+            <Button
+              onClick={handleDeviceUpload}
+              disabled={isUploading || !selectedFile}
+              className="w-32"
+            >
+              {isUploading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4 mr-2" />
+              )}
+              Upload
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Video Library */}
       <Card>
         <CardHeader>
           <CardTitle>Video Library</CardTitle>
@@ -131,7 +259,7 @@ export function VideosTab() {
               ))}
             </div>
           ) : videos && videos.length > 0 ? (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -148,8 +276,8 @@ export function VideosTab() {
                     <TableRow key={video.id}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
-                          <PlayCircle className="w-4 h-4 text-muted-foreground" />
-                          <span className="truncate max-w-[200px]" title={video.filename}>
+                          <PlayCircle className="w-4 h-4 shrink-0 text-muted-foreground" />
+                          <span className="truncate max-w-[180px]" title={video.filename}>
                             {video.filename}
                           </span>
                         </div>
@@ -157,12 +285,12 @@ export function VideosTab() {
                       <TableCell>
                         {editingId === video.id ? (
                           <div className="flex items-center gap-2">
-                            <Input 
-                              value={editCategory} 
+                            <Input
+                              value={editCategory}
                               onChange={(e) => setEditCategory(e.target.value)}
-                              className="h-8 w-32"
+                              className="h-8 w-28"
                               autoFocus
-                              onKeyDown={(e) => e.key === 'Enter' && saveCategory(video.id)}
+                              onKeyDown={(e) => e.key === "Enter" && saveCategory(video.id)}
                             />
                             <Button size="icon" variant="ghost" className="h-8 w-8 text-green-500" onClick={() => saveCategory(video.id)}>
                               <Check className="w-4 h-4" />
@@ -174,14 +302,11 @@ export function VideosTab() {
                         ) : (
                           <div className="flex items-center gap-2 group">
                             <Badge variant="secondary">{video.category}</Badge>
-                            <Button 
-                              size="icon" 
-                              variant="ghost" 
+                            <Button
+                              size="icon"
+                              variant="ghost"
                               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => {
-                                setEditingId(video.id);
-                                setEditCategory(video.category);
-                              }}
+                              onClick={() => { setEditingId(video.id); setEditCategory(video.category); }}
                             >
                               <Edit2 className="w-3 h-3" />
                             </Button>
@@ -197,16 +322,37 @@ export function VideosTab() {
                         {video.usedCount}
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
-                        {video.lastUsed ? formatDistanceToNow(new Date(video.lastUsed), { addSuffix: true }) : 'Never'}
+                        {video.lastUsed
+                          ? formatDistanceToNow(new Date(video.lastUsed), { addSuffix: true })
+                          : "Never"}
                       </TableCell>
                       <TableCell className="text-right">
-                        {video.driveLink && (
-                          <Button size="icon" variant="ghost" asChild>
-                            <a href={video.driveLink} target="_blank" rel="norenoopener noreferrer">
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
-                          </Button>
-                        )}
+                        <div className="flex items-center justify-end gap-1">
+                          {!video.driveLink && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-8 gap-1.5 text-xs"
+                              disabled={savingToDriveId === video.id}
+                              onClick={() => handleSaveToDrive(video.id)}
+                              title="Save to Google Drive"
+                            >
+                              {savingToDriveId === video.id ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <HardDriveUpload className="w-3 h-3" />
+                              )}
+                              Save to Drive
+                            </Button>
+                          )}
+                          {video.driveLink && (
+                            <Button size="icon" variant="ghost" className="h-8 w-8" asChild title="Open in Drive">
+                              <a href={video.driveLink} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -215,8 +361,8 @@ export function VideosTab() {
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
-              <Video className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p>No videos found in your library.</p>
+              <PlayCircle className="w-12 h-12 mx-auto mb-4 opacity-20" />
+              <p>No videos found. Download from a URL or upload from your device.</p>
             </div>
           )}
         </CardContent>

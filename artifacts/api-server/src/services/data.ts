@@ -231,6 +231,15 @@ export function getRandomUnusedAudio(category?: string | null): Audio | null {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+export function updateAudio(id: string, update: Partial<Audio>): Audio | null {
+  const audios = getAudios();
+  const idx = audios.findIndex((a) => a.id === id);
+  if (idx === -1) return null;
+  audios[idx] = { ...audios[idx], ...update };
+  saveAudios(audios);
+  return audios[idx];
+}
+
 export function markAudioUsed(id: string): void {
   const audios = getAudios();
   const idx = audios.findIndex((a) => a.id === id);
