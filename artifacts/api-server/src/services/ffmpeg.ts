@@ -75,8 +75,7 @@ export async function mergeVideoWithAudio(
       })
       .on("progress", (p: { percent?: number; timemark?: string }) => {
         const pct = Math.min(95, 10 + Math.round((p.percent ?? 0) * 0.85));
-        const msg = `Encoding… ${p.percent?.toFixed(1) ?? "?"}% (${p.timemark ?? ""})`;
-        onProgress?.(pct, msg);
+        onProgress?.(pct, `Encoding… ${p.percent?.toFixed(1) ?? "?"}% (${p.timemark ?? ""})`);
       })
       .on("end", () => {
         addLog("process", "success", `Merge complete → ${path.basename(outputPath)}`);
@@ -85,6 +84,45 @@ export async function mergeVideoWithAudio(
       })
       .on("error", (err: Error, _stdout: string, stderr: string) => {
         addLog("process", "error", "FFmpeg error", stderr?.slice(-500) || err.message);
+        reject(err);
+      })
+      .run();
+  });
+}
+
+// ── Mute a video (strip audio stream, stream-copy video — fast, no re-encode) ─
+
+export async function muteVideo(
+  inputPath: string,
+  outputPath: string,
+  onProgress?: (progress: number, message: string) => void
+): Promise<string> {
+  addLog("process", "info", `Muting audio: ${path.basename(inputPath)}`);
+  onProgress?.(5, "Stripping audio track…");
+
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .outputOptions([
+        "-c:v copy",   // stream-copy video — no re-encode, very fast
+        "-an",         // drop all audio streams
+        "-movflags +faststart",
+      ])
+      .output(outputPath)
+      .on("start", (cmdLine: string) => {
+        addLog("process", "info", "FFmpeg mute started", cmdLine.slice(0, 200));
+        onProgress?.(20, "Removing audio stream…");
+      })
+      .on("progress", (p: { percent?: number; timemark?: string }) => {
+        const pct = Math.min(90, 20 + Math.round((p.percent ?? 0) * 0.7));
+        onProgress?.(pct, `Muting… ${p.timemark ?? ""}`);
+      })
+      .on("end", () => {
+        addLog("process", "success", `Muted → ${path.basename(outputPath)}`);
+        onProgress?.(100, "Muted successfully");
+        resolve(outputPath);
+      })
+      .on("error", (err: Error, _stdout: string, stderr: string) => {
+        addLog("process", "error", "FFmpeg mute error", stderr?.slice(-400) || err.message);
         reject(err);
       })
       .run();

@@ -17,6 +17,13 @@ const AUDIO_DIR = path.resolve(process.cwd(), "data", "audios");
 fs.mkdirSync(VIDEO_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
+// ── Cross-device safe file move (/tmp → /data are different filesystems) ─────
+
+function moveFile(src: string, dest: string): void {
+  fs.copyFileSync(src, dest);
+  try { fs.unlinkSync(src); } catch {}
+}
+
 // ── Detect Kuaishou / Kwai URLs ───────────────────────────────────────────────
 
 function isKuaishouUrl(url: string): boolean {
@@ -31,7 +38,7 @@ function isKuaishouUrl(url: string): boolean {
 
 // ── POST /api/download/video ──────────────────────────────────────────────────
 //
-// Always saves to local data/videos/ — Google Drive is a separate optional action.
+// Always saves to data/videos/ locally. Drive is a separate manual step.
 
 router.post("/download/video", async (req, res) => {
   const { urls, category } = req.body as { urls: string[]; category: string };
@@ -54,7 +61,6 @@ router.post("/download/video", async (req, res) => {
       const kuaishou = isKuaishouUrl(url);
 
       addLog("download_video", "info", `[${i + 1}/${urls.length}] ${kuaishou ? "Kuaishou→Puppeteer" : "yt-dlp"}: ${url}`);
-
       emitJobUpdate({
         jobId,
         jobType: "download_video",
@@ -81,8 +87,7 @@ router.post("/download/video", async (req, res) => {
               emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: m, progress: p });
             });
           } else {
-            const dlId = `dl_${Date.now()}`;
-            downloadedPath = await downloadVideoWithYtDlp(url, tmpDir, dlId, (p, m) => {
+            downloadedPath = await downloadVideoWithYtDlp(url, tmpDir, `dl_${Date.now()}`, (p, m) => {
               emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: m, progress: p });
             });
           }
@@ -98,14 +103,14 @@ router.post("/download/video", async (req, res) => {
 
           emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: "Saving to library…", progress: 97 });
 
-          // Move to permanent local storage
+          // Cross-device safe move: /tmp → data/videos/
           const filename = path.basename(downloadedPath);
           const destPath = path.join(VIDEO_DIR, filename);
-          fs.renameSync(downloadedPath, destPath);
+          moveFile(downloadedPath, destPath);
 
           const stat = fs.statSync(destPath);
           addVideo({
-            driveId: destPath,   // local path — Drive is separate optional step
+            driveId: destPath,
             filename,
             category: category || "Uncategorized",
             usedCount: 0,
@@ -117,7 +122,13 @@ router.post("/download/video", async (req, res) => {
 
           fs.rmSync(tmpDir, { recursive: true, force: true });
 
-          emitJobUpdate({ jobId, jobType: "download_video", status: "done", message: `Saved: ${filename} (${(stat.size / 1024 / 1024).toFixed(1)} MB)`, progress: 100 });
+          emitJobUpdate({
+            jobId,
+            jobType: "download_video",
+            status: "done",
+            message: `Saved: ${filename} (${(stat.size / 1024 / 1024).toFixed(1)} MB)`,
+            progress: 100,
+          });
           succeeded = true;
 
         } catch (err) {
@@ -137,7 +148,7 @@ router.post("/download/video", async (req, res) => {
 
 // ── POST /api/download/audio ──────────────────────────────────────────────────
 //
-// Always saves to local data/audios/ — Google Drive is a separate optional action.
+// Always saves to data/audios/ locally. Drive is a separate manual step.
 
 router.post("/download/audio", async (req, res) => {
   const { urls, category } = req.body as { urls: string[]; category?: string | null };
@@ -185,12 +196,12 @@ router.post("/download/audio", async (req, res) => {
 
           emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message: "Saving to library…", progress: 97 });
 
-          // Move to permanent local storage
+          // Cross-device safe move: /tmp → data/audios/
           const destPath = path.join(AUDIO_DIR, metadata.filename);
-          fs.renameSync(audioPath, destPath);
+          moveFile(audioPath, destPath);
 
           addAudio({
-            driveId: destPath,   // local path — Drive is separate optional step
+            driveId: destPath,
             title: metadata.title,
             description: metadata.description,
             tags: metadata.tags,
@@ -203,7 +214,13 @@ router.post("/download/audio", async (req, res) => {
 
           fs.rmSync(tmpDir, { recursive: true, force: true });
 
-          emitJobUpdate({ jobId, jobType: "download_audio", status: "done", message: `"${metadata.title}" — ${metadata.tags.length} tags`, progress: 100 });
+          emitJobUpdate({
+            jobId,
+            jobType: "download_audio",
+            status: "done",
+            message: `"${metadata.title}" — ${metadata.tags.length} tags`,
+            progress: 100,
+          });
           succeeded = true;
 
         } catch (err) {

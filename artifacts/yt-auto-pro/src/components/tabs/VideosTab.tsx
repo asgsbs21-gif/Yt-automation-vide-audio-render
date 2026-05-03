@@ -16,8 +16,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Download, Edit2, Check, X, Loader2, PlayCircle,
-  ExternalLink, Upload, HardDriveUpload, FolderOpen, Trash2,
-  HardDrive, CheckCircle2,
+  ExternalLink, Upload, FolderOpen, Trash2,
+  HardDrive, CheckCircle2, VolumeX,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { VIDEO_CATEGORIES } from "@/lib/categories";
@@ -31,7 +31,7 @@ export function VideosTab() {
   const [category, setCategory] = useState("fish cutting");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editCategory, setEditCategory] = useState("");
-  const [savingToDriveId, setSavingToDriveId] = useState<string | null>(null);
+  const [mutingId, setMutingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -83,18 +83,30 @@ export function VideosTab() {
     }
   };
 
-  const handleSaveToDrive = async (id: string) => {
-    setSavingToDriveId(id);
+  // Mute audio + upload muted version to Google Drive
+  const handleMuteAndDrive = async (id: string, filename: string) => {
+    setMutingId(id);
     try {
-      const res = await fetch(`/api/drive/save-video/${id}`, { method: "POST" });
+      const res = await fetch(`/api/videos/${id}/mute-and-drive`, { method: "POST" });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error((data as any).error || "Save failed");
-      toast({ title: "Saved to Drive", description: "Video copied to your Google Drive folder." });
-      invalidate();
+      if (!res.ok) {
+        const msg = (data as any).error || "Failed";
+        if ((data as any).requiresAuth) {
+          toast({ title: "Google Not Connected", description: msg, variant: "destructive" });
+        } else {
+          throw new Error(msg);
+        }
+        return;
+      }
+      toast({
+        title: "Mute & Drive Upload Started",
+        description: `Stripping audio from "${filename}" then uploading to Drive — watch the progress panel.`,
+      });
+      setTimeout(invalidate, 8000);
     } catch (err: any) {
-      toast({ title: "Drive Save Failed", description: err.message, variant: "destructive" });
+      toast({ title: "Failed", description: err.message, variant: "destructive" });
     } finally {
-      setSavingToDriveId(null);
+      setMutingId(null);
     }
   };
 
@@ -103,7 +115,7 @@ export function VideosTab() {
     try {
       const res = await fetch(`/api/videos/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Delete failed");
-      toast({ title: "Deleted", description: `${filename} removed from library.` });
+      toast({ title: "Deleted", description: `${filename} removed.` });
       invalidate();
     } catch (err: any) {
       toast({ title: "Delete Failed", description: err.message, variant: "destructive" });
@@ -130,7 +142,7 @@ export function VideosTab() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Videos</h2>
         <p className="text-muted-foreground">
-          All videos are stored locally on the server. Google Drive is an optional backup.
+          All videos are stored locally on the server. "Mute & Send to Drive" strips audio and uploads to Google Drive.
         </p>
       </div>
 
@@ -139,7 +151,7 @@ export function VideosTab() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Download className="w-4 h-4" /> Download from URL</CardTitle>
           <CardDescription>
-            Kuaishou / Kwai URLs → Puppeteer. YouTube, TikTok, and all other URLs → yt-dlp. Saved locally immediately.
+            Kuaishou / Kwai → Puppeteer. YouTube, TikTok, all others → yt-dlp. Saved locally immediately.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -174,7 +186,8 @@ export function VideosTab() {
           <CardDescription>MP4, MOV, AVI, WEBM — up to 500 MB. Saved locally.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <input ref={fileInputRef} type="file" accept="video/*" className="hidden" onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)} />
+          <input ref={fileInputRef} type="file" accept="video/*" className="hidden"
+            onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)} />
           <div onClick={() => fileInputRef.current?.click()}
             className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors">
             {selectedFile ? (
@@ -184,7 +197,10 @@ export function VideosTab() {
                 <span className="text-muted-foreground">({(selectedFile.size / 1024 / 1024).toFixed(1)} MB)</span>
               </div>
             ) : (
-              <div className="space-y-1"><FolderOpen className="w-7 h-7 mx-auto text-muted-foreground" /><p className="text-sm text-muted-foreground">Click to browse</p></div>
+              <div className="space-y-1">
+                <FolderOpen className="w-7 h-7 mx-auto text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Click to browse</p>
+              </div>
             )}
           </div>
           <div className="flex items-end gap-3">
@@ -205,11 +221,13 @@ export function VideosTab() {
         </CardContent>
       </Card>
 
-      {/* Library */}
+      {/* Video Library */}
       <Card>
         <CardHeader>
           <CardTitle>Video Library ({videos?.length ?? 0})</CardTitle>
-          <CardDescription>All files stored locally on the server. "Save to Drive" is optional.</CardDescription>
+          <CardDescription>
+            Click <strong>Mute &amp; Drive</strong> to strip audio with FFmpeg and upload to Google Drive. Your local copy is never modified.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -228,8 +246,10 @@ export function VideosTab() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {videos.map((video: any) => (
+                  {(videos as any[]).map((video) => (
                     <TableRow key={video.id}>
+
+                      {/* Filename + size */}
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <PlayCircle className="w-4 h-4 shrink-0 text-muted-foreground" />
@@ -239,6 +259,8 @@ export function VideosTab() {
                           </div>
                         </div>
                       </TableCell>
+
+                      {/* Category (editable) */}
                       <TableCell>
                         {editingId === video.id ? (
                           <div className="flex items-center gap-1">
@@ -261,6 +283,8 @@ export function VideosTab() {
                           </div>
                         )}
                       </TableCell>
+
+                      {/* Storage badges */}
                       <TableCell>
                         <div className="flex items-center gap-1.5">
                           {video.localExists ? (
@@ -271,18 +295,24 @@ export function VideosTab() {
                             <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 text-xs">Missing</Badge>
                           )}
                           {video.driveLink && (
-                            <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 gap-1 text-xs">
+                            <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/20 gap-1 text-xs">
                               <CheckCircle2 className="w-3 h-3" /> Drive
                             </Badge>
                           )}
                         </div>
                       </TableCell>
+
                       <TableCell className="text-right text-muted-foreground tabular-nums">{video.usedCount}</TableCell>
+
                       <TableCell className="text-muted-foreground text-sm">
                         {video.lastUsed ? formatDistanceToNow(new Date(video.lastUsed), { addSuffix: true }) : "Never"}
                       </TableCell>
+
+                      {/* Actions */}
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
+
+                          {/* Preview local file */}
                           {video.localExists && (
                             <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" asChild>
                               <a href={`/api/videos/${video.id}/file`} target="_blank" rel="noopener noreferrer">
@@ -290,24 +320,42 @@ export function VideosTab() {
                               </a>
                             </Button>
                           )}
-                          {!video.driveLink && video.localExists && (
-                            <Button size="sm" variant="outline" className="h-8 gap-1 text-xs"
-                              disabled={savingToDriveId === video.id}
-                              onClick={() => handleSaveToDrive(video.id)}>
-                              {savingToDriveId === video.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <HardDriveUpload className="w-3 h-3" />}
-                              Drive
+
+                          {/* Mute & Send to Drive — primary Drive action */}
+                          {video.localExists && !video.driveLink && (
+                            <Button
+                              size="sm"
+                              variant="default"
+                              className="h-8 gap-1 text-xs bg-blue-600 hover:bg-blue-700"
+                              disabled={mutingId === video.id}
+                              onClick={() => handleMuteAndDrive(video.id, video.filename)}
+                            >
+                              {mutingId === video.id
+                                ? <Loader2 className="w-3 h-3 animate-spin" />
+                                : <VolumeX className="w-3 h-3" />}
+                              Mute &amp; Drive
                             </Button>
                           )}
+
+                          {/* Open Drive link if already uploaded */}
                           {video.driveLink && (
-                            <Button size="icon" variant="ghost" className="h-8 w-8" asChild>
-                              <a href={video.driveLink} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
+                            <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" asChild>
+                              <a href={video.driveLink} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="w-3 h-3" /> Drive
+                              </a>
                             </Button>
                           )}
-                          <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:bg-destructive/10"
+
+                          {/* Delete */}
+                          <Button
+                            size="icon" variant="ghost"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
                             disabled={deletingId === video.id}
-                            onClick={() => handleDelete(video.id, video.filename)}>
+                            onClick={() => handleDelete(video.id, video.filename)}
+                          >
                             {deletingId === video.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                           </Button>
+
                         </div>
                       </TableCell>
                     </TableRow>
@@ -319,7 +367,7 @@ export function VideosTab() {
             <div className="text-center py-16 text-muted-foreground">
               <PlayCircle className="w-12 h-12 mx-auto mb-3 opacity-20" />
               <p className="font-medium">No videos yet</p>
-              <p className="text-sm mt-1">Paste Kuaishou or YouTube URLs above, or upload a file from your device.</p>
+              <p className="text-sm mt-1">Paste Kuaishou or YouTube URLs above, or upload from your device.</p>
               <p className="text-sm mt-1 text-green-600 font-medium">✓ No Google connection needed to download or store videos.</p>
             </div>
           )}
