@@ -1,8 +1,56 @@
 import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
+import { execSync } from "child_process";
 import { addLog } from "./data.js";
 import type { JobType } from "../lib/socket.js";
+
+// ── Locate yt-dlp binary ──────────────────────────────────────────────────────
+
+const WORKSPACE_BIN = "/home/runner/workspace/bin";
+
+function ensureYtDlpBinary(): void {
+  const target = path.join(WORKSPACE_BIN, "yt-dlp-linux");
+  if (fs.existsSync(target)) return;
+  try {
+    fs.mkdirSync(WORKSPACE_BIN, { recursive: true });
+    execSync(
+      `curl -fsSL "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux" -o "${target}" && chmod +x "${target}"`,
+      { timeout: 120_000, stdio: "pipe" }
+    );
+  } catch {}
+}
+
+// Always ensure binary exists on module load
+ensureYtDlpBinary();
+
+function findYtDlp(): string {
+  const candidates = [
+    // PyInstaller standalone binary — no Python dependency
+    path.join(WORKSPACE_BIN, "yt-dlp-linux"),
+    path.resolve(process.cwd(), "../../bin/yt-dlp-linux"),
+  ];
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      try {
+        const ver = execSync(`"${p}" --version`, {
+          encoding: "utf8",
+          timeout: 8000,
+          stdio: ["pipe", "pipe", "pipe"],
+        }).trim();
+        const year = parseInt(ver.split(".")[0], 10);
+        if (year >= 2023) return p;
+      } catch {}
+    }
+  }
+
+  return path.join(WORKSPACE_BIN, "yt-dlp-linux");
+}
+
+export const YT_DLP_BIN = findYtDlp();
+
+// ── Metadata extracted from info.json ────────────────────────────────────────
 
 export interface AudioMetadata {
   title: string;
@@ -13,7 +61,130 @@ export interface AudioMetadata {
   filename: string;
 }
 
-// ── Download audio + metadata with yt-dlp ────────────────────────────────────
+// ── Shared: run yt-dlp and stream output to logs + progress ─────────────────
+
+async function runYtDlp(
+  args: string[],
+  cwd: string,
+  jobType: JobType,
+  onProgress?: (progress: number, message: string) => void,
+  startPct = 5,
+  endPct = 92
+): Promise<{ stdout: string; stderr: string }> {
+  addLog(jobType, "info", `yt-dlp ${YT_DLP_BIN}`, args.join(" "));
+
+  return new Promise((resolve, reject) => {
+    const proc = spawn(YT_DLP_BIN, args, { cwd });
+    let lastPct = startPct;
+    const stdoutLines: string[] = [];
+    const stderrLines: string[] = [];
+
+    proc.stdout.on("data", (chunk: Buffer) => {
+      const text = chunk.toString();
+      const lines = text.split("\n").filter((l) => l.trim());
+
+      for (const line of lines) {
+        stdoutLines.push(line);
+
+        // Always log every line so user can see actual yt-dlp output
+        addLog(jobType, "info", line.trim().slice(0, 300));
+
+        // Parse progress percentage
+        const pctMatch = line.match(/\[download\]\s+([\d.]+)%/);
+        if (pctMatch) {
+          const raw = parseFloat(pctMatch[1]);
+          const pct = Math.min(endPct, startPct + Math.round((raw / 100) * (endPct - startPct)));
+          if (pct > lastPct) {
+            lastPct = pct;
+            onProgress?.(pct, line.trim());
+          }
+        } else if (line.includes("[Merger]") || line.includes("[ffmpeg]")) {
+          onProgress?.(Math.min(endPct, lastPct + 5), line.trim());
+        } else if (line.includes("[download] Destination:")) {
+          onProgress?.(startPct + 2, line.trim());
+        }
+      }
+    });
+
+    proc.stderr.on("data", (chunk: Buffer) => {
+      const text = chunk.toString().trim();
+      if (!text) return;
+      const lines = text.split("\n").filter((l) => l.trim());
+      for (const line of lines) {
+        stderrLines.push(line);
+        addLog(jobType, "error", `yt-dlp stderr: ${line.trim().slice(0, 300)}`);
+        onProgress?.(lastPct, `ERROR: ${line.trim().slice(0, 120)}`);
+      }
+    });
+
+    proc.on("close", (code) => {
+      if (code === 0) {
+        resolve({ stdout: stdoutLines.join("\n"), stderr: stderrLines.join("\n") });
+      } else {
+        const errMsg = stderrLines.join("\n") || stdoutLines.join("\n");
+        reject(new Error(`yt-dlp exited with code ${code}:\n${errMsg.slice(0, 500)}`));
+      }
+    });
+
+    proc.on("error", (err) => {
+      reject(new Error(`yt-dlp spawn failed (binary: ${YT_DLP_BIN}): ${err.message}`));
+    });
+  });
+}
+
+// ── Download VIDEO with yt-dlp (non-Kuaishou URLs) ───────────────────────────
+
+export async function downloadVideoWithYtDlp(
+  url: string,
+  destDir: string,
+  jobId: string,
+  onProgress?: (progress: number, message: string) => void
+): Promise<string | null> {
+  const jobType: JobType = "download_video";
+
+  if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+  const outputTemplate = path.join(destDir, `${jobId}.%(ext)s`);
+
+  addLog(jobType, "info", `Downloading video via yt-dlp: ${url}`);
+  onProgress?.(3, `Starting yt-dlp for: ${url}`);
+
+  const args = [
+    "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+    "--merge-output-format", "mp4",
+    "--no-playlist",
+    "--newline",
+    "--no-warnings",
+    "-o", outputTemplate,
+    url,
+  ];
+
+  try {
+    await runYtDlp(args, destDir, jobType, onProgress, 3, 95);
+  } catch (err) {
+    addLog(jobType, "error", `yt-dlp video download failed: ${url}`, String(err));
+    onProgress?.(0, `Failed: ${String(err).slice(0, 120)}`);
+    return null;
+  }
+
+  // Find the output file
+  const files = fs.readdirSync(destDir);
+  const videoFile = files.find(
+    (f) => f.startsWith(jobId) && (f.endsWith(".mp4") || f.endsWith(".mkv") || f.endsWith(".webm"))
+  );
+
+  if (!videoFile) {
+    addLog(jobType, "error", `No output file found in ${destDir} after yt-dlp. Files: ${files.join(", ")}`);
+    return null;
+  }
+
+  const videoPath = path.join(destDir, videoFile);
+  addLog(jobType, "success", `Downloaded: ${videoFile}`);
+  onProgress?.(100, `Done: ${videoFile}`);
+  return videoPath;
+}
+
+// ── Download AUDIO + metadata with yt-dlp ────────────────────────────────────
 
 export async function downloadAudio(
   url: string,
@@ -23,65 +194,31 @@ export async function downloadAudio(
   const jobType: JobType = "download_audio";
   addLog(jobType, "info", `Starting audio download: ${url}`);
 
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true });
-  }
+  if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
 
   const outputTemplate = path.join(destDir, "%(id)s.%(ext)s");
-  const infoTemplate = path.join(destDir, "%(id)s.%(ext)s");
 
   const args = [
     "--extract-audio",
-    "--audio-format",
-    "mp3",
-    "--audio-quality",
-    "0",
+    "--audio-format", "mp3",
+    "--audio-quality", "0",
     "--write-info-json",
     "--no-playlist",
-    "--no-warnings",
     "--newline",
-    "--output",
-    outputTemplate,
+    "--no-warnings",
+    "-o", outputTemplate,
     url,
   ];
 
-  onProgress?.(5, "Starting yt-dlp…");
+  onProgress?.(5, `Starting yt-dlp (binary: ${path.basename(YT_DLP_BIN)})…`);
 
-  await new Promise<void>((resolve, reject) => {
-    const proc = spawn("yt-dlp", args, { cwd: destDir });
-    let lastPct = 5;
-
-    proc.stdout.on("data", (chunk: Buffer) => {
-      const lines = chunk.toString().split("\n");
-      for (const line of lines) {
-        const pctMatch = line.match(/\[download\]\s+([\d.]+)%/);
-        if (pctMatch) {
-          const pct = Math.min(90, 5 + Math.round(parseFloat(pctMatch[1]) * 0.85));
-          if (pct > lastPct) {
-            lastPct = pct;
-            onProgress?.(pct, line.trim());
-          }
-        }
-      }
-    });
-
-    proc.stderr.on("data", (chunk: Buffer) => {
-      const txt = chunk.toString().trim();
-      if (txt) addLog(jobType, "warn", txt.slice(0, 200));
-    });
-
-    proc.on("close", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`yt-dlp exited with code ${code}`));
-    });
-
-    proc.on("error", (err) => {
-      reject(new Error(`yt-dlp spawn failed: ${err.message}`));
-    });
-  }).catch((err) => {
-    addLog(jobType, "error", `yt-dlp failed for ${url}`, String(err));
-    throw err;
-  });
+  try {
+    await runYtDlp(args, destDir, jobType, onProgress, 5, 90);
+  } catch (err) {
+    addLog(jobType, "error", `yt-dlp audio download failed: ${url}`, String(err));
+    onProgress?.(0, `Failed: ${String(err).slice(0, 120)}`);
+    return null;
+  }
 
   onProgress?.(92, "Parsing metadata…");
 

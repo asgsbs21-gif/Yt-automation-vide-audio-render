@@ -1,5 +1,765 @@
 [
   {
+    "id": "d20438da-9a44-4ee0-86bc-9611e5ec6edc",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "All 3 attempts failed for: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:13.716Z"
+  },
+  {
+    "id": "66ab1e49-6a98-477d-a195-4ce31324cbec",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "Attempt 3/3 failed for https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": "Error: EXDEV: cross-device link not permitted, rename '/tmp/audio_670c4cab-d952-4cc4-af9c-6aa8572e2021/jNQXAC9IVRw.mp3' -> '/home/runner/workspace/artifacts/api-server/data/audios/jNQXAC9IVRw.mp3'",
+    "createdAt": "2026-05-03T03:30:13.715Z"
+  },
+  {
+    "id": "fec9bbda-d7f8-49d2-a577-ead8bb66e94d",
+    "jobType": "download_audio",
+    "level": "success",
+    "message": "Downloaded: \"Me at the zoo\" (19s, 3 tags)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:13.714Z"
+  },
+  {
+    "id": "cafb1c9d-d358-4868-a836-61c5b65a2ea3",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Deleting original file /tmp/audio_670c4cab-d952-4cc4-af9c-6aa8572e2021/jNQXAC9IVRw.webm (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:13.575Z"
+  },
+  {
+    "id": "109f85ac-0dc5-4e55-bf0e-2f633a7417f4",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[ExtractAudio] Destination: /tmp/audio_670c4cab-d952-4cc4-af9c-6aa8572e2021/jNQXAC9IVRw.mp3",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:13.129Z"
+  },
+  {
+    "id": "665bb17b-257d-4434-a83c-4265c98d7739",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] 100% of  246.27KiB in 00:00:00 at 15.65MiB/s",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.640Z"
+  },
+  {
+    "id": "71a6f2d9-77fe-4565-9c75-45ca131cee93",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] 100.0% of  246.27KiB at   42.70MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.639Z"
+  },
+  {
+    "id": "c289dcf9-0928-47e5-ba74-1673139d8c21",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  51.6% of  246.27KiB at   32.82MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.637Z"
+  },
+  {
+    "id": "bb7df7bd-7c75-4802-bb18-322c5372e610",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  25.6% of  246.27KiB at   24.49MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.636Z"
+  },
+  {
+    "id": "9c3c2c9f-d599-44dc-9f87-6d5667ac78d3",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  12.6% of  246.27KiB at   21.14MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.636Z"
+  },
+  {
+    "id": "a338fadb-6126-4db5-b49c-83171b8a63bd",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   6.1% of  246.27KiB at   13.51MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.635Z"
+  },
+  {
+    "id": "dda9065b-d2e8-48ef-9583-5e278a6bfabb",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   2.8% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.634Z"
+  },
+  {
+    "id": "58dac4c0-1576-4953-a63d-9de39781cf35",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   1.2% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.633Z"
+  },
+  {
+    "id": "341d1bfa-df58-4041-b5eb-1e9fa63bee5a",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   0.4% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.632Z"
+  },
+  {
+    "id": "e311db24-ddba-4110-92bc-392ec7b8d044",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] Destination: /tmp/audio_670c4cab-d952-4cc4-af9c-6aa8572e2021/jNQXAC9IVRw.webm",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.631Z"
+  },
+  {
+    "id": "d6f8a6d0-a88d-4f9d-87e1-b066086724dc",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[info] Writing video metadata as JSON to: /tmp/audio_670c4cab-d952-4cc4-af9c-6aa8572e2021/jNQXAC9IVRw.info.json",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.617Z"
+  },
+  {
+    "id": "e0f5e57d-ac00-443a-b9a8-1af7cac64e9c",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[info] jNQXAC9IVRw: Downloading 1 format(s): 251",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.612Z"
+  },
+  {
+    "id": "49954c97-8bea-4645-ad1c-995a59132bb1",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] jNQXAC9IVRw: Downloading android vr player API JSON",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:12.147Z"
+  },
+  {
+    "id": "9e9d49e6-f8b2-4a6c-b8fc-d6604cb6631d",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] jNQXAC9IVRw: Downloading webpage",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:10.973Z"
+  },
+  {
+    "id": "143b1d36-5493-413f-8822-ce4108fad159",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] Extracting URL: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:10.972Z"
+  },
+  {
+    "id": "c8fd5513-48a2-4537-9e8a-195cb930c607",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_670c4cab-d952-4cc4-af9c-6aa8572e2021/%(id)s.%(ext)s https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "createdAt": "2026-05-03T03:30:10.051Z"
+  },
+  {
+    "id": "6af62dc6-3c09-4578-9689-703858de8068",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:10.050Z"
+  },
+  {
+    "id": "4bc90a51-877f-4bb2-9d31-e35b06505dd9",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "Attempt 2/3 failed for https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": "Error: EXDEV: cross-device link not permitted, rename '/tmp/audio_a973e1ab-3db6-4cee-b458-b994be464cbe/jNQXAC9IVRw.mp3' -> '/home/runner/workspace/artifacts/api-server/data/audios/jNQXAC9IVRw.mp3'",
+    "createdAt": "2026-05-03T03:30:10.049Z"
+  },
+  {
+    "id": "e59ef404-be70-4ede-aaef-36a9d1216c21",
+    "jobType": "download_audio",
+    "level": "success",
+    "message": "Downloaded: \"Me at the zoo\" (19s, 3 tags)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:10.048Z"
+  },
+  {
+    "id": "60c5723e-1683-4222-9857-e9144b908768",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Deleting original file /tmp/audio_a973e1ab-3db6-4cee-b458-b994be464cbe/jNQXAC9IVRw.webm (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:09.918Z"
+  },
+  {
+    "id": "89f1dfa5-5ad1-43fc-b9f6-56f7c9a81351",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[ExtractAudio] Destination: /tmp/audio_a973e1ab-3db6-4cee-b458-b994be464cbe/jNQXAC9IVRw.mp3",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:09.456Z"
+  },
+  {
+    "id": "45585da7-7c61-4e88-981b-0bd53592554c",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] 100% of  246.27KiB in 00:00:00 at 13.30MiB/s",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.925Z"
+  },
+  {
+    "id": "35032636-dca8-4502-8268-5bb30b95f3f1",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] 100.0% of  246.27KiB at   37.41MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.924Z"
+  },
+  {
+    "id": "4fcb256d-e389-4d2d-b39a-baf8964fc525",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  51.6% of  246.27KiB at   28.28MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.923Z"
+  },
+  {
+    "id": "8623d308-45f0-4ce2-9bdc-7a64a5ea0c57",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  25.6% of  246.27KiB at   20.28MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.922Z"
+  },
+  {
+    "id": "46083782-6abf-498e-9ca4-b647e15b133f",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  12.6% of  246.27KiB at   16.84MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.919Z"
+  },
+  {
+    "id": "3141d9f5-bcfc-4816-aa1d-8ff29f5888d1",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   6.1% of  246.27KiB at   10.40MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.919Z"
+  },
+  {
+    "id": "214d7dd4-0a0e-45a3-b071-487d6135b44b",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   2.8% of  246.27KiB at    6.36MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.918Z"
+  },
+  {
+    "id": "eb90ac18-a3ce-4ad6-b621-cdd2dd55b516",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   1.2% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.917Z"
+  },
+  {
+    "id": "4c80078a-584b-4ea4-ba3f-d18d76538ece",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   0.4% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.915Z"
+  },
+  {
+    "id": "1c11ba31-fe75-4bb5-8b04-a71417766584",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] Destination: /tmp/audio_a973e1ab-3db6-4cee-b458-b994be464cbe/jNQXAC9IVRw.webm",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.914Z"
+  },
+  {
+    "id": "fcae3e79-c3d2-4bf8-b2e1-53da41da3617",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[info] Writing video metadata as JSON to: /tmp/audio_a973e1ab-3db6-4cee-b458-b994be464cbe/jNQXAC9IVRw.info.json",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.895Z"
+  },
+  {
+    "id": "ce25f81f-a6e3-432f-aa31-71e917949f20",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[info] jNQXAC9IVRw: Downloading 1 format(s): 251",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.891Z"
+  },
+  {
+    "id": "809ec9de-921e-4937-9a20-818e7fce6a27",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] jNQXAC9IVRw: Downloading android vr player API JSON",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:08.420Z"
+  },
+  {
+    "id": "e07edfcd-086d-4e99-b318-cdc48f0a76b7",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] jNQXAC9IVRw: Downloading webpage",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:07.367Z"
+  },
+  {
+    "id": "2852e1e7-eb8d-4a28-8379-121e4198a1b0",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] Extracting URL: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:07.367Z"
+  },
+  {
+    "id": "a66489c6-621f-428e-b806-fd027f763f1c",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_a973e1ab-3db6-4cee-b458-b994be464cbe/%(id)s.%(ext)s https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "createdAt": "2026-05-03T03:30:06.500Z"
+  },
+  {
+    "id": "a5aa063a-7832-4803-9a3e-57da7477f414",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:06.499Z"
+  },
+  {
+    "id": "ca002e89-9ba6-4f95-b4d5-79fb32138dc8",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "Attempt 1/3 failed for https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": "Error: EXDEV: cross-device link not permitted, rename '/tmp/audio_479a83c8-3a64-485d-9ed0-2e93c7c10e91/jNQXAC9IVRw.mp3' -> '/home/runner/workspace/artifacts/api-server/data/audios/jNQXAC9IVRw.mp3'",
+    "createdAt": "2026-05-03T03:30:06.498Z"
+  },
+  {
+    "id": "33d5ff23-28af-4806-a532-3576956da2f4",
+    "jobType": "download_audio",
+    "level": "success",
+    "message": "Downloaded: \"Me at the zoo\" (19s, 3 tags)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:06.495Z"
+  },
+  {
+    "id": "4225d311-ad3b-4399-9c52-434c87e6ec94",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Deleting original file /tmp/audio_479a83c8-3a64-485d-9ed0-2e93c7c10e91/jNQXAC9IVRw.webm (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:06.353Z"
+  },
+  {
+    "id": "29e40001-a4d3-45de-8294-2652052f848f",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[ExtractAudio] Destination: /tmp/audio_479a83c8-3a64-485d-9ed0-2e93c7c10e91/jNQXAC9IVRw.mp3",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.904Z"
+  },
+  {
+    "id": "64c376af-0bdb-44b6-b0bd-d88ac8dcd725",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] 100% of  246.27KiB in 00:00:00 at 11.31MiB/s",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.356Z"
+  },
+  {
+    "id": "22e9dc42-689b-4d95-bf99-7b2ee30560e0",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] 100.0% of  246.27KiB at   40.93MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.355Z"
+  },
+  {
+    "id": "41cd06be-ae31-4796-b7e4-fa30b91ca1d4",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  51.6% of  246.27KiB at   26.34MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.354Z"
+  },
+  {
+    "id": "b37eb710-8226-43c8-a157-8c4d03fc1283",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  25.6% of  246.27KiB at   19.00MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.353Z"
+  },
+  {
+    "id": "34a7fed2-a2ce-41bc-908e-5427d6f48a9d",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]  12.6% of  246.27KiB at   14.13MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.353Z"
+  },
+  {
+    "id": "2d8eea68-61d3-48ae-b13b-cd5cb8457670",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   6.1% of  246.27KiB at    8.71MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.352Z"
+  },
+  {
+    "id": "ba4b97e0-a822-4fc5-bf01-ba3c066c2bfc",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   2.8% of  246.27KiB at    5.21MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.351Z"
+  },
+  {
+    "id": "d7579601-36bc-4452-bd20-00044fc33fee",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   1.2% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.350Z"
+  },
+  {
+    "id": "1a5d0ebb-a00e-448a-b273-fdb5ef3e1296",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download]   0.4% of  246.27KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.350Z"
+  },
+  {
+    "id": "1430b7a9-b062-484f-8b08-f1113eb00166",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[download] Destination: /tmp/audio_479a83c8-3a64-485d-9ed0-2e93c7c10e91/jNQXAC9IVRw.webm",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.349Z"
+  },
+  {
+    "id": "56c11a65-5c83-4147-b924-98681dce33b1",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[info] Writing video metadata as JSON to: /tmp/audio_479a83c8-3a64-485d-9ed0-2e93c7c10e91/jNQXAC9IVRw.info.json",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.327Z"
+  },
+  {
+    "id": "3c068f9e-38a3-4baa-8bee-ef3b1dd630de",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[info] jNQXAC9IVRw: Downloading 1 format(s): 251",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:05.324Z"
+  },
+  {
+    "id": "9a0dcad7-ce15-4bff-92a6-0c8076784f10",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] jNQXAC9IVRw: Downloading android vr player API JSON",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:04.897Z"
+  },
+  {
+    "id": "e428db74-2e51-4354-83d0-3e988316840b",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] jNQXAC9IVRw: Downloading webpage",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:03.697Z"
+  },
+  {
+    "id": "dd740297-ade9-4951-b598-2f0d98637a17",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "[youtube] Extracting URL: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:03.696Z"
+  },
+  {
+    "id": "8ea14858-5fd2-4204-abb4-f6339aafa85f",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_479a83c8-3a64-485d-9ed0-2e93c7c10e91/%(id)s.%(ext)s https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "createdAt": "2026-05-03T03:30:02.714Z"
+  },
+  {
+    "id": "f017c62c-7a15-42d2-ad54-1b1d5282ed02",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:02.713Z"
+  },
+  {
+    "id": "d2eb5186-7620-4597-8488-c1ada1fea342",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Batch 7d8cc07f-b263-4c85-8f3e-80125dba47dc: 1 audio URL(s)",
+    "details": null,
+    "createdAt": "2026-05-03T03:30:02.711Z"
+  },
+  {
+    "id": "4727d6ba-5bf5-499b-9490-c6bd4e38318f",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T03:29:41.553Z"
+  },
+  {
+    "id": "4e074762-f548-47a4-8a4c-f54c981aff13",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T03:28:19.819Z"
+  },
+  {
+    "id": "df5f8b0e-acba-4c8f-9e1a-5e4719cc8095",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed after 3 retries: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:23:34.016Z"
+  },
+  {
+    "id": "f3debb70-0f7e-4f3d-bdca-53b3fd41632e",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:23:34.006Z"
+  },
+  {
+    "id": "6393f869-f6cd-407c-88b5-2d74a04d7e21",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "TimeoutError: Timed out after waiting 30000ms",
+    "createdAt": "2026-05-03T03:23:34.005Z"
+  },
+  {
+    "id": "8e016540-16aa-481f-95d5-700eb95bfe46",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Launching browser: /nix/store/ia69plrrvn7czdhn3flq1ll39i92ixab-chromium-92.0.4515.159/bin/chromium",
+    "details": null,
+    "createdAt": "2026-05-03T03:23:03.459Z"
+  },
+  {
+    "id": "bbbeff57-a22a-4791-af76-e952bc8f4314",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:23:03.444Z"
+  },
+  {
+    "id": "5e023829-43b1-42d9-8bd3-fc2f94d6cd2a",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:23:03.431Z"
+  },
+  {
+    "id": "184c7345-0344-4d6f-a9cf-4ee05da68c66",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "TimeoutError: Timed out after waiting 30000ms",
+    "createdAt": "2026-05-03T03:23:03.430Z"
+  },
+  {
+    "id": "5b724c93-b552-4420-b9e2-a0655df7dd54",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Launching browser: /nix/store/ia69plrrvn7czdhn3flq1ll39i92ixab-chromium-92.0.4515.159/bin/chromium",
+    "details": null,
+    "createdAt": "2026-05-03T03:22:33.055Z"
+  },
+  {
+    "id": "be75a2e4-a932-4a34-a775-1b3aa99c170d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:22:33.046Z"
+  },
+  {
+    "id": "fbab15bb-5b0f-43e0-8293-cc4f6f4af60d",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:22:33.031Z"
+  },
+  {
+    "id": "8fce24a9-226e-441d-9e28-3d030fe3fc7e",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "TimeoutError: Timed out after waiting 30000ms",
+    "createdAt": "2026-05-03T03:22:33.030Z"
+  },
+  {
+    "id": "a0b227d3-f022-4cd0-99a8-360d25308acd",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Launching browser: /nix/store/ia69plrrvn7czdhn3flq1ll39i92ixab-chromium-92.0.4515.159/bin/chromium",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:59.629Z"
+  },
+  {
+    "id": "924a2cbf-440f-4517-8c50-735a5901af6e",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:59.611Z"
+  },
+  {
+    "id": "f47b3e4d-7f65-4564-b63e-b518e94e07df",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Starting 1 video download(s) [2a7b449e-a5e7-419e-99ee-df5050891e7b]",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:59.609Z"
+  },
+  {
+    "id": "f82668ca-777b-4aee-b571-ffa1d2188123",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "Failed after 3 retries: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:15.405Z"
+  },
+  {
+    "id": "4225b968-0fc7-44ff-89f3-d94e164eaa4e",
+    "jobType": "download_audio",
+    "level": "warn",
+    "message": "Retry 3/3 for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: yt-dlp exited with code 1",
+    "createdAt": "2026-05-03T03:21:15.404Z"
+  },
+  {
+    "id": "eb85164f-6e95-469c-84e3-954dbb96a5b0",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "yt-dlp failed for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: yt-dlp exited with code 1",
+    "createdAt": "2026-05-03T03:21:15.404Z"
+  },
+  {
+    "id": "0c285b64-b3e9-44ae-8141-2a12894c39ed",
+    "jobType": "download_audio",
+    "level": "warn",
+    "message": "ERROR: The page needs to be reloaded.. The page needs to be reloaded.",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:15.337Z"
+  },
+  {
+    "id": "026a005f-ef43-4235-bbf1-887cec57b8e3",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:04.149Z"
+  },
+  {
+    "id": "faf76510-6942-43fa-9265-fa0df0b3b016",
+    "jobType": "download_audio",
+    "level": "warn",
+    "message": "Retry 2/3 for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: yt-dlp exited with code 1",
+    "createdAt": "2026-05-03T03:21:04.148Z"
+  },
+  {
+    "id": "81ac028f-0e75-4293-9521-3a4c7d601f19",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "yt-dlp failed for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: yt-dlp exited with code 1",
+    "createdAt": "2026-05-03T03:21:04.148Z"
+  },
+  {
+    "id": "e7d38531-3167-4a68-a11f-633d23b28ea3",
+    "jobType": "download_audio",
+    "level": "warn",
+    "message": "ERROR: The page needs to be reloaded.. The page needs to be reloaded.",
+    "details": null,
+    "createdAt": "2026-05-03T03:21:04.097Z"
+  },
+  {
+    "id": "fe028982-61a0-412e-a33d-62adf78a27e7",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:20:54.135Z"
+  },
+  {
+    "id": "e1d433eb-a757-4942-9253-a8c90d95a077",
+    "jobType": "download_audio",
+    "level": "warn",
+    "message": "Retry 1/3 for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: yt-dlp exited with code 1",
+    "createdAt": "2026-05-03T03:20:54.134Z"
+  },
+  {
+    "id": "1b4e30a6-b8b1-4b4a-b5c5-d7d9ca66380f",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "yt-dlp failed for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: yt-dlp exited with code 1",
+    "createdAt": "2026-05-03T03:20:54.133Z"
+  },
+  {
+    "id": "5642ee2c-bec8-4ccd-a83c-982cf71b6b0f",
+    "jobType": "download_audio",
+    "level": "warn",
+    "message": "ERROR: Signature extraction failed: Traceback (most recent call last):\n  File \"/nix/store/jsiv18m79d8vql5ffhm697hlmxg95yqx-python3.9-yt-dlp-2021.08.02/lib/python3.9/site-packages/yt_dlp/extractor/yout",
+    "details": null,
+    "createdAt": "2026-05-03T03:20:54.079Z"
+  },
+  {
+    "id": "8b915a03-59ce-42bc-afc1-2d335704d0c6",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:20:38.246Z"
+  },
+  {
+    "id": "21d31964-05b7-4944-87c3-221f6647f3e5",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting 1 audio download(s) [5ece69a0-e77f-4d15-b376-9ddc99508c1b]",
+    "details": null,
+    "createdAt": "2026-05-03T03:20:38.244Z"
+  },
+  {
     "id": "e675be5b-e46d-4a2c-a026-d9a67f2da2a6",
     "jobType": "schedule",
     "level": "info",

@@ -5,7 +5,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { addVideo, addAudio, addLog, getSettings } from "../services/data.js";
 import { downloadKuaishouVideo } from "../services/kuaishou.js";
-import { downloadAudio } from "../services/ytdlp.js";
+import { downloadVideoWithYtDlp, downloadAudio } from "../services/ytdlp.js";
 import { uploadFileToDrive } from "../services/drive.js";
 import { createAuthenticatedClient } from "../services/auth.js";
 import { getSessionTokens } from "../middlewares/auth.js";
@@ -13,7 +13,64 @@ import { emitJobUpdate } from "../lib/socket.js";
 
 const router = Router();
 
-// POST /api/download/video
+// ── Detect if a URL is from Kuaishou / Kwai ───────────────────────────────────
+
+function isKuaishouUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return (
+      hostname.includes("kuaishou.com") ||
+      hostname.includes("kwai.com") ||
+      hostname.includes("v.kuaishou") ||
+      hostname.includes("gifshow.com")
+    );
+  } catch {
+    return url.toLowerCase().includes("kuaishou") || url.toLowerCase().includes("kwai");
+  }
+}
+
+// ── Helper: save a video file to Drive or local storage ──────────────────────
+
+async function saveVideoFile(
+  filePath: string,
+  filename: string,
+  category: string,
+  tokens: ReturnType<typeof getSessionTokens>,
+  folderId: string | undefined
+): Promise<void> {
+  if (folderId && tokens) {
+    const auth = createAuthenticatedClient(tokens);
+    const driveFile = await uploadFileToDrive(auth, filePath, folderId, "video/mp4", filename);
+    addVideo({
+      driveId: driveFile.id,
+      filename,
+      category: category || "Uncategorized",
+      usedCount: 0,
+      lastUsed: null,
+      available: true,
+      driveLink: driveFile.webViewLink,
+      status: "available",
+    });
+  } else {
+    const localDir = path.resolve(process.cwd(), "data", "videos");
+    fs.mkdirSync(localDir, { recursive: true });
+    const localPath = path.join(localDir, filename);
+    fs.renameSync(filePath, localPath);
+    addVideo({
+      driveId: localPath,
+      filename,
+      category: category || "Uncategorized",
+      usedCount: 0,
+      lastUsed: null,
+      available: true,
+      driveLink: null,
+      status: "available",
+    });
+  }
+}
+
+// ── POST /api/download/video ──────────────────────────────────────────────────
+
 router.post("/download/video", async (req, res) => {
   const { urls, category } = req.body as { urls: string[]; category: string };
 
@@ -22,9 +79,9 @@ router.post("/download/video", async (req, res) => {
     return;
   }
 
-  const jobId = uuidv4();
-  addLog("download_video", "info", `Starting ${urls.length} video download(s) [${jobId}]`);
-  res.json({ jobId, message: `Started ${urls.length} download job(s)`, status: "started" });
+  const batchId = uuidv4();
+  addLog("download_video", "info", `Batch ${batchId}: ${urls.length} video URL(s)`);
+  res.json({ jobId: batchId, message: `Started ${urls.length} download job(s)`, status: "started" });
 
   (async () => {
     const settings = getSettings();
@@ -32,101 +89,107 @@ router.post("/download/video", async (req, res) => {
 
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i];
-      const urlJobId = `${jobId}_${i}`;
+      const jobId = `${batchId}_${i}`;
+      const kuaishou = isKuaishouUrl(url);
+
+      addLog("download_video", "info", `[${i + 1}/${urls.length}] ${kuaishou ? "Kuaishou" : "yt-dlp"}: ${url}`);
 
       emitJobUpdate({
-        jobId: urlJobId,
+        jobId,
         jobType: "download_video",
         status: "running",
-        message: `Downloading video ${i + 1}/${urls.length}…`,
+        message: `[${i + 1}/${urls.length}] ${kuaishou ? "Launching browser…" : "Starting yt-dlp…"}`,
         progress: 0,
       });
 
-      let retries = 0;
       const maxRetries = settings.maxRetries || 3;
+      let attempt = 0;
       let succeeded = false;
 
-      while (retries < maxRetries && !succeeded) {
+      while (attempt < maxRetries && !succeeded) {
+        attempt++;
+        const tmpDir = path.join(os.tmpdir(), `video_${uuidv4()}`);
+        fs.mkdirSync(tmpDir, { recursive: true });
+
         try {
-          const tmpDir = path.join(os.tmpdir(), `kuaishou_${uuidv4()}`);
-          fs.mkdirSync(tmpDir, { recursive: true });
+          let savedPath: string | null = null;
+          let filename: string;
 
-          const filename = `video_${Date.now()}.mp4`;
-
-          const tmpPath = await downloadKuaishouVideo(
-            url,
-            tmpDir,
-            filename,
-            urlJobId,
-            (progress, message) => {
-              emitJobUpdate({
-                jobId: urlJobId,
-                jobType: "download_video",
-                status: "running",
-                message,
-                progress,
-              });
-            }
-          );
-
-          if (!tmpPath) { retries++; continue; }
-
-          emitJobUpdate({ jobId: urlJobId, jobType: "download_video", status: "running", message: "Saving…", progress: 97 });
-
-          const folderId = settings.driveVideoFolderId;
-          if (folderId && tokens) {
-            const auth = createAuthenticatedClient(tokens);
-            const driveFile = await uploadFileToDrive(auth, tmpPath, folderId, "video/mp4", filename);
-            addVideo({
-              driveId: driveFile.id,
+          if (kuaishou) {
+            // ── Kuaishou → Puppeteer ─────────────────────────────────────────
+            filename = `kuaishou_${Date.now()}.mp4`;
+            savedPath = await downloadKuaishouVideo(
+              url,
+              tmpDir,
               filename,
-              category: category || "Uncategorized",
-              usedCount: 0,
-              lastUsed: null,
-              available: true,
-              driveLink: driveFile.webViewLink,
-              status: "available",
-            });
+              jobId,
+              (progress, message) => {
+                emitJobUpdate({ jobId, jobType: "download_video", status: "running", message, progress });
+              }
+            );
           } else {
-            const localDir = path.resolve(process.cwd(), "data", "videos");
-            fs.mkdirSync(localDir, { recursive: true });
-            const localPath = path.join(localDir, filename);
-            fs.renameSync(tmpPath, localPath);
-            addVideo({
-              driveId: localPath,
-              filename,
-              category: category || "Uncategorized",
-              usedCount: 0,
-              lastUsed: null,
-              available: true,
-              driveLink: null,
-              status: "available",
-            });
+            // ── YouTube / other → yt-dlp ─────────────────────────────────────
+            const dlJobId = `dl_${Date.now()}`;
+            savedPath = await downloadVideoWithYtDlp(
+              url,
+              tmpDir,
+              dlJobId,
+              (progress, message) => {
+                emitJobUpdate({ jobId, jobType: "download_video", status: "running", message, progress });
+              }
+            );
+            filename = savedPath ? path.basename(savedPath) : `video_${Date.now()}.mp4`;
           }
 
-          try { fs.rmSync(path.dirname(tmpPath), { recursive: true, force: true }); } catch {}
+          if (!savedPath) {
+            if (attempt < maxRetries) {
+              addLog("download_video", "warn", `Attempt ${attempt}/${maxRetries} failed for ${url}, retrying…`);
+              emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: `Retry ${attempt}/${maxRetries}…`, progress: 0 });
+              try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+              continue;
+            }
+            throw new Error("Download returned null after all retries");
+          }
 
-          emitJobUpdate({ jobId: urlJobId, jobType: "download_video", status: "done", message: `Downloaded: ${filename}`, progress: 100 });
+          emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: "Saving to library…", progress: 97 });
+
+          await saveVideoFile(savedPath, filename, category, tokens, settings.driveVideoFolderId);
+
+          try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+
+          emitJobUpdate({ jobId, jobType: "download_video", status: "done", message: `Saved: ${filename}`, progress: 100 });
           succeeded = true;
+
         } catch (err) {
-          retries++;
-          addLog("download_video", "warn", `Retry ${retries}/${maxRetries} for ${url}`, String(err));
-          if (retries >= maxRetries) {
-            emitJobUpdate({ jobId: urlJobId, jobType: "download_video", status: "error", message: `Failed after ${maxRetries} retries`, progress: 0 });
+          try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+          const msg = String(err);
+          addLog("download_video", "error", `Attempt ${attempt}/${maxRetries} error for ${url}`, msg);
+
+          if (attempt >= maxRetries) {
+            emitJobUpdate({
+              jobId,
+              jobType: "download_video",
+              status: "error",
+              message: `Failed after ${maxRetries} attempts: ${msg.slice(0, 120)}`,
+              progress: 0,
+            });
+          } else {
+            emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: `Error, retrying (${attempt}/${maxRetries})…`, progress: 0 });
           }
         }
       }
 
       if (!succeeded) {
-        addLog("download_video", "error", `Failed after ${maxRetries} retries: ${url}`);
+        addLog("download_video", "error", `All ${maxRetries} attempts failed for: ${url}`);
       }
     }
   })().catch((err) => {
-    addLog("download_video", "error", "Video download batch failed", String(err));
+    addLog("download_video", "error", "Video download batch crashed", String(err));
   });
 });
 
-// POST /api/download/audio
+// ── POST /api/download/audio ──────────────────────────────────────────────────
+
 router.post("/download/audio", async (req, res) => {
   const { urls, category } = req.body as { urls: string[]; category?: string | null };
 
@@ -135,9 +198,9 @@ router.post("/download/audio", async (req, res) => {
     return;
   }
 
-  const jobId = uuidv4();
-  addLog("download_audio", "info", `Starting ${urls.length} audio download(s) [${jobId}]`);
-  res.json({ jobId, message: `Started ${urls.length} audio download(s)`, status: "started" });
+  const batchId = uuidv4();
+  addLog("download_audio", "info", `Batch ${batchId}: ${urls.length} audio URL(s)`);
+  res.json({ jobId: batchId, message: `Started ${urls.length} audio download(s)`, status: "started" });
 
   (async () => {
     const settings = getSettings();
@@ -145,43 +208,45 @@ router.post("/download/audio", async (req, res) => {
 
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i];
-      const urlJobId = `${jobId}_${i}`;
+      const jobId = `${batchId}_${i}`;
 
       emitJobUpdate({
-        jobId: urlJobId,
+        jobId,
         jobType: "download_audio",
         status: "running",
-        message: `Downloading audio ${i + 1}/${urls.length}…`,
+        message: `[${i + 1}/${urls.length}] Starting yt-dlp for: ${url}`,
         progress: 0,
       });
 
-      let retries = 0;
       const maxRetries = settings.maxRetries || 3;
+      let attempt = 0;
       let succeeded = false;
 
-      while (retries < maxRetries && !succeeded) {
-        try {
-          const tmpDir = path.join(os.tmpdir(), `audio_${uuidv4()}`);
+      while (attempt < maxRetries && !succeeded) {
+        attempt++;
+        const tmpDir = path.join(os.tmpdir(), `audio_${uuidv4()}`);
 
+        try {
           const result = await downloadAudio(
             url,
             tmpDir,
             (progress, message) => {
-              emitJobUpdate({
-                jobId: urlJobId,
-                jobType: "download_audio",
-                status: "running",
-                message,
-                progress,
-              });
+              emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message, progress });
             }
           );
 
-          if (!result) { retries++; continue; }
+          if (!result) {
+            if (attempt < maxRetries) {
+              addLog("download_audio", "warn", `Attempt ${attempt}/${maxRetries} returned null for ${url}`);
+              try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+              continue;
+            }
+            throw new Error("downloadAudio returned null");
+          }
 
           const { audioPath, metadata } = result;
 
-          emitJobUpdate({ jobId: urlJobId, jobType: "download_audio", status: "running", message: "Saving…", progress: 97 });
+          emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message: "Saving to library…", progress: 97 });
 
           const folderId = settings.driveAudioFolderId;
           if (folderId && tokens) {
@@ -219,28 +284,37 @@ router.post("/download/audio", async (req, res) => {
           try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
 
           emitJobUpdate({
-            jobId: urlJobId,
+            jobId,
             jobType: "download_audio",
             status: "done",
             message: `"${metadata.title}" — ${metadata.tags.length} tags extracted`,
             progress: 100,
           });
           succeeded = true;
+
         } catch (err) {
-          retries++;
-          addLog("download_audio", "warn", `Retry ${retries}/${maxRetries} for ${url}`, String(err));
-          if (retries >= maxRetries) {
-            emitJobUpdate({ jobId: urlJobId, jobType: "download_audio", status: "error", message: `Failed: ${String(err).slice(0, 80)}`, progress: 0 });
+          try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
+          const msg = String(err);
+          addLog("download_audio", "error", `Attempt ${attempt}/${maxRetries} failed for ${url}`, msg);
+
+          if (attempt >= maxRetries) {
+            emitJobUpdate({
+              jobId,
+              jobType: "download_audio",
+              status: "error",
+              message: `Failed after ${maxRetries} attempts: ${msg.slice(0, 120)}`,
+              progress: 0,
+            });
           }
         }
       }
 
       if (!succeeded) {
-        addLog("download_audio", "error", `Failed after ${maxRetries} retries: ${url}`);
+        addLog("download_audio", "error", `All ${maxRetries} attempts failed for: ${url}`);
       }
     }
   })().catch((err) => {
-    addLog("download_audio", "error", "Audio download batch failed", String(err));
+    addLog("download_audio", "error", "Audio download batch crashed", String(err));
   });
 });
 
