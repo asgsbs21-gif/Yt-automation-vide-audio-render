@@ -16,6 +16,7 @@ import {
   type Video,
 } from "../services/data.js";
 import { mergeVideoWithAudio, getVideoDuration, extractThumbnail } from "../services/ffmpeg.js";
+import { composeThumbnailWithText } from "../services/thumbnail.js";
 import { downloadFromDrive, uploadFileToDrive } from "../services/drive.js";
 import { createAuthenticatedClient } from "../services/auth.js";
 import { getSessionTokens } from "../middlewares/auth.js";
@@ -170,7 +171,7 @@ router.post("/process", async (req, res) => {
 
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Saving output…", progress: 92 });
 
-      // ── Step 5: Optional thumbnail extraction ────────────────────────────────
+      // ── Step 5: Optional thumbnail extraction + Bengali text overlay ─────────
       let thumbnailPath: string | null = null;
       if (settings.thumbnailEnabled) {
         const thumbFile = path.join(OUTPUT_DIR, `thumb_${jobId}.jpg`);
@@ -178,6 +179,13 @@ router.post("/process", async (req, res) => {
           emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Extracting thumbnail frame…", progress: 93 });
           await extractThumbnail(outputPath, thumbFile);
           thumbnailPath = thumbFile;
+          // Auto-overlay audio title as Bengali text on the thumbnail
+          try {
+            emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Composing thumbnail with Bengali title text…", progress: 94 });
+            await composeThumbnailWithText(thumbFile, thumbFile, audio.title, settings.thumbnailBgColor);
+          } catch (composeErr) {
+            addLog("process", "warn", "Thumbnail text overlay failed — using raw frame", String(composeErr));
+          }
         } catch {
           addLog("process", "warn", "Thumbnail extraction failed — continuing without thumbnail");
         }

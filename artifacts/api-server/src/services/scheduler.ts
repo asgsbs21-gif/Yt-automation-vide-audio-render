@@ -22,6 +22,7 @@ import { getGlobalTokens, createAuthenticatedClient } from "./auth.js";
 import { downloadFromDrive } from "./drive.js";
 import { uploadToYouTube, setYouTubeThumbnail } from "./youtube.js";
 import { mergeVideoWithAudio, getVideoDuration, extractThumbnail } from "./ffmpeg.js";
+import { composeThumbnailWithText } from "./thumbnail.js";
 import { uploadFileToDrive } from "./drive.js";
 import { emitJobUpdate } from "../lib/socket.js";
 import { v4 as uuidv4 } from "uuid";
@@ -262,14 +263,21 @@ async function runAutoCycle(
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 32 + Math.round(pct * 0.48) });
     }, audio.duration);
 
-    // ── Step 8: Optional thumbnail extraction ────────────────────────────────
+    // ── Step 8: Optional thumbnail extraction + Bengali text overlay ─────────
     let thumbnailPath: string | null = null;
     if (settings.thumbnailEnabled) {
       const thumbFile = path.join(OUTPUT_DIR, `thumb_${jobId}.jpg`);
       try {
-        emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Extracting thumbnail…`, progress: 82 });
+        emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Extracting thumbnail frame…`, progress: 82 });
         await extractThumbnail(outputPath, thumbFile);
         thumbnailPath = thumbFile;
+        // Auto-overlay audio title as Bengali text on the thumbnail
+        try {
+          emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Composing thumbnail with Bengali title text…`, progress: 83 });
+          await composeThumbnailWithText(thumbFile, thumbFile, audio.title, settings.thumbnailBgColor);
+        } catch (composeErr) {
+          addLog("schedule", "warn", `[${slotLabel}] Thumbnail text overlay failed — using raw frame`, String(composeErr));
+        }
       } catch {
         addLog("schedule", "warn", `[${slotLabel}] Thumbnail extraction failed (non-fatal)`);
       }

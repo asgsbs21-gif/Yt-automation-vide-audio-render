@@ -37,7 +37,19 @@ export async function uploadToYouTube(
     statusBody["publishAt"] = options.scheduledAt;
   }
 
-  addLog("upload", "info", `Uploading to YouTube: ${title}`);
+  // ── Pre-upload audit log — shows the EXACT payload sent to YouTube ──────────
+  addLog(
+    "upload",
+    "info",
+    `YouTube upload payload: "${title}"`,
+    [
+      `TITLE (${title.length} chars): ${title}`,
+      `DESCRIPTION (${description.length} chars):\n${description}`,
+      `TAGS (${options.tags.length}): ${options.tags.join(", ")}`,
+      `CATEGORY ID: ${options.categoryId}`,
+      `PRIVACY: ${privacyStatus}${options.scheduledAt ? ` — publishAt ${options.scheduledAt}` : ""}`,
+    ].join("\n\n")
+  );
 
   const res = await youtube.videos.insert({
     part: ["snippet", "status"],
