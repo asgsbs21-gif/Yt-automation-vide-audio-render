@@ -70,6 +70,50 @@ router.get("/queue/:id/preview", (req, res) => {
   }
 });
 
+// GET /api/preview/:jobId — stream the merged output video by process job ID
+//
+// The output file is always named output_<jobId>.mp4 and lives in data/output/.
+// Supports HTTP range requests for HTML5 video seeking.
+router.get("/preview/:jobId", (req, res) => {
+  const { jobId } = req.params;
+  // Sanitise: only allow UUID-like job IDs (alphanumeric + hyphens)
+  if (!/^[\w-]+$/.test(jobId)) {
+    res.status(400).json({ error: "Invalid jobId" });
+    return;
+  }
+
+  const filePath = path.join(THUMB_DIR, `output_${jobId}.mp4`);
+  if (!fs.existsSync(filePath)) {
+    res.status(404).json({ error: "Preview not found. The output file may have been removed." });
+    return;
+  }
+
+  const stat = fs.statSync(filePath);
+  const range = req.headers.range;
+
+  if (range) {
+    const [startStr, endStr] = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(startStr, 10);
+    const end = endStr ? parseInt(endStr, 10) : stat.size - 1;
+    const chunkSize = end - start + 1;
+    res.writeHead(206, {
+      "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": chunkSize,
+      "Content-Type": "video/mp4",
+    });
+    fs.createReadStream(filePath, { start, end }).pipe(res);
+  } else {
+    res.writeHead(200, {
+      "Content-Length": stat.size,
+      "Content-Type": "video/mp4",
+      "Accept-Ranges": "bytes",
+      "Content-Disposition": `inline; filename="output_${jobId}.mp4"`,
+    });
+    fs.createReadStream(filePath).pipe(res);
+  }
+});
+
 // GET /api/queue/:id/thumbnail — serve the stored thumbnail JPEG
 router.get("/queue/:id/thumbnail", (req, res) => {
   const item = getQueue().find((q) => q.id === req.params.id);

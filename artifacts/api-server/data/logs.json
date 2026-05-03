@@ -1,5 +1,13 @@
 [
   {
+    "id": "14df88e6-2f46-4a7f-8f2d-0877e7bd399b",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T06:01:12.657Z"
+  },
+  {
     "id": "2b8ae1f5-c947-46f6-9702-9708e087528f",
     "jobType": "schedule",
     "level": "info",
@@ -3990,13 +3998,5 @@
     "message": "Deleting original file /tmp/audio_ace20be9-7d55-4c44-a1ce-c33f4aaa8c34/aFDy54VgEYo.webm (pass -k to keep)",
     "details": null,
     "createdAt": "2026-05-03T03:34:20.595Z"
-  },
-  {
-    "id": "ebca1766-eb06-49d0-81e2-e337af592694",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[ExtractAudio] Destination: /tmp/audio_ace20be9-7d55-4c44-a1ce-c33f4aaa8c34/aFDy54VgEYo.mp3",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:16.991Z"
   }
 ]

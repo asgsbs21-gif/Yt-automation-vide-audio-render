@@ -290,6 +290,7 @@ async function runAutoCycle(
     markAudioUsed(audio.id);
 
     const queueItem = addQueueItem({
+      jobId,
       driveId: outputPath,
       title: audio.title,
       description: audio.description,

@@ -66,6 +66,7 @@ export type QueueStatus =
 
 export interface QueueItem {
   id: string;
+  jobId: string | null;
   driveId: string;
   title: string;
   description: string;

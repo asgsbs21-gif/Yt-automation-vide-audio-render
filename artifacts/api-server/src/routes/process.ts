@@ -199,6 +199,7 @@ router.post("/process", async (req, res) => {
 
       if (addToQueue) {
         addQueueItem({
+          jobId,
           driveId: outputPath,
           title: audio.title,
           description: audio.description,
