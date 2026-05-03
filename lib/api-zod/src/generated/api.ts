@@ -15,6 +15,38 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
+ * @summary Get current auth status
+ */
+export const GetAuthStatusResponse = zod.object({
+  authenticated: zod.boolean(),
+  user: zod
+    .object({
+      email: zod.string(),
+      name: zod.string(),
+      picture: zod.string().nullish(),
+      driveConnected: zod.boolean(),
+      youtubeConnected: zod.boolean(),
+      driveVideoFolderId: zod.string().nullish(),
+      driveAudioFolderId: zod.string().nullish(),
+      driveOutputFolderId: zod.string().nullish(),
+    })
+    .nullish(),
+  authUrl: zod
+    .string()
+    .nullish()
+    .describe(
+      "Google OAuth URL to redirect to for login (when not authenticated)",
+    ),
+});
+
+/**
+ * @summary Log out and clear session
+ */
+export const LogoutResponse = zod.object({
+  message: zod.string(),
+});
+
+/**
  * @summary List all videos in the pool
  */
 export const ListVideosQueryParams = zod.object({
@@ -230,6 +262,9 @@ export const GetSettingsResponse = zod.object({
   maxRetries: zod.number(),
   defaultCategory: zod.string(),
   youtubeCategoryId: zod.string(),
+  driveVideoFolderId: zod.string().nullish(),
+  driveAudioFolderId: zod.string().nullish(),
+  driveOutputFolderId: zod.string().nullish(),
 });
 
 /**
@@ -241,6 +276,9 @@ export const UpdateSettingsBody = zod.object({
   maxRetries: zod.number().optional(),
   defaultCategory: zod.string().optional(),
   youtubeCategoryId: zod.string().optional(),
+  driveVideoFolderId: zod.string().nullish(),
+  driveAudioFolderId: zod.string().nullish(),
+  driveOutputFolderId: zod.string().nullish(),
 });
 
 export const UpdateSettingsResponse = zod.object({
@@ -249,6 +287,9 @@ export const UpdateSettingsResponse = zod.object({
   maxRetries: zod.number(),
   defaultCategory: zod.string(),
   youtubeCategoryId: zod.string(),
+  driveVideoFolderId: zod.string().nullish(),
+  driveAudioFolderId: zod.string().nullish(),
+  driveOutputFolderId: zod.string().nullish(),
 });
 
 /**

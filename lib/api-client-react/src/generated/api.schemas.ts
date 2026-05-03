@@ -9,6 +9,28 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface MessageResponse {
+  message: string;
+}
+
+export interface AuthUser {
+  email: string;
+  name: string;
+  picture?: string | null;
+  driveConnected: boolean;
+  youtubeConnected: boolean;
+  driveVideoFolderId?: string | null;
+  driveAudioFolderId?: string | null;
+  driveOutputFolderId?: string | null;
+}
+
+export interface AuthStatus {
+  authenticated: boolean;
+  user?: AuthUser | null;
+  /** Google OAuth URL to redirect to for login (when not authenticated) */
+  authUrl?: string | null;
+}
+
 export type VideoStatus = (typeof VideoStatus)[keyof typeof VideoStatus];
 
 export const VideoStatus = {
@@ -76,6 +98,9 @@ export interface AppSettings {
   maxRetries: number;
   defaultCategory: string;
   youtubeCategoryId: string;
+  driveVideoFolderId?: string | null;
+  driveAudioFolderId?: string | null;
+  driveOutputFolderId?: string | null;
 }
 
 export interface CategoryCount {
@@ -182,6 +207,9 @@ export interface UpdateSettingsBody {
   maxRetries?: number;
   defaultCategory?: string;
   youtubeCategoryId?: string;
+  driveVideoFolderId?: string | null;
+  driveAudioFolderId?: string | null;
+  driveOutputFolderId?: string | null;
 }
 
 export type ListVideosParams = {

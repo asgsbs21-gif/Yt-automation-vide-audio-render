@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Google OAuth2 authentication
   - name: videos
     description: Video pool management
   - name: audios
@@ -38,6 +40,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/status:
+    get:
+      operationId: getAuthStatus
+      tags: [auth]
+      summary: Get current auth status
+      responses:
+        "200":
+          description: Auth status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthStatus"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Log out and clear session
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
 
   /videos:
     get:
@@ -309,6 +337,53 @@ components:
           type: string
       required: [status]
 
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    AuthStatus:
+      type: object
+      properties:
+        authenticated:
+          type: boolean
+        user:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/AuthUser"
+        authUrl:
+          type: string
+          nullable: true
+          description: "Google OAuth URL to redirect to for login (when not authenticated)"
+      required: [authenticated]
+
+    AuthUser:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        picture:
+          type: string
+          nullable: true
+        driveConnected:
+          type: boolean
+        youtubeConnected:
+          type: boolean
+        driveVideoFolderId:
+          type: string
+          nullable: true
+        driveAudioFolderId:
+          type: string
+          nullable: true
+        driveOutputFolderId:
+          type: string
+          nullable: true
+      required: [email, name, driveConnected, youtubeConnected]
+
     Video:
       type: object
       properties:
@@ -417,6 +492,15 @@ components:
           type: string
         youtubeCategoryId:
           type: string
+        driveVideoFolderId:
+          type: string
+          nullable: true
+        driveAudioFolderId:
+          type: string
+          nullable: true
+        driveOutputFolderId:
+          type: string
+          nullable: true
       required: [dailyUploadTime, autoCycleEnabled, maxRetries, defaultCategory, youtubeCategoryId]
 
     SystemStatus:
@@ -591,3 +675,12 @@ components:
           type: string
         youtubeCategoryId:
           type: string
+        driveVideoFolderId:
+          type: string
+          nullable: true
+        driveAudioFolderId:
+          type: string
+          nullable: true
+        driveOutputFolderId:
+          type: string
+          nullable: true
