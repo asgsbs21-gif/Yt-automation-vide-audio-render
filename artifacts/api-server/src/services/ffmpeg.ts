@@ -135,6 +135,35 @@ export async function mergeVideoWithAudio(
   });
 }
 
+// ── Extract a thumbnail frame at 30% of video duration ────────────────────────
+//
+// Probes the duration first, then seeks to 30% and extracts one JPEG frame.
+// The output quality is controlled by -q:v 2 (highest JPEG quality in FFmpeg).
+
+export async function extractThumbnail(
+  videoPath: string,
+  outputPath: string
+): Promise<void> {
+  const duration = await getVideoDuration(videoPath);
+  const seekTime = duration > 0 ? duration * 0.3 : 5;
+
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .seekInput(seekTime)
+      .outputOptions(["-vframes 1", "-q:v 2"])
+      .output(outputPath)
+      .on("end", () => {
+        addLog("process", "info", `Thumbnail extracted → ${path.basename(outputPath)}`);
+        resolve();
+      })
+      .on("error", (err: Error) => {
+        addLog("process", "warn", "Thumbnail extraction failed (non-fatal)", err.message);
+        reject(err);
+      })
+      .run();
+  });
+}
+
 // ── Mute a video (strip audio stream, stream-copy video — fast, no re-encode) ─
 
 export async function muteVideo(

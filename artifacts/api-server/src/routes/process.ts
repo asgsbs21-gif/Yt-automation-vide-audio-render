@@ -15,7 +15,7 @@ import {
   getSettings,
   type Video,
 } from "../services/data.js";
-import { mergeVideoWithAudio, getVideoDuration } from "../services/ffmpeg.js";
+import { mergeVideoWithAudio, getVideoDuration, extractThumbnail } from "../services/ffmpeg.js";
 import { downloadFromDrive, uploadFileToDrive } from "../services/drive.js";
 import { createAuthenticatedClient } from "../services/auth.js";
 import { getSessionTokens } from "../middlewares/auth.js";
@@ -170,7 +170,20 @@ router.post("/process", async (req, res) => {
 
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Saving output…", progress: 92 });
 
-      // ── Step 5: Optional Drive upload ────────────────────────────────────────
+      // ── Step 5: Optional thumbnail extraction ────────────────────────────────
+      let thumbnailPath: string | null = null;
+      if (settings.thumbnailEnabled) {
+        const thumbFile = path.join(OUTPUT_DIR, `thumb_${jobId}.jpg`);
+        try {
+          emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Extracting thumbnail frame…", progress: 93 });
+          await extractThumbnail(outputPath, thumbFile);
+          thumbnailPath = thumbFile;
+        } catch {
+          addLog("process", "warn", "Thumbnail extraction failed — continuing without thumbnail");
+        }
+      }
+
+      // ── Step 6: Optional Drive upload ────────────────────────────────────────
       const outputFolderId = settings.driveOutputFolderId;
       if (auth && outputFolderId) {
         try {
@@ -180,7 +193,7 @@ router.post("/process", async (req, res) => {
         }
       }
 
-      // ── Step 6: Mark used & add to queue ─────────────────────────────────────
+      // ── Step 7: Mark used & add to queue ─────────────────────────────────────
       markVideosUsed([...usedVideoIds]);
       markAudioUsed(audio.id);
 
@@ -195,6 +208,7 @@ router.post("/process", async (req, res) => {
           youtubeUrl: null,
           youtubeId: null,
           error: null,
+          thumbnailPath,
         });
       }
 

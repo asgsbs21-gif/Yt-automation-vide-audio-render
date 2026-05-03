@@ -76,6 +76,7 @@ export interface QueueItem {
   youtubeId: string | null;
   error: string | null;
   createdAt: string;
+  thumbnailPath: string | null;
 }
 
 export interface UploadSlot {
@@ -96,6 +97,8 @@ export interface AppSettings {
   driveAudioFolderId: string | null;
   driveOutputFolderId: string | null;
   dailyUploadTime?: string;
+  thumbnailEnabled: boolean;
+  thumbnailBgColor: string;
 }
 
 export type LogLevel = "info" | "warn" | "error" | "success";
@@ -132,6 +135,8 @@ const defaultSettings: AppSettings = {
   driveVideoFolderId: null,
   driveAudioFolderId: null,
   driveOutputFolderId: null,
+  thumbnailEnabled: false,
+  thumbnailBgColor: "yellow",
 };
 
 // ── Auto-cycle category rotation state ───────────────────────────────────────

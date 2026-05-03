@@ -71,6 +71,8 @@ export function ScheduleTab() {
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(false);
   const [maxRetries, setMaxRetries] = useState(3);
   const [youtubeCategoryId, setYoutubeCategoryId] = useState("22");
+  const [thumbnailEnabled, setThumbnailEnabled] = useState(false);
+  const [thumbnailBgColor, setThumbnailBgColor] = useState("yellow");
   const [driveVideoFolderId, setDriveVideoFolderId] = useState("");
   const [driveAudioFolderId, setDriveAudioFolderId] = useState("");
   const [driveOutputFolderId, setDriveOutputFolderId] = useState("");
@@ -94,6 +96,8 @@ export function ScheduleTab() {
       setAutoCycleEnabled((settings as any).autoCycleEnabled ?? false);
       setMaxRetries((settings as any).maxRetries ?? 3);
       setYoutubeCategoryId((settings as any).youtubeCategoryId ?? "22");
+      setThumbnailEnabled((settings as any).thumbnailEnabled ?? false);
+      setThumbnailBgColor((settings as any).thumbnailBgColor ?? "yellow");
       setDriveVideoFolderId((settings as any).driveVideoFolderId ?? "");
       setDriveAudioFolderId((settings as any).driveAudioFolderId ?? "");
       setDriveOutputFolderId((settings as any).driveOutputFolderId ?? "");
@@ -113,6 +117,8 @@ export function ScheduleTab() {
           autoCycleEnabled,
           maxRetries,
           youtubeCategoryId,
+          thumbnailEnabled,
+          thumbnailBgColor,
           driveVideoFolderId: driveVideoFolderId || null,
           driveAudioFolderId: driveAudioFolderId || null,
           driveOutputFolderId: driveOutputFolderId || null,
@@ -281,6 +287,50 @@ export function ScheduleTab() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* ── Thumbnail generation ─────────────────────────────────────── */}
+            <div className="border-t border-border pt-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium">Auto-Generate Thumbnail</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Extract frame at 30% of video and overlay Bengali title text
+                  </p>
+                </div>
+                <Switch checked={thumbnailEnabled} onCheckedChange={setThumbnailEnabled} />
+              </div>
+
+              {thumbnailEnabled && (
+                <div className="space-y-2">
+                  <Label className="text-sm">Text Background Color</Label>
+                  <div className="flex gap-2">
+                    {(["yellow", "green", "red"] as const).map((color) => {
+                      const hex = { yellow: "#FACC15", green: "#22C55E", red: "#EF4444" }[color];
+                      return (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setThumbnailBgColor(color)}
+                          className={`w-9 h-9 rounded-full border-4 transition-all ${
+                            thumbnailBgColor === color
+                              ? "border-foreground scale-110 shadow-md"
+                              : "border-transparent opacity-70 hover:opacity-100"
+                          }`}
+                          style={{ backgroundColor: hex }}
+                          title={color.charAt(0).toUpperCase() + color.slice(1)}
+                        />
+                      );
+                    })}
+                    <span className="self-center text-sm text-muted-foreground capitalize ml-1">
+                      {thumbnailBgColor}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Preview and edit thumbnails per-video in the Queue tab before uploading.
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

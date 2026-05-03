@@ -5,6 +5,9 @@ import { getQueue, updateQueueItem, addLog } from "../services/data.js";
 import { processQueueItem } from "../services/scheduler.js";
 import { getSessionTokens } from "../middlewares/auth.js";
 
+const THUMB_DIR = path.resolve(process.cwd(), "data", "output");
+fs.mkdirSync(THUMB_DIR, { recursive: true });
+
 const router = Router();
 
 // GET /api/queue
@@ -65,6 +68,39 @@ router.get("/queue/:id/preview", (req, res) => {
     });
     fs.createReadStream(filePath).pipe(res);
   }
+});
+
+// GET /api/queue/:id/thumbnail — serve the stored thumbnail JPEG
+router.get("/queue/:id/thumbnail", (req, res) => {
+  const item = getQueue().find((q) => q.id === req.params.id);
+  if (!item) { res.status(404).json({ error: "Queue item not found" }); return; }
+  if (!item.thumbnailPath || !fs.existsSync(item.thumbnailPath)) {
+    res.status(404).json({ error: "Thumbnail not available" }); return;
+  }
+  res.setHeader("Content-Type", "image/jpeg");
+  res.setHeader("Cache-Control", "no-cache");
+  fs.createReadStream(item.thumbnailPath).pipe(res);
+});
+
+// POST /api/queue/:id/thumbnail — save a composed thumbnail (data URL from frontend canvas)
+router.post("/queue/:id/thumbnail", (req, res) => {
+  const item = getQueue().find((q) => q.id === req.params.id);
+  if (!item) { res.status(404).json({ error: "Queue item not found" }); return; }
+
+  const { dataUrl } = req.body as { dataUrl?: string };
+  if (!dataUrl || !dataUrl.startsWith("data:image/")) {
+    res.status(400).json({ error: "dataUrl is required and must be an image data URL" }); return;
+  }
+
+  const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64, "base64");
+
+  const thumbPath = item.thumbnailPath ?? path.join(THUMB_DIR, `thumb_${item.id}.jpg`);
+  fs.writeFileSync(thumbPath, buffer);
+
+  const updated = updateQueueItem(item.id, { thumbnailPath: thumbPath });
+  addLog("process", "info", `Composed thumbnail saved for "${item.title}"`);
+  res.json(updated);
 });
 
 // POST /api/schedule

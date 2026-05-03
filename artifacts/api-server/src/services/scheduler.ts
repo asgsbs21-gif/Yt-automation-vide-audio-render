@@ -20,8 +20,8 @@ import {
 } from "./data.js";
 import { getGlobalTokens, createAuthenticatedClient } from "./auth.js";
 import { downloadFromDrive } from "./drive.js";
-import { uploadToYouTube } from "./youtube.js";
-import { mergeVideoWithAudio, getVideoDuration } from "./ffmpeg.js";
+import { uploadToYouTube, setYouTubeThumbnail } from "./youtube.js";
+import { mergeVideoWithAudio, getVideoDuration, extractThumbnail } from "./ffmpeg.js";
 import { uploadFileToDrive } from "./drive.js";
 import { emitJobUpdate } from "../lib/socket.js";
 import { v4 as uuidv4 } from "uuid";
@@ -88,6 +88,15 @@ export async function processQueueItem(
       filePath: tmpFile,
       scheduledAt: item.scheduledAt,
     });
+
+    // Set custom thumbnail if one was generated/saved for this item
+    if (item.thumbnailPath && fs.existsSync(item.thumbnailPath)) {
+      try {
+        await setYouTubeThumbnail(auth, youtubeId, item.thumbnailPath);
+      } catch (thumbErr) {
+        addLog("upload", "warn", "Thumbnail upload failed (non-fatal — channel may need verification)", String(thumbErr));
+      }
+    }
 
     updateQueueItem(itemId, { status: "uploaded", youtubeId, youtubeUrl });
     addLog("upload", "success", `Uploaded: ${item.title} → ${youtubeUrl}`);
@@ -253,7 +262,20 @@ async function runAutoCycle(
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 32 + Math.round(pct * 0.48) });
     }, audio.duration);
 
-    // ── Step 8: Optional Drive upload ────────────────────────────────────────
+    // ── Step 8: Optional thumbnail extraction ────────────────────────────────
+    let thumbnailPath: string | null = null;
+    if (settings.thumbnailEnabled) {
+      const thumbFile = path.join(OUTPUT_DIR, `thumb_${jobId}.jpg`);
+      try {
+        emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Extracting thumbnail…`, progress: 82 });
+        await extractThumbnail(outputPath, thumbFile);
+        thumbnailPath = thumbFile;
+      } catch {
+        addLog("schedule", "warn", `[${slotLabel}] Thumbnail extraction failed (non-fatal)`);
+      }
+    }
+
+    // ── Step 9: Optional Drive upload ────────────────────────────────────────
     if (settings.driveOutputFolderId) {
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading to Drive…`, progress: 83 });
       try {
@@ -277,6 +299,7 @@ async function runAutoCycle(
       youtubeUrl: null,
       youtubeId: null,
       error: null,
+      thumbnailPath,
     });
 
     emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading to YouTube…`, progress: 88 });

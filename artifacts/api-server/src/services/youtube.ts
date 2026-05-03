@@ -63,6 +63,27 @@ export async function uploadToYouTube(
   return { youtubeId: videoId, youtubeUrl: videoUrl };
 }
 
+// ── Set a custom thumbnail for an uploaded YouTube video ─────────────────────
+//
+// Requires the video to already be uploaded. The thumbnail file should be a
+// JPEG image. Note: thumbnail uploads require the channel to be verified.
+
+export async function setYouTubeThumbnail(
+  auth: OAuth2Client,
+  videoId: string,
+  thumbPath: string
+): Promise<void> {
+  const youtube = google.youtube({ version: "v3", auth });
+  await youtube.thumbnails.set({
+    videoId,
+    media: {
+      mimeType: "image/jpeg",
+      body: fs.createReadStream(thumbPath),
+    },
+  });
+  addLog("upload", "info", `Custom thumbnail set for video ${videoId}`);
+}
+
 // ── Check YouTube connectivity ────────────────────────────────────────────────
 
 export async function checkYouTubeConnected(

@@ -1,5 +1,13 @@
 [
   {
+    "id": "2b8ae1f5-c947-46f6-9702-9708e087528f",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T05:42:13.060Z"
+  },
+  {
     "id": "b5c144cb-abd3-4f57-b4bb-55e5dad08d86",
     "jobType": "schedule",
     "level": "info",
@@ -3990,13 +3998,5 @@
     "message": "[ExtractAudio] Destination: /tmp/audio_ace20be9-7d55-4c44-a1ce-c33f4aaa8c34/aFDy54VgEYo.mp3",
     "details": null,
     "createdAt": "2026-05-03T03:34:16.991Z"
-  },
-  {
-    "id": "2fd3bda3-d18e-43e7-a400-e3c38450493e",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[download] 100% of    3.19MiB in 00:00:00 at 41.85MiB/s",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:16.454Z"
   }
 ]

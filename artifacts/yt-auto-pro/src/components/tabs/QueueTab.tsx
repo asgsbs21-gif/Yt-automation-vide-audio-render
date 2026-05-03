@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   useListQueue,
   useScheduleUpload,
@@ -13,16 +13,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2, Upload, Calendar, ExternalLink,
   Youtube, AlertCircle, PlayCircle, X,
-  HardDrive, FileVideo,
+  HardDrive, FileVideo, Image, Save,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { ThumbnailCanvas, type ThumbBgColor } from "@/components/ThumbnailCanvas";
 
 export function QueueTab() {
   const { toast } = useToast();
@@ -37,6 +40,13 @@ export function QueueTab() {
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewItem, setPreviewItem] = useState<{ id: string; title: string } | null>(null);
+
+  const [thumbOpen, setThumbOpen] = useState(false);
+  const [thumbItem, setThumbItem] = useState<{ id: string; title: string } | null>(null);
+  const [thumbBgColor, setThumbBgColor] = useState<ThumbBgColor>("yellow");
+  const [thumbTitle, setThumbTitle] = useState("");
+  const [thumbDataUrl, setThumbDataUrl] = useState<string | null>(null);
+  const [thumbSaving, setThumbSaving] = useState(false);
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: getListQueueQueryKey() });
@@ -81,6 +91,41 @@ export function QueueTab() {
     setPreviewOpen(true);
   };
 
+  const openThumbnail = (id: string, title: string) => {
+    setThumbItem({ id, title });
+    setThumbTitle(title);
+    setThumbBgColor("yellow");
+    setThumbDataUrl(null);
+    setThumbOpen(true);
+  };
+
+  const handleThumbDataUrl = useCallback((dataUrl: string) => {
+    setThumbDataUrl(dataUrl);
+  }, []);
+
+  const handleSaveThumbnail = async () => {
+    if (!thumbItem || !thumbDataUrl) return;
+    setThumbSaving(true);
+    try {
+      const res = await fetch(`/api/queue/${thumbItem.id}/thumbnail`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataUrl: thumbDataUrl }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to save thumbnail");
+      }
+      toast({ title: "Thumbnail Saved", description: "Will be uploaded to YouTube with the video." });
+      setThumbOpen(false);
+      invalidate();
+    } catch (err: any) {
+      toast({ title: "Save Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setThumbSaving(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":   return <Badge variant="secondary" className="bg-gray-500/10 text-gray-500">Pending</Badge>;
@@ -100,14 +145,14 @@ export function QueueTab() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Upload Queue</h2>
         <p className="text-muted-foreground">
-          Processed videos waiting to go to YouTube. Preview each video before uploading.
+          Processed videos waiting to go to YouTube. Preview each video or edit its thumbnail before uploading.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Queue Items ({queue?.length ?? 0})</CardTitle>
-          <CardDescription>Click the play button to preview a video before uploading.</CardDescription>
+          <CardDescription>Use the play button to preview, or the image button to edit the thumbnail.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -119,7 +164,7 @@ export function QueueTab() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-10"></TableHead>
+                    <TableHead className="w-20"></TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Storage</TableHead>
@@ -132,23 +177,37 @@ export function QueueTab() {
                   {(queue as any[]).map((item) => (
                     <TableRow key={item.id}>
 
-                      {/* Preview play button */}
+                      {/* Preview + thumbnail buttons */}
                       <TableCell className="pr-0">
-                        {item.localExists ? (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-primary hover:bg-primary/10"
-                            title="Preview video"
-                            onClick={() => openPreview(item.id, item.title)}
-                          >
-                            <PlayCircle className="w-5 h-5" />
-                          </Button>
-                        ) : (
-                          <span className="flex items-center justify-center h-8 w-8 text-muted-foreground/30" title="Local file not available">
-                            <FileVideo className="w-4 h-4" />
-                          </span>
-                        )}
+                        <div className="flex items-center gap-0.5">
+                          {item.localExists ? (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-primary hover:bg-primary/10"
+                              title="Preview video"
+                              onClick={() => openPreview(item.id, item.title)}
+                            >
+                              <PlayCircle className="w-5 h-5" />
+                            </Button>
+                          ) : (
+                            <span className="flex items-center justify-center h-8 w-8 text-muted-foreground/30" title="Local file not available">
+                              <FileVideo className="w-4 h-4" />
+                            </span>
+                          )}
+
+                          {item.thumbnailPath ? (
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-orange-500 hover:bg-orange-500/10"
+                              title="Edit thumbnail"
+                              onClick={() => openThumbnail(item.id, item.title)}
+                            >
+                              <Image className="w-4 h-4" />
+                            </Button>
+                          ) : null}
+                        </div>
                       </TableCell>
 
                       {/* Title + tags */}
@@ -314,6 +373,106 @@ export function QueueTab() {
               <a href={previewItem ? `/api/queue/${previewItem.id}/preview` : "#"} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-3 h-3" /> Open in new tab
               </a>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Thumbnail editor modal ──────────────────────────────────────────── */}
+      <Dialog open={thumbOpen} onOpenChange={(open) => { if (!open) setThumbItem(null); setThumbOpen(open); }}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden rounded-xl">
+          <DialogHeader className="px-5 pt-4 pb-3 border-b">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Image className="w-4 h-4 text-orange-500" />
+              Thumbnail Editor
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col md:flex-row gap-0">
+            {/* Canvas preview */}
+            <div className="bg-muted/40 flex items-center justify-center p-4 md:w-64 shrink-0">
+              {thumbItem && (
+                <div className="w-full max-w-[200px]">
+                  <ThumbnailCanvas
+                    thumbnailUrl={`/api/queue/${thumbItem.id}/thumbnail?t=${Date.now()}`}
+                    title={thumbTitle}
+                    bgColor={thumbBgColor}
+                    onDataUrl={handleThumbDataUrl}
+                    className="rounded-lg shadow-lg"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Controls */}
+            <div className="flex-1 p-5 space-y-5">
+              <div className="space-y-2">
+                <Label>Title Text (Bengali)</Label>
+                <Textarea
+                  value={thumbTitle}
+                  onChange={(e) => setThumbTitle(e.target.value)}
+                  rows={3}
+                  placeholder="বাংলা শিরোনাম লিখুন…"
+                  className="resize-none font-sans"
+                  style={{ fontFamily: '"Hind Siliguri", "Noto Sans Bengali", sans-serif' }}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Words are never split mid-word. Long titles wrap automatically.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Background Color</Label>
+                <div className="flex gap-3">
+                  {(["yellow", "green", "red"] as ThumbBgColor[]).map((color) => {
+                    const hex = { yellow: "#FACC15", green: "#22C55E", red: "#EF4444" }[color];
+                    const label = color.charAt(0).toUpperCase() + color.slice(1);
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setThumbBgColor(color)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                          thumbBgColor === color
+                            ? "border-foreground bg-foreground/5"
+                            : "border-border hover:border-foreground/40"
+                        }`}
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full shrink-0"
+                          style={{ backgroundColor: hex }}
+                        />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 px-4 py-3 text-xs text-amber-700 dark:text-amber-400 space-y-1">
+                <p className="font-medium">What happens when you save:</p>
+                <ul className="list-disc pl-4 space-y-0.5">
+                  <li>The composed thumbnail replaces the raw frame on the server</li>
+                  <li>When uploaded to YouTube, it will be set as the video thumbnail</li>
+                  <li>YouTube requires a verified channel to set custom thumbnails</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-5 py-3 border-t flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { setThumbOpen(false); setThumbItem(null); }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveThumbnail}
+              disabled={thumbSaving || !thumbDataUrl}
+              className="gap-1.5"
+            >
+              {thumbSaving
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <Save className="w-4 h-4" />}
+              Save Thumbnail
             </Button>
           </div>
         </DialogContent>
