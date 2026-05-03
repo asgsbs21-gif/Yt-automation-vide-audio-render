@@ -79,8 +79,18 @@ export interface QueueItem {
   createdAt: string;
 }
 
+// ── Upload slots ──────────────────────────────────────────────────────────────
+
+export interface UploadSlot {
+  id: string;       // stable identifier: "morning" | "afternoon" | "night"
+  label: string;    // English label
+  labelBn: string;  // Bangla label
+  time: string;     // "HH:MM" 24-hour
+  enabled: boolean;
+}
+
 export interface AppSettings {
-  dailyUploadTime: string;
+  uploadSlots: UploadSlot[];
   autoCycleEnabled: boolean;
   maxRetries: number;
   defaultCategory: string;
@@ -88,6 +98,8 @@ export interface AppSettings {
   driveVideoFolderId: string | null;
   driveAudioFolderId: string | null;
   driveOutputFolderId: string | null;
+  // Legacy field kept for backward compatibility — ignored by scheduler
+  dailyUploadTime?: string;
 }
 
 export type LogLevel = "info" | "warn" | "error" | "success";
@@ -109,8 +121,14 @@ export interface LogEntry {
 
 // ── Default values ────────────────────────────────────────────────────────────
 
+const DEFAULT_SLOTS: UploadSlot[] = [
+  { id: "morning",   label: "Morning",   labelBn: "সকাল", time: "09:00", enabled: true  },
+  { id: "afternoon", label: "Afternoon", labelBn: "দুপুর", time: "14:00", enabled: false },
+  { id: "night",     label: "Night",     labelBn: "রাত",   time: "19:00", enabled: false },
+];
+
 const defaultSettings: AppSettings = {
-  dailyUploadTime: "09:00",
+  uploadSlots: DEFAULT_SLOTS,
   autoCycleEnabled: false,
   maxRetries: 3,
   defaultCategory: "satisfying",
@@ -162,7 +180,6 @@ export function pickVideosForDuration(
   let pool = getVideos().filter((v) => v.available && v.status === "available");
   if (category) pool = pool.filter((v) => v.category === category);
 
-  // Sort: least used first, then oldest last used
   pool.sort((a, b) => {
     if (a.usedCount !== b.usedCount) return a.usedCount - b.usedCount;
     const aTime = a.lastUsed ? new Date(a.lastUsed).getTime() : 0;
@@ -170,12 +187,10 @@ export function pickVideosForDuration(
     return aTime - bTime;
   });
 
-  // Pick enough videos to cover duration (assume average 30s per video)
   const avgDuration = 30;
   const needed = Math.ceil(durationSeconds / avgDuration);
   const selected = pool.slice(0, Math.max(1, needed));
 
-  // If all used at least once, reset cycle
   const allUsed = pool.every((v) => v.usedCount > 0);
   if (allUsed && pool.length > 0) {
     const videos = getVideos();
@@ -288,7 +303,23 @@ export function updateQueueItem(
 // ── Settings ─────────────────────────────────────────────────────────────────
 
 export function getSettings(): AppSettings {
-  return readJson<AppSettings>("settings.json", defaultSettings);
+  const raw = readJson<Partial<AppSettings>>("settings.json", {});
+
+  // Migrate: old settings may have dailyUploadTime but no uploadSlots
+  if (!raw.uploadSlots || raw.uploadSlots.length === 0) {
+    const legacyTime = (raw as any).dailyUploadTime as string | undefined;
+    raw.uploadSlots = DEFAULT_SLOTS.map((s, i) =>
+      i === 0 && legacyTime ? { ...s, time: legacyTime, enabled: true } : s
+    );
+  }
+
+  // Ensure all 3 slot ids exist (in case we add slots in future)
+  const existingIds = new Set(raw.uploadSlots.map((s) => s.id));
+  for (const def of DEFAULT_SLOTS) {
+    if (!existingIds.has(def.id)) raw.uploadSlots.push({ ...def });
+  }
+
+  return { ...defaultSettings, ...raw } as AppSettings;
 }
 
 export function saveSettings(settings: AppSettings): void {
@@ -319,7 +350,6 @@ export function addLog(
     createdAt: new Date().toISOString(),
   };
   logs.unshift(entry);
-  // Keep only the last MAX_LOGS entries
   if (logs.length > MAX_LOGS) logs.splice(MAX_LOGS);
   writeJson("logs.json", logs);
   return entry;

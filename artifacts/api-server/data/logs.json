@@ -1,5 +1,453 @@
 [
   {
+    "id": "0d80671b-b05c-44bb-bc21-c7c557c4c67f",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T04:07:43.377Z"
+  },
+  {
+    "id": "9e084d5b-6829-4054-869f-30db24168211",
+    "jobType": "download_video",
+    "level": "success",
+    "message": "Downloaded: dl_1777780714984.mp4",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:38.289Z"
+  },
+  {
+    "id": "8190b5d1-ed59-4589-8184-95e25e84a16f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Deleting original file /tmp/video_7ad3870b-ba66-45af-b4c2-2123a3928110/dl_1777780714984.f140.m4a (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:38.116Z"
+  },
+  {
+    "id": "8adc5caf-916f-41bc-ad48-d29ee3b1878d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Deleting original file /tmp/video_7ad3870b-ba66-45af-b4c2-2123a3928110/dl_1777780714984.f399.mp4 (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:38.112Z"
+  },
+  {
+    "id": "0662e8ce-c08b-49ab-b14c-208caa44c0d9",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[Merger] Merging formats into \"/tmp/video_7ad3870b-ba66-45af-b4c2-2123a3928110/dl_1777780714984.mp4\"",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.850Z"
+  },
+  {
+    "id": "80dbe6df-62f7-43d3-b55f-1fd6a7c9b593",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100% of    2.99MiB in 00:00:00 at 99.99MiB/s",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.847Z"
+  },
+  {
+    "id": "57a8649a-e424-40d1-b10d-ebdaf12ead21",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100.0% of    2.99MiB at  195.41MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.845Z"
+  },
+  {
+    "id": "87a1a89f-e99a-496c-b6bf-e1af734bc532",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  66.8% of    2.99MiB at  185.80MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.842Z"
+  },
+  {
+    "id": "57c8051f-824e-40d0-9b16-e0cecaf0bdc2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  33.4% of    2.99MiB at  155.18MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.839Z"
+  },
+  {
+    "id": "acc4dcec-3bb9-4422-b9cd-b8ab3ad0b9fc",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  16.7% of    2.99MiB at  109.30MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.837Z"
+  },
+  {
+    "id": "0d2d5ad6-fcb3-41ce-84b8-7dbf30e5eccb",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   8.3% of    2.99MiB at   70.25MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.835Z"
+  },
+  {
+    "id": "df882be2-7a8d-43dc-9ff2-8cfe0f3616cd",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   4.1% of    2.99MiB at   55.40MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.831Z"
+  },
+  {
+    "id": "ca162660-7721-4bf8-bfff-e4914b4f2e1c",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   2.1% of    2.99MiB at   32.32MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.829Z"
+  },
+  {
+    "id": "0550e983-9ef0-4434-9dd6-7a677157d033",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   1.0% of    2.99MiB at   18.88MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.827Z"
+  },
+  {
+    "id": "a5698041-7d55-44a8-a6e9-ffad547b6735",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.5% of    2.99MiB at   11.33MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.824Z"
+  },
+  {
+    "id": "0dbc2cc9-9dc0-44db-8f50-748e4b5f0d3f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.2% of    2.99MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.821Z"
+  },
+  {
+    "id": "84ced5e9-af22-4343-bed8-e6c278c4b8af",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.1% of    2.99MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.819Z"
+  },
+  {
+    "id": "037acf73-e244-435e-8b10-7b8b460db3bb",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of    2.99MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.817Z"
+  },
+  {
+    "id": "e1523cd8-4be1-4223-9c41-62e2815fc51d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] Destination: /tmp/video_7ad3870b-ba66-45af-b4c2-2123a3928110/dl_1777780714984.f140.m4a",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.813Z"
+  },
+  {
+    "id": "69786fd1-1a53-4750-b13c-b70d03cb2a29",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100% of   17.35MiB in 00:00:00 at 82.63MiB/s",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.806Z"
+  },
+  {
+    "id": "9ee72012-361d-4b38-891a-0c465906256d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100.0% of   17.35MiB at  184.31MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.758Z"
+  },
+  {
+    "id": "d7a9e84e-4147-4b99-a711-e26781ed30a8",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  80.0% of   17.35MiB at  277.18MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.747Z"
+  },
+  {
+    "id": "7419f723-0ef1-4a93-81d3-dcd814fbf92e",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  68.5% of   17.35MiB at  227.63MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.745Z"
+  },
+  {
+    "id": "552faf47-7ba0-48da-b37d-fee0b84ecf8b",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  62.7% of   17.35MiB at  169.86MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.742Z"
+  },
+  {
+    "id": "1442d416-78d5-48ad-8f99-e4ca6a200b02",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  59.8% of   17.35MiB at  111.83MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.740Z"
+  },
+  {
+    "id": "06c98333-23d5-45e9-9d19-7ef8ac56e33f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  58.4% of   17.35MiB at   90.67MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.736Z"
+  },
+  {
+    "id": "9c2743fb-3a79-42d5-b4de-96c0d489ec2f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  57.7% of   17.35MiB at   56.73MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.734Z"
+  },
+  {
+    "id": "dff51420-a686-4123-8b9c-ba86d3f2decb",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  57.3% of   17.35MiB at   35.98MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.732Z"
+  },
+  {
+    "id": "490a6eba-9b3a-411a-b194-cd73b06053ba",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  57.1% of   17.35MiB at   23.96MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.728Z"
+  },
+  {
+    "id": "0c1e3705-3e23-4c3d-a10f-7aa1bba5fb07",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  57.0% of   17.35MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.726Z"
+  },
+  {
+    "id": "91556113-a153-41cd-b085-b2825fe7611e",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  57.0% of   17.35MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.723Z"
+  },
+  {
+    "id": "d5a8f086-4910-4fd2-b1df-02e35a721eb9",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  57.0% of   17.35MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.721Z"
+  },
+  {
+    "id": "182d8c7b-0157-4ef3-922c-1d62f4a5afe2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  56.9% of   17.35MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.717Z"
+  },
+  {
+    "id": "8a414773-4951-4e3d-841d-129443267b47",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  56.9% of   17.35MiB at  134.01MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.708Z"
+  },
+  {
+    "id": "42e75188-a5c4-4510-9af7-a3f860b723fc",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  46.1% of   17.35MiB at  197.90MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.686Z"
+  },
+  {
+    "id": "f8eb6d75-8c80-41f6-a83c-948a9c0ef378",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  23.1% of   17.35MiB at  227.88MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.681Z"
+  },
+  {
+    "id": "b3af3c87-bb7a-48ec-92f1-7ae77c4732ab",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  11.5% of   17.35MiB at  198.06MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.679Z"
+  },
+  {
+    "id": "66749512-deb0-44cd-96d5-893ef46a2bbd",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   5.8% of   17.35MiB at  145.36MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.676Z"
+  },
+  {
+    "id": "10a418d0-05db-430e-9b58-25405ddf7887",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   2.9% of   17.35MiB at   90.16MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.674Z"
+  },
+  {
+    "id": "d79a0722-18be-41f7-a226-c36f41e90023",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   1.4% of   17.35MiB at   52.84MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.670Z"
+  },
+  {
+    "id": "1e188a1d-7c02-47cb-91c1-90b685f5a9da",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.7% of   17.35MiB at   30.82MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.667Z"
+  },
+  {
+    "id": "0cd8a5cc-21f9-4a56-92c1-c3c6b2389f5f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.4% of   17.35MiB at   28.87MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.662Z"
+  },
+  {
+    "id": "4cb023fd-3154-431f-a224-3f0b2bcb0d12",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.2% of   17.35MiB at   17.03MiB/s ETA 00:01",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.659Z"
+  },
+  {
+    "id": "022e1020-2604-4783-9270-f7d1eb263ee5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.1% of   17.35MiB at   10.17MiB/s ETA 00:01",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.656Z"
+  },
+  {
+    "id": "a99851d4-55f5-48b5-a735-05e49956c4de",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of   17.35MiB at    6.13MiB/s ETA 00:02",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.654Z"
+  },
+  {
+    "id": "92651ec8-9c26-4d3d-a457-c670e8ec917b",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of   17.35MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.650Z"
+  },
+  {
+    "id": "4eebd41e-68f3-4371-a6b2-d8558a05d2fc",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of   17.35MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.647Z"
+  },
+  {
+    "id": "c8819251-c680-411b-9fe7-2ac8b5f26753",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] Destination: /tmp/video_7ad3870b-ba66-45af-b4c2-2123a3928110/dl_1777780714984.f399.mp4",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.635Z"
+  },
+  {
+    "id": "c29e3d31-543a-4d31-ada5-5daf3e1a9dce",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[info] aFDy54VgEYo: Downloading 1 format(s): 399+140",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:37.427Z"
+  },
+  {
+    "id": "5c5f5d29-4f6f-4e92-83f3-fe2f41f882f6",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] aFDy54VgEYo: Downloading android vr player API JSON",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:36.900Z"
+  },
+  {
+    "id": "5483d7dc-925f-4e6d-8ac2-1528f2ab3d98",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] aFDy54VgEYo: Downloading webpage",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:35.881Z"
+  },
+  {
+    "id": "68e4fed6-9014-4946-8b86-800819d2d458",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] Extracting URL: https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:35.878Z"
+  },
+  {
+    "id": "1a9ad4ad-5bc9-42b6-ae11-4beceaa355fa",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_7ad3870b-ba66-45af-b4c2-2123a3928110/dl_1777780714984.%(ext)s https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
+    "createdAt": "2026-05-03T03:58:34.989Z"
+  },
+  {
+    "id": "2d92b1d2-47ba-40f3-ab89-9e542020f484",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Downloading video via yt-dlp: https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:34.985Z"
+  },
+  {
+    "id": "0b9fcf0d-a01d-4d75-9a8a-8d10a900ca3a",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[1/1] yt-dlp: https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:34.974Z"
+  },
+  {
+    "id": "9820fed7-e4aa-4923-9005-ddbe6039df43",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Batch 0f563aa9-5ba5-43fd-8449-aad60f8b43de: 1 video URL(s)",
+    "details": null,
+    "createdAt": "2026-05-03T03:58:34.971Z"
+  },
+  {
     "id": "b8b19123-48a9-41f3-8e42-f04b2a38fe6a",
     "jobType": "schedule",
     "level": "info",
@@ -3550,453 +3998,5 @@
     "message": "[download]  23.1% of   17.35MiB at   87.60MiB/s ETA 00:00",
     "details": null,
     "createdAt": "2026-05-03T03:34:04.982Z"
-  },
-  {
-    "id": "95877f56-ab57-4ef7-9e41-40f2c390b91c",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  11.5% of   17.35MiB at  109.99MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.955Z"
-  },
-  {
-    "id": "d5fe616b-ed7e-4b5b-830c-0753639b755f",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   5.8% of   17.35MiB at   87.97MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.951Z"
-  },
-  {
-    "id": "fe6467ed-793e-4828-8e3d-a3cfe9096161",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   2.9% of   17.35MiB at   65.51MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.949Z"
-  },
-  {
-    "id": "5b58d1d9-a694-4dbc-a2e5-d4f503673d4a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   1.4% of   17.35MiB at   50.59MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.947Z"
-  },
-  {
-    "id": "d503f225-974b-4d89-a8aa-030f3b542eff",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.7% of   17.35MiB at   30.68MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.946Z"
-  },
-  {
-    "id": "674e7273-ebfc-4c74-8993-71921d146723",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.4% of   17.35MiB at   24.22MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.945Z"
-  },
-  {
-    "id": "0bc99202-55c7-472d-b446-a22a843ede35",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.2% of   17.35MiB at   14.51MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.944Z"
-  },
-  {
-    "id": "9574f524-b255-41df-b18b-06ba2c14f858",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.1% of   17.35MiB at    8.97MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.942Z"
-  },
-  {
-    "id": "d19f8c4f-a136-46f9-af2d-123e132a6119",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   17.35MiB at    5.62MiB/s ETA 00:03",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.941Z"
-  },
-  {
-    "id": "9f05356b-776b-47b2-94a1-1746f9c3cfa0",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.940Z"
-  },
-  {
-    "id": "7cd6d32e-4cbe-4a54-b77d-d27273226802",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.938Z"
-  },
-  {
-    "id": "5cc4348a-5524-4072-b6c6-c53686fe1551",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] Destination: /tmp/video_c700eccb-f502-4191-bfca-4ea99b1144f1/dl_1777779242090.f399.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.936Z"
-  },
-  {
-    "id": "896a8dd3-c3da-4693-a8b6-66c6cb09949e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[info] aFDy54VgEYo: Downloading 1 format(s): 399+140",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.767Z"
-  },
-  {
-    "id": "bacadabc-7372-4785-9208-2269750c76a4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] aFDy54VgEYo: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:04.219Z"
-  },
-  {
-    "id": "1ddde76e-e242-4dfa-a01b-c37e1e5732a9",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] aFDy54VgEYo: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:03.126Z"
-  },
-  {
-    "id": "4dea1b17-db5f-4cb1-abd6-c36111d4c965",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:03.124Z"
-  },
-  {
-    "id": "6d677cf0-d643-4221-ae50-ea379b98e31e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_c700eccb-f502-4191-bfca-4ea99b1144f1/dl_1777779242090.%(ext)s https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
-    "createdAt": "2026-05-03T03:34:02.092Z"
-  },
-  {
-    "id": "40ce5592-eca1-488a-9112-4cb20d76f58f",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Downloading video via yt-dlp: https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:02.091Z"
-  },
-  {
-    "id": "a028cc3a-a744-419b-a05d-294b869edb5e",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "Attempt 2/3 error for https://youtu.be/aFDy54VgEYo?si=FeUt3Yb_GzoNm7_v",
-    "details": "Error: EXDEV: cross-device link not permitted, rename '/tmp/video_4b482272-7e5d-41fb-a846-6ec77bbd54b5/dl_1777779238288.mp4' -> '/home/runner/workspace/artifacts/api-server/data/videos/dl_1777779238288.mp4'",
-    "createdAt": "2026-05-03T03:34:02.089Z"
-  },
-  {
-    "id": "a811c17f-fca7-41bf-bd1e-6f2f82489636",
-    "jobType": "download_video",
-    "level": "success",
-    "message": "Downloaded: dl_1777779238288.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:02.079Z"
-  },
-  {
-    "id": "799b086e-dd52-47aa-b22a-163c5c831404",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleting original file /tmp/video_4b482272-7e5d-41fb-a846-6ec77bbd54b5/dl_1777779238288.f140.m4a (pass -k to keep)",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.904Z"
-  },
-  {
-    "id": "54fcf282-4a8b-4679-b9d4-b44247f4d026",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleting original file /tmp/video_4b482272-7e5d-41fb-a846-6ec77bbd54b5/dl_1777779238288.f399.mp4 (pass -k to keep)",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.900Z"
-  },
-  {
-    "id": "99666caf-5849-4669-a2c5-db84b752b61b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[Merger] Merging formats into \"/tmp/video_4b482272-7e5d-41fb-a846-6ec77bbd54b5/dl_1777779238288.mp4\"",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.539Z"
-  },
-  {
-    "id": "14760d25-4110-4ee2-b03b-f59e016ecd06",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100% of    2.99MiB in 00:00:00 at 112.97MiB/s",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.531Z"
-  },
-  {
-    "id": "7c076bd4-40fb-4afe-8a5f-ed5e1db5bd31",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100.0% of    2.99MiB at  248.51MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.529Z"
-  },
-  {
-    "id": "ee78fdc3-eaac-4733-bdbd-ea7834405357",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  66.8% of    2.99MiB at  215.24MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.527Z"
-  },
-  {
-    "id": "63e8645e-5d73-47b8-8048-cb81909ffcf5",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  33.4% of    2.99MiB at  150.56MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.523Z"
-  },
-  {
-    "id": "84d186d6-2d7f-4879-a7bc-023c2ed0f428",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.7% of    2.99MiB at   96.54MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.522Z"
-  },
-  {
-    "id": "0db9cc06-703b-4dda-868c-698646bd68ae",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   8.3% of    2.99MiB at   59.03MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.520Z"
-  },
-  {
-    "id": "b92062a3-088a-4a9f-b518-273ed38db715",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   4.1% of    2.99MiB at   37.49MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.519Z"
-  },
-  {
-    "id": "8e6d395b-d6cb-40ba-af79-dabf4e5d2954",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   2.1% of    2.99MiB at   25.71MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.517Z"
-  },
-  {
-    "id": "ff996305-e98f-49d0-a246-7595eb324d7e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   1.0% of    2.99MiB at   16.59MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.516Z"
-  },
-  {
-    "id": "9ff216a7-4b23-4474-a5c3-11bad697e664",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.5% of    2.99MiB at   10.11MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.514Z"
-  },
-  {
-    "id": "2803a7ea-ab9a-46a6-94eb-2c27f490ae21",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.2% of    2.99MiB at    6.03MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.513Z"
-  },
-  {
-    "id": "adde0343-9a8f-4bad-a51d-d9f9baeda5cd",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.1% of    2.99MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.511Z"
-  },
-  {
-    "id": "55043a52-fb0e-4e61-90e7-7202d82790e4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of    2.99MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.510Z"
-  },
-  {
-    "id": "61624df1-63e5-4d88-a4ea-3d6c7ffc0b91",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] Destination: /tmp/video_4b482272-7e5d-41fb-a846-6ec77bbd54b5/dl_1777779238288.f140.m4a",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.508Z"
-  },
-  {
-    "id": "775a3cd5-fb93-468f-ad37-bed979a66f66",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100% of   17.35MiB in 00:00:00 at 132.94MiB/s",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.503Z"
-  },
-  {
-    "id": "11e79fbb-83f5-4eaf-9b74-834f939f85f8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100.0% of   17.35MiB at  278.73MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.449Z"
-  },
-  {
-    "id": "0b8befb6-71ce-4e02-ba80-cd40db48dafe",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  78.6% of   17.35MiB at  254.28MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.438Z"
-  },
-  {
-    "id": "dd4aac7c-f8be-4ed9-abd4-b17a09698a19",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  67.1% of   17.35MiB at  197.55MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.437Z"
-  },
-  {
-    "id": "c56370d3-16ea-41d2-9e3a-28d759ca2904",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  61.3% of   17.35MiB at  142.92MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.435Z"
-  },
-  {
-    "id": "cb0bd444-43ef-404f-9ca0-831323f88bb2",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  58.4% of   17.35MiB at   96.50MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.432Z"
-  },
-  {
-    "id": "34feb3ea-0051-48e6-9e8c-5c15e17c29e5",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  57.0% of   17.35MiB at   68.45MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.431Z"
-  },
-  {
-    "id": "8dc1f55f-38c6-443b-965d-113274b9eded",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  56.3% of   17.35MiB at   42.30MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.430Z"
-  },
-  {
-    "id": "ed4d824e-ada8-44ef-b2bc-94e24f23dd61",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.9% of   17.35MiB at   27.09MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.428Z"
-  },
-  {
-    "id": "c1edc27e-6d8a-4a76-b6a9-6fc485504d1b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.7% of   17.35MiB at   17.41MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.427Z"
-  },
-  {
-    "id": "783536f4-94b8-4ea8-94b5-44a35a0394b0",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.7% of   17.35MiB at   11.74MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.425Z"
-  },
-  {
-    "id": "cede9ad7-29ad-4eb5-b28f-24e9a36e593f",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.6% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.424Z"
-  },
-  {
-    "id": "97bfb19f-89c1-4be8-86f8-c29e5c0805b8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.6% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.423Z"
-  },
-  {
-    "id": "3aa799d0-ece7-4d53-a134-ba8e70787114",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.6% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.421Z"
-  },
-  {
-    "id": "38ab9616-4159-439d-a246-6c1271eaacbf",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.6% of   17.35MiB at  266.11MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.416Z"
-  },
-  {
-    "id": "af9f21af-4057-4653-a1a9-c5f10bd48874",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  46.1% of   17.35MiB at  250.94MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.412Z"
-  },
-  {
-    "id": "8b403981-8f5d-46ce-88f0-fb5ea7964ef6",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  23.1% of   17.35MiB at  225.47MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.403Z"
-  },
-  {
-    "id": "3296ce20-f41a-4b14-9470-82a601523813",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  11.5% of   17.35MiB at  183.14MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.400Z"
-  },
-  {
-    "id": "3fd8cc6e-6db2-4582-a56e-237e52cc4128",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   5.8% of   17.35MiB at  132.12MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:01.399Z"
   }
 ]

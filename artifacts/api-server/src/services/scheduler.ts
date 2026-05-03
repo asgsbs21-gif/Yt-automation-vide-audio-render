@@ -5,7 +5,6 @@ import fs from "fs";
 import {
   getSettings,
   getQueue,
-  getAudios,
   getRandomUnusedAudio,
   pickVideosForDuration,
   markVideosUsed,
@@ -23,7 +22,9 @@ import { emitJobUpdate } from "../lib/socket.js";
 import { v4 as uuidv4 } from "uuid";
 
 let schedulerTask: cron.ScheduledTask | null = null;
-let lastAutoRunMinute = -1;
+
+// Track which slots have already fired today: "YYYY-MM-DD-slotId"
+const firedSlots = new Set<string>();
 
 // ── Upload a single queue item ────────────────────────────────────────────────
 
@@ -73,7 +74,6 @@ export async function processQueueItem(
 
     updateQueueItem(itemId, { status: "uploaded", youtubeId, youtubeUrl });
     addLog("upload", "success", `Uploaded: ${item.title} → ${youtubeUrl}`);
-
     emitJobUpdate({ jobId: itemId, jobType: "upload", status: "done", message: `Uploaded! ${youtubeUrl}`, progress: 100 });
   } catch (err) {
     const msg = String(err);
@@ -86,27 +86,30 @@ export async function processQueueItem(
   }
 }
 
-// ── Auto cycle: pick videos + audio, merge, upload ───────────────────────────
+// ── Auto cycle: pick videos + audio, merge, queue + upload ────────────────────
 
 async function runAutoCycle(
-  tokens: { access_token: string; refresh_token?: string | null }
+  tokens: { access_token: string; refresh_token?: string | null },
+  slotLabel: string
 ): Promise<void> {
   const jobId = uuidv4();
   const settings = getSettings();
   const auth = createAuthenticatedClient(tokens);
 
-  addLog("schedule", "info", "Auto-cycle: starting daily job…");
-  emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Auto-cycle: picking audio…", progress: 5 });
+  addLog("schedule", "info", `Auto-cycle [${slotLabel}]: starting…`);
+  emitJobUpdate({ jobId, jobType: "process", status: "running", message: `Auto-cycle [${slotLabel}]: picking audio…`, progress: 5 });
 
   const audio = getRandomUnusedAudio(null);
   if (!audio) {
-    addLog("schedule", "warn", "Auto-cycle: no unused audio available");
+    addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no unused audio available`);
+    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No unused audio available`, progress: 0 });
     return;
   }
 
   const videos = pickVideosForDuration(null, audio.duration);
   if (videos.length === 0) {
-    addLog("schedule", "warn", "Auto-cycle: no videos available");
+    addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no videos available`);
+    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No videos available`, progress: 0 });
     return;
   }
 
@@ -114,7 +117,7 @@ async function runAutoCycle(
   fs.mkdirSync(tmpDir, { recursive: true });
 
   try {
-    emitJobUpdate({ jobId, jobType: "process", status: "running", message: `Preparing ${videos.length} clip(s)…`, progress: 15 });
+    emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Preparing ${videos.length} clip(s)…`, progress: 15 });
 
     const videoPaths: string[] = [];
     for (const video of videos) {
@@ -134,23 +137,21 @@ async function runAutoCycle(
       fs.copyFileSync(audio.driveId, audioDest);
     }
 
-    emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Merging video…", progress: 40 });
+    emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Merging…`, progress: 40 });
 
     const outputPath = path.join(tmpDir, `output_${jobId}.mp4`);
     await mergeVideoWithAudio(videoPaths, audioDest, outputPath, (pct, msg) => {
-      emitJobUpdate({ jobId, jobType: "process", status: "running", message: msg, progress: 40 + Math.round(pct * 0.4) });
+      emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 40 + Math.round(pct * 0.4) });
     });
 
     let outputDriveId = outputPath;
-    let outputDriveLink: string | null = null;
 
     if (settings.driveOutputFolderId) {
-      emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Uploading to Drive…", progress: 85 });
+      emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading output to Drive…`, progress: 85 });
       const driveFile = await uploadFileToDrive(
         auth, outputPath, settings.driveOutputFolderId, "video/mp4", `output_${jobId}.mp4`
       );
       outputDriveId = driveFile.id;
-      outputDriveLink = driveFile.webViewLink;
     }
 
     markVideosUsed(videos.map((v) => v.id));
@@ -168,18 +169,15 @@ async function runAutoCycle(
       error: null,
     });
 
-    emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Uploading to YouTube…", progress: 90 });
+    emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading to YouTube…`, progress: 90 });
     await processQueueItem(queueItem.id, tokens);
 
-    addLog("schedule", "success", `Auto-cycle complete: "${audio.title}"`);
-    emitJobUpdate({ jobId, jobType: "process", status: "done", message: "Auto-cycle complete!", progress: 100 });
-
-    try {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
-    } catch {}
+    addLog("schedule", "success", `Auto-cycle [${slotLabel}] complete: "${audio.title}"`);
+    emitJobUpdate({ jobId, jobType: "process", status: "done", message: `[${slotLabel}] Done!`, progress: 100 });
   } catch (err) {
-    addLog("schedule", "error", "Auto-cycle failed", String(err));
-    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `Auto-cycle failed: ${String(err).slice(0, 100)}`, progress: 0 });
+    addLog("schedule", "error", `Auto-cycle [${slotLabel}] failed`, String(err));
+    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] Failed: ${String(err).slice(0, 100)}`, progress: 0 });
+  } finally {
     try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
   }
 }
@@ -193,32 +191,48 @@ export function startScheduler(): void {
     const settings = getSettings();
     const tokens = getGlobalTokens();
     const now = new Date();
-    const currentMinute = now.getHours() * 60 + now.getMinutes();
 
-    if (tokens) {
-      const queue = getQueue();
-      const due = queue.filter((item) => {
-        if (item.status !== "scheduled" || !item.scheduledAt) return false;
-        return new Date(item.scheduledAt) <= now;
-      });
+    // Key for today: "YYYY-MM-DD"
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-      for (const item of due) {
-        try {
-          await processQueueItem(item.id, tokens);
-        } catch {}
+    // Clean up fired-slots from previous days on midnight
+    if (now.getHours() === 0 && now.getMinutes() === 0) {
+      for (const key of firedSlots) {
+        if (!key.startsWith(today)) firedSlots.delete(key);
       }
+    }
 
-      if (settings.autoCycleEnabled && currentMinute !== lastAutoRunMinute) {
-        const [hStr, mStr] = (settings.dailyUploadTime || "09:00").split(":");
-        const targetH = parseInt(hStr, 10);
-        const targetM = parseInt(mStr, 10);
+    if (!tokens) return;
 
-        if (now.getHours() === targetH && now.getMinutes() === targetM) {
-          lastAutoRunMinute = currentMinute;
-          runAutoCycle(tokens).catch((err) => {
-            addLog("schedule", "error", "Auto-cycle error", String(err));
-          });
-        }
+    // ── Process manually scheduled queue items ────────────────────────────────
+    const queue = getQueue();
+    const due = queue.filter((item) => {
+      if (item.status !== "scheduled" || !item.scheduledAt) return false;
+      return new Date(item.scheduledAt) <= now;
+    });
+    for (const item of due) {
+      try { await processQueueItem(item.id, tokens); } catch {}
+    }
+
+    // ── Auto-cycle: fire each enabled slot whose time matches now ─────────────
+    if (!settings.autoCycleEnabled) return;
+
+    for (const slot of (settings.uploadSlots ?? [])) {
+      if (!slot.enabled) continue;
+
+      const slotKey = `${today}-${slot.id}`;
+      if (firedSlots.has(slotKey)) continue;
+
+      const [hStr, mStr] = (slot.time || "09:00").split(":");
+      const slotH = parseInt(hStr, 10);
+      const slotM = parseInt(mStr, 10);
+
+      if (now.getHours() === slotH && now.getMinutes() === slotM) {
+        firedSlots.add(slotKey);
+        const label = `${slot.label} / ${slot.labelBn} ${slot.time}`;
+        runAutoCycle(tokens, label).catch((err) => {
+          addLog("schedule", "error", `Auto-cycle [${label}] error`, String(err));
+        });
       }
     }
   });
