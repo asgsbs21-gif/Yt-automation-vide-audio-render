@@ -17,12 +17,38 @@
     "driveId": "/home/runner/workspace/artifacts/api-server/data/videos/dl_1777788915466.mp4",
     "filename": "dl_1777788915466.mp4",
     "category": "fish cutting",
-    "usedCount": 0,
-    "lastUsed": null,
+    "usedCount": 1,
+    "lastUsed": "2026-05-03T09:17:15.682Z",
     "available": true,
     "driveLink": null,
     "status": "available",
     "id": "2eb124bb-79b5-400a-a875-3ca6b6a3e0f4",
     "addedAt": "2026-05-03T06:15:20.234Z"
+  },
+  {
+    "duration": 0,
+    "driveId": "/home/runner/workspace/artifacts/api-server/data/videos/video_1777793638939_a70ce7f6.mp4",
+    "filename": "video_1777793638939_a70ce7f6.mp4",
+    "category": "fish cutting",
+    "usedCount": 0,
+    "lastUsed": null,
+    "available": true,
+    "driveLink": null,
+    "status": "available",
+    "id": "97576686-c7ee-4d71-bc91-5627e5135744",
+    "addedAt": "2026-05-03T07:34:00.609Z"
+  },
+  {
+    "duration": 189.103311,
+    "driveId": "/home/runner/workspace/artifacts/api-server/data/videos/dl_1777799607703.mp4",
+    "filename": "dl_1777799607703.mp4",
+    "category": "custom",
+    "usedCount": 0,
+    "lastUsed": null,
+    "available": true,
+    "driveLink": null,
+    "status": "available",
+    "id": "fac44126-370f-4cc3-8d25-c412d6050b67",
+    "addedAt": "2026-05-03T09:13:33.959Z"
   }
 ]

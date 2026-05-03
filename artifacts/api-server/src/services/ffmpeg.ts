@@ -121,7 +121,8 @@ export async function mergeVideoWithAudio(
         // Single clip + watermark
         filterComplex =
           `[0:v]${clipVideoFilter}[scaled];` +
-          `[scaled][${wmIdx}:v]overlay=W-w-20:H-h-20:alpha=0.7[outv]`;
+          `[${wmIdx}:v]scale=80:80[wm];` +
+          `[scaled][wm]overlay=W-w-10:H-h-10:alpha=0.7[outv]`;
       } else if (!hasWatermark) {
         // Multi-clip, no watermark
         const scaleFilters = videoPaths.map((_, i) => `[${i}:v]${clipVideoFilter}[v${i}]`).join(";");
@@ -134,7 +135,8 @@ export async function mergeVideoWithAudio(
         filterComplex =
           `${scaleFilters};` +
           `${labels}concat=n=${n}:v=1:a=0[concatv];` +
-          `[concatv][${wmIdx}:v]overlay=W-w-20:H-h-20:alpha=0.7[outv]`;
+          `[${wmIdx}:v]scale=80:80[wm];` +
+          `[concatv][wm]overlay=W-w-10:H-h-10:alpha=0.7[outv]`;
       }
 
       cmd.complexFilter(filterComplex).outputOptions([
