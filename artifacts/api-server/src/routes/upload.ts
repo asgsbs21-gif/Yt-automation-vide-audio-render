@@ -14,7 +14,7 @@ import {
   getSettings,
   addLog,
 } from "../services/data.js";
-import { uploadFileToDrive } from "../services/drive.js";
+import { uploadFileToDrive, uploadFileToDriveWithSpeed } from "../services/drive.js";
 import { muteVideo } from "../services/ffmpeg.js";
 import { createAuthenticatedClient } from "../services/auth.js";
 import { getSessionTokens } from "../middlewares/auth.js";
@@ -22,7 +22,7 @@ import { emitJobUpdate } from "../lib/socket.js";
 
 const router = Router();
 
-// ── Local storage dirs ────────────────────────────────────────────────────────
+// ── Permanent local storage dirs (fallback when Drive not configured) ─────────
 
 const DATA_DIR = path.resolve(process.cwd(), "data");
 const VIDEO_DIR = path.resolve(process.cwd(), "data", "videos");
@@ -31,11 +31,22 @@ const WATERMARK_PATH = path.join(DATA_DIR, "watermark.png");
 fs.mkdirSync(VIDEO_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
-// ── Multer config ─────────────────────────────────────────────────────────────
+function safeMoveToLocal(src: string, dest: string): void {
+  try {
+    fs.renameSync(src, dest);
+  } catch {
+    fs.copyFileSync(src, dest);
+    try { fs.unlinkSync(src); } catch {}
+  }
+}
+
+// ── Multer: always write to /tmp first ────────────────────────────────────────
+// If Drive is configured, we stream from /tmp → Drive and delete the tmp file.
+// If not, we move from /tmp → data/videos/ (permanent local storage).
 
 const videoUpload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, VIDEO_DIR),
+    destination: (_req, _file, cb) => cb(null, os.tmpdir()),
     filename: (_req, file, cb) => {
       const ext = path.extname(file.originalname) || ".mp4";
       cb(null, `video_${Date.now()}_${uuidv4().slice(0, 8)}${ext}`);
@@ -50,7 +61,7 @@ const videoUpload = multer({
 
 const audioUpload = multer({
   storage: multer.diskStorage({
-    destination: (_req, _file, cb) => cb(null, AUDIO_DIR),
+    destination: (_req, _file, cb) => cb(null, os.tmpdir()),
     filename: (_req, file, cb) => {
       const ext = path.extname(file.originalname) || ".mp3";
       cb(null, `audio_${Date.now()}_${uuidv4().slice(0, 8)}${ext}`);
@@ -76,13 +87,24 @@ const watermarkUpload = multer({
 });
 
 // ── POST /api/upload/video — device upload ────────────────────────────────────
-// Multer writes directly to VIDEO_DIR (no cross-device rename). Saved locally only.
+// 1. Multer writes to /tmp.
+// 2. Register video immediately (responds with video object).
+// 3. Background: stream /tmp → Drive at full speed, update driveId + driveLink, delete /tmp.
+// 4. If Drive not configured: move /tmp → data/videos/ (local fallback).
 
 router.post("/upload/video", videoUpload.single("file"), async (req, res) => {
   const file = req.file;
   if (!file) { res.status(400).json({ error: "No file uploaded" }); return; }
 
+  const tokens = getSessionTokens(req);
+  const settings = getSettings();
+  const driveFolder = settings.driveVideoFolderId;
+  const hasDrive = !!(tokens && driveFolder);
+
   const category = (req.body.category as string) || "Uncategorized";
+  const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
+
+  // Register with tmp path immediately — background job will update driveId
   const video = addVideo({
     driveId: file.path,
     filename: file.filename,
@@ -94,8 +116,82 @@ router.post("/upload/video", videoUpload.single("file"), async (req, res) => {
     status: "available",
   });
 
-  addLog("download_video", "success", `Uploaded from device: ${file.filename} (${(file.size / 1024 / 1024).toFixed(1)} MB)`);
+  addLog("download_video", "info", `Device upload received: ${file.originalname} (${fileSizeMB} MB)`);
   res.json(video);
+
+  if (hasDrive) {
+    // ── Background: stream to Drive ──────────────────────────────────────────
+    const jobId = `upload_${uuidv4().slice(0, 8)}`;
+    (async () => {
+      try {
+        emitJobUpdate({
+          jobId,
+          jobType: "upload",
+          status: "running",
+          message: `Uploading ${file.originalname} (${fileSizeMB} MB) to Drive…`,
+          progress: 0,
+        });
+
+        const auth = createAuthenticatedClient(tokens!);
+        const driveFile = await uploadFileToDriveWithSpeed(
+          auth,
+          file.path,
+          driveFolder!,
+          "video/mp4",
+          file.originalname,
+          (pct, _mbps, msg) => {
+            emitJobUpdate({
+              jobId,
+              jobType: "upload",
+              status: "running",
+              message: msg,
+              progress: pct,
+            });
+          }
+        );
+
+        updateVideo(video.id, { driveId: driveFile.id, driveLink: driveFile.webViewLink });
+        try { fs.unlinkSync(file.path); } catch {}
+
+        addLog("download_video", "success", `${file.originalname} → Drive (${fileSizeMB} MB)`);
+        emitJobUpdate({
+          jobId,
+          jobType: "upload",
+          status: "done",
+          message: `Saved to Drive: ${file.originalname}`,
+          progress: 100,
+        });
+
+      } catch (err) {
+        const msg = String(err);
+        addLog("upload", "error", `Drive upload failed for ${file.originalname}`, msg);
+        emitJobUpdate({
+          jobId,
+          jobType: "upload",
+          status: "error",
+          message: `Drive upload failed: ${msg.slice(0, 120)}`,
+          progress: 0,
+        });
+
+        // Fallback: move /tmp → permanent local storage so the record stays valid
+        try {
+          const destPath = path.join(VIDEO_DIR, file.filename);
+          safeMoveToLocal(file.path, destPath);
+          updateVideo(video.id, { driveId: destPath });
+        } catch {}
+      }
+    })();
+
+  } else {
+    // ── No Drive: move to permanent local storage synchronously ──────────────
+    try {
+      const destPath = path.join(VIDEO_DIR, file.filename);
+      safeMoveToLocal(file.path, destPath);
+      updateVideo(video.id, { driveId: destPath });
+    } catch (err) {
+      addLog("download_video", "error", `Failed to move video to local storage`, String(err));
+    }
+  }
 });
 
 // ── POST /api/upload/audio — device upload ────────────────────────────────────
@@ -104,8 +200,15 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
   const file = req.file;
   if (!file) { res.status(400).json({ error: "No file uploaded" }); return; }
 
+  const tokens = getSessionTokens(req);
+  const settings = getSettings();
+  const driveFolder = settings.driveAudioFolderId;
+  const hasDrive = !!(tokens && driveFolder);
+
   const category = (req.body.category as string) || null;
   const title = (req.body.title as string)?.trim() || path.parse(file.originalname).name;
+  const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
+
   const audio = addAudio({
     driveId: file.path,
     title,
@@ -118,11 +221,86 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
     driveLink: null,
   });
 
-  addLog("download_audio", "success", `Uploaded from device: ${file.filename}`);
+  addLog("download_audio", "info", `Device upload received: ${file.originalname} (${fileSizeMB} MB)`);
   res.json(audio);
+
+  if (hasDrive) {
+    const jobId = `upload_${uuidv4().slice(0, 8)}`;
+    (async () => {
+      try {
+        emitJobUpdate({
+          jobId,
+          jobType: "upload",
+          status: "running",
+          message: `Uploading "${title}" (${fileSizeMB} MB) to Drive…`,
+          progress: 0,
+        });
+
+        const auth = createAuthenticatedClient(tokens!);
+        const ext = path.extname(file.originalname) || ".mp3";
+        const driveFilename = `${title}${ext}`.replace(/[/\\?%*:|"<>]/g, "_");
+
+        const driveFile = await uploadFileToDriveWithSpeed(
+          auth,
+          file.path,
+          driveFolder!,
+          "audio/mpeg",
+          driveFilename,
+          (pct, _mbps, msg) => {
+            emitJobUpdate({
+              jobId,
+              jobType: "upload",
+              status: "running",
+              message: msg,
+              progress: pct,
+            });
+          }
+        );
+
+        updateAudio(audio.id, { driveId: driveFile.id, driveLink: driveFile.webViewLink });
+        try { fs.unlinkSync(file.path); } catch {}
+
+        addLog("download_audio", "success", `"${title}" → Drive (${fileSizeMB} MB)`);
+        emitJobUpdate({
+          jobId,
+          jobType: "upload",
+          status: "done",
+          message: `Saved to Drive: "${title}"`,
+          progress: 100,
+        });
+
+      } catch (err) {
+        const msg = String(err);
+        addLog("upload", "error", `Drive upload failed for "${title}"`, msg);
+        emitJobUpdate({
+          jobId,
+          jobType: "upload",
+          status: "error",
+          message: `Drive upload failed: ${msg.slice(0, 120)}`,
+          progress: 0,
+        });
+
+        try {
+          const destPath = path.join(AUDIO_DIR, file.filename);
+          safeMoveToLocal(file.path, destPath);
+          updateAudio(audio.id, { driveId: destPath });
+        } catch {}
+      }
+    })();
+
+  } else {
+    try {
+      const destPath = path.join(AUDIO_DIR, file.filename);
+      safeMoveToLocal(file.path, destPath);
+      updateAudio(audio.id, { driveId: destPath });
+    } catch (err) {
+      addLog("download_audio", "error", `Failed to move audio to local storage`, String(err));
+    }
+  }
 });
 
 // ── POST /api/upload/watermark — upload PNG watermark ────────────────────────
+// Watermark always stays local (used by FFmpeg at process time).
 
 router.post("/upload/watermark", watermarkUpload.single("file"), (req, res) => {
   if (!req.file) { res.status(400).json({ error: "No PNG file uploaded" }); return; }
@@ -139,6 +317,13 @@ router.get("/watermark", (_req, res) => {
   fs.createReadStream(WATERMARK_PATH).pipe(res);
 });
 
+// ── HEAD /api/watermark — check if watermark exists ──────────────────────────
+
+router.head("/watermark", (_req, res) => {
+  if (!fs.existsSync(WATERMARK_PATH)) { res.status(404).end(); return; }
+  res.status(200).end();
+});
+
 // ── DELETE /api/watermark — remove watermark ──────────────────────────────────
 
 router.delete("/watermark", (_req, res) => {
@@ -148,7 +333,7 @@ router.delete("/watermark", (_req, res) => {
 
 // ── POST /api/videos/:id/mute-and-drive ──────────────────────────────────────
 // 1. Strip audio from local video using FFmpeg (fast stream-copy, no re-encode)
-// 2. Upload muted file to Google Drive
+// 2. Stream muted file to Google Drive at full speed with progress
 // 3. Update driveLink on the video record
 // 4. Local original file is NOT modified or deleted
 
@@ -165,9 +350,10 @@ router.post("/videos/:id/mute-and-drive", async (req, res) => {
   const video = getVideos().find((v) => v.id === req.params.id);
   if (!video) { res.status(404).json({ error: "Video not found" }); return; }
 
-  const localPath = video.driveId;
-  if (!fs.existsSync(localPath)) {
-    res.status(404).json({ error: "Local file not found — it may have been deleted." });
+  // Only works on locally stored files
+  const localPath = video.driveId.startsWith("/") ? video.driveId : null;
+  if (!localPath || !fs.existsSync(localPath)) {
+    res.status(404).json({ error: "Local file not found — video is Drive-only and cannot be re-processed here." });
     return;
   }
 
@@ -193,14 +379,29 @@ router.post("/videos/:id/mute-and-drive", async (req, res) => {
         emitJobUpdate({ jobId, jobType: "process", status: "running", message: m, progress: p });
       });
 
-      emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Uploading to Google Drive…", progress: 95 });
+      emitJobUpdate({ jobId, jobType: "process", status: "running", message: "Streaming to Google Drive…", progress: 60 });
 
       const auth = createAuthenticatedClient(tokens);
-      const driveFile = await uploadFileToDrive(auth, mutedPath, folderId, "video/mp4", mutedFilename);
+      const driveFile = await uploadFileToDriveWithSpeed(
+        auth,
+        mutedPath,
+        folderId,
+        "video/mp4",
+        mutedFilename,
+        (pct, _mbps, msg) => {
+          emitJobUpdate({
+            jobId,
+            jobType: "process",
+            status: "running",
+            message: `Drive: ${msg}`,
+            progress: 60 + Math.round(pct * 0.39),
+          });
+        }
+      );
 
       updateVideo(req.params.id, { driveLink: driveFile.webViewLink });
 
-      addLog("upload", "success", `Muted & uploaded to Drive: ${mutedFilename}`);
+      addLog("upload", "success", `Muted & streamed to Drive: ${mutedFilename}`);
       emitJobUpdate({ jobId, jobType: "process", status: "done", message: `Uploaded: ${mutedFilename}`, progress: 100 });
     } catch (err) {
       const msg = String(err);
@@ -213,7 +414,7 @@ router.post("/videos/:id/mute-and-drive", async (req, res) => {
 });
 
 // ── POST /api/drive/save-video/:id ───────────────────────────────────────────
-// Upload local file to Drive as-is (no muting). Local file is KEPT.
+// Stream local file to Drive as-is (no muting) with speed tracking.
 
 router.post("/drive/save-video/:id", async (req, res) => {
   const tokens = getSessionTokens(req);
@@ -226,8 +427,8 @@ router.post("/drive/save-video/:id", async (req, res) => {
   if (!video) { res.status(404).json({ error: "Video not found" }); return; }
   if (video.driveLink) { res.status(400).json({ error: "Already saved to Drive" }); return; }
 
-  const localPath = video.driveId;
-  if (!fs.existsSync(localPath)) {
+  const localPath = video.driveId.startsWith("/") ? video.driveId : null;
+  if (!localPath || !fs.existsSync(localPath)) {
     res.status(404).json({ error: "Local file not found." });
     return;
   }
@@ -252,7 +453,7 @@ router.post("/drive/save-video/:id", async (req, res) => {
 });
 
 // ── POST /api/drive/save-audio/:id ───────────────────────────────────────────
-// Upload local audio to Drive. Local file is KEPT.
+// Stream local audio to Drive with speed tracking.
 
 router.post("/drive/save-audio/:id", async (req, res) => {
   const tokens = getSessionTokens(req);
@@ -265,8 +466,8 @@ router.post("/drive/save-audio/:id", async (req, res) => {
   if (!audio) { res.status(404).json({ error: "Audio not found" }); return; }
   if (audio.driveLink) { res.status(400).json({ error: "Already saved to Drive" }); return; }
 
-  const localPath = audio.driveId;
-  if (!fs.existsSync(localPath)) {
+  const localPath = audio.driveId.startsWith("/") ? audio.driveId : null;
+  if (!localPath || !fs.existsSync(localPath)) {
     res.status(404).json({ error: "Local file not found." });
     return;
   }
