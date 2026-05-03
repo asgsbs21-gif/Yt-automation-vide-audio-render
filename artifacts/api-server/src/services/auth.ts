@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import type { OAuth2Client } from "google-auth-library";
 
-// ── Scopes ───────────────────────────────────────────────────────────────────
+// ── Scopes ────────────────────────────────────────────────────────────────────
 
 export const SCOPES = [
   "https://www.googleapis.com/auth/userinfo.email",
@@ -11,19 +11,35 @@ export const SCOPES = [
   "https://www.googleapis.com/auth/youtube.upload",
 ];
 
-// ── Build the redirect URI dynamically ───────────────────────────────────────
+// ── Global tokens (for scheduler use) ────────────────────────────────────────
+
+export interface TokenSet {
+  access_token: string;
+  refresh_token?: string | null;
+  expiry_date?: number | null;
+}
+
+let _globalTokens: TokenSet | null = null;
+
+export function setGlobalTokens(tokens: TokenSet | null): void {
+  _globalTokens = tokens;
+}
+
+export function getGlobalTokens(): TokenSet | null {
+  return _globalTokens;
+}
+
+// ── Build redirect URI ────────────────────────────────────────────────────────
 
 export function getRedirectUri(host?: string): string {
   if (process.env["GOOGLE_REDIRECT_URI"]) {
     return process.env["GOOGLE_REDIRECT_URI"];
   }
-  // Derive from REPLIT_DOMAINS (comma-separated, use first)
   const domains = process.env["REPLIT_DOMAINS"];
   if (domains) {
     const primary = domains.split(",")[0].trim();
     return `https://${primary}/api/auth/callback`;
   }
-  // Fallback: localhost
   const port = process.env["PORT"] || "3000";
   return `http://localhost:${port}/api/auth/callback`;
 }
@@ -34,7 +50,6 @@ export function createOAuth2Client(host?: string): OAuth2Client {
   const clientId = process.env["YOUTUBE_CLIENT_ID"] || "";
   const clientSecret = process.env["YOUTUBE_CLIENT_SECRET"] || "";
   const redirectUri = getRedirectUri(host);
-
   return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 }
 
@@ -50,12 +65,6 @@ export function generateAuthUrl(host?: string): string {
 }
 
 // ── Exchange code for tokens ──────────────────────────────────────────────────
-
-export interface TokenSet {
-  access_token: string;
-  refresh_token?: string | null;
-  expiry_date?: number | null;
-}
 
 export interface UserInfo {
   email: string;
@@ -74,12 +83,16 @@ export async function exchangeCode(
   const oauth2 = google.oauth2({ version: "v2", auth: client });
   const { data } = await oauth2.userinfo.get();
 
+  const tokenSet: TokenSet = {
+    access_token: tokens.access_token ?? "",
+    refresh_token: tokens.refresh_token,
+    expiry_date: tokens.expiry_date,
+  };
+
+  setGlobalTokens(tokenSet);
+
   return {
-    tokens: {
-      access_token: tokens.access_token ?? "",
-      refresh_token: tokens.refresh_token,
-      expiry_date: tokens.expiry_date,
-    },
+    tokens: tokenSet,
     user: {
       email: data.email ?? "",
       name: data.name ?? "",

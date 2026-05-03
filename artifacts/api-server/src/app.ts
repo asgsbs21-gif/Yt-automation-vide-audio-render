@@ -4,7 +4,6 @@ import session from "express-session";
 import pinoHttp from "pino-http";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
-import { startScheduler } from "./services/scheduler.js";
 
 const app: Express = express();
 
@@ -13,11 +12,7 @@ app.use(
     logger,
     serializers: {
       req(req) {
-        return {
-          id: req.id,
-          method: req.method,
-          url: req.url?.split("?")[0],
-        };
+        return { id: req.id, method: req.method, url: req.url?.split("?")[0] };
       },
       res(res) {
         return { statusCode: res.statusCode };
@@ -26,17 +21,11 @@ app.use(
   }),
 );
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  }),
-);
+app.use(cors({ origin: true, credentials: true }));
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware — stores OAuth tokens per session
 app.use(
   session({
     secret: process.env["SESSION_SECRET"] || "yt-auto-pro-secret",
@@ -45,16 +34,12 @@ app.use(
     cookie: {
       secure: process.env["NODE_ENV"] === "production",
       httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000,
       sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
     },
   }),
 );
 
 app.use("/api", router);
-
-// Start the cron scheduler — tokens come from whichever session is active
-// For single-user scenarios this is fine; tokens are passed per-request for uploads
-startScheduler(() => null);
 
 export default app;

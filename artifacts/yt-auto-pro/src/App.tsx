@@ -7,6 +7,8 @@ import { ProcessTab } from "./components/tabs/ProcessTab";
 import { QueueTab } from "./components/tabs/QueueTab";
 import { ScheduleTab } from "./components/tabs/ScheduleTab";
 import { LogsTab } from "./components/tabs/LogsTab";
+import { JobProgressPanel } from "./components/JobProgressPanel";
+import { useSocket } from "./hooks/useSocket";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -18,6 +20,7 @@ import {
   TerminalSquare,
   LogOut,
   Chrome,
+  Loader2,
 } from "lucide-react";
 
 type TabId = "dashboard" | "videos" | "audio" | "process" | "queue" | "schedule" | "logs";
@@ -36,6 +39,7 @@ export default function App() {
   const { data: auth } = useGetAuthStatus();
   const logout = useLogout();
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
+  const { runningCount } = useSocket();
 
   const ActiveComponent = TABS.find((t) => t.id === activeTab)?.component ?? DashboardTab;
   const isAuthenticated = auth?.authenticated ?? false;
@@ -49,10 +53,16 @@ export default function App() {
           <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-bold shrink-0 shadow-lg shadow-primary/20">
             YT
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h1 className="font-bold text-sm tracking-tight leading-none text-foreground">Auto Pro</h1>
             <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono mt-1 block">Cockpit</span>
           </div>
+          {runningCount > 0 && (
+            <div className="flex items-center gap-1 text-primary">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              <span className="text-[10px] font-mono font-bold">{runningCount}</span>
+            </div>
+          )}
         </div>
 
         {/* Nav */}
@@ -127,6 +137,9 @@ export default function App() {
           </div>
         </main>
       </div>
+
+      {/* Floating job progress panel */}
+      <JobProgressPanel />
     </div>
   );
 }

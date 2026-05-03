@@ -1,10 +1,8 @@
-import { exec } from "child_process";
-import { promisify } from "util";
+import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 import { addLog } from "./data.js";
-
-const execAsync = promisify(exec);
+import type { JobType } from "../lib/socket.js";
 
 export interface AudioMetadata {
   title: string;
@@ -19,80 +17,138 @@ export interface AudioMetadata {
 
 export async function downloadAudio(
   url: string,
-  destDir: string
+  destDir: string,
+  onProgress?: (progress: number, message: string) => void
 ): Promise<{ audioPath: string; metadata: AudioMetadata } | null> {
-  addLog("download_audio", "info", `Starting audio download: ${url}`);
+  const jobType: JobType = "download_audio";
+  addLog(jobType, "info", `Starting audio download: ${url}`);
 
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
 
-  const outputTemplate = path.join(destDir, "%(title)s.%(ext)s");
+  const outputTemplate = path.join(destDir, "%(id)s.%(ext)s");
+  const infoTemplate = path.join(destDir, "%(id)s.%(ext)s");
 
-  const cmd = [
-    "yt-dlp",
+  const args = [
     "--extract-audio",
-    "--audio-format mp3",
+    "--audio-format",
+    "mp3",
+    "--audio-quality",
+    "0",
     "--write-info-json",
     "--no-playlist",
     "--no-warnings",
-    `--output "${outputTemplate}"`,
-    `"${url}"`,
-  ].join(" ");
+    "--newline",
+    "--output",
+    outputTemplate,
+    url,
+  ];
 
-  try {
-    await execAsync(cmd, { timeout: 300000 });
-  } catch (err) {
-    addLog("download_audio", "error", `yt-dlp failed for ${url}`, String(err));
-    return null;
-  }
+  onProgress?.(5, "Starting yt-dlp…");
 
-  // Find downloaded files
+  await new Promise<void>((resolve, reject) => {
+    const proc = spawn("yt-dlp", args, { cwd: destDir });
+    let lastPct = 5;
+
+    proc.stdout.on("data", (chunk: Buffer) => {
+      const lines = chunk.toString().split("\n");
+      for (const line of lines) {
+        const pctMatch = line.match(/\[download\]\s+([\d.]+)%/);
+        if (pctMatch) {
+          const pct = Math.min(90, 5 + Math.round(parseFloat(pctMatch[1]) * 0.85));
+          if (pct > lastPct) {
+            lastPct = pct;
+            onProgress?.(pct, line.trim());
+          }
+        }
+      }
+    });
+
+    proc.stderr.on("data", (chunk: Buffer) => {
+      const txt = chunk.toString().trim();
+      if (txt) addLog(jobType, "warn", txt.slice(0, 200));
+    });
+
+    proc.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`yt-dlp exited with code ${code}`));
+    });
+
+    proc.on("error", (err) => {
+      reject(new Error(`yt-dlp spawn failed: ${err.message}`));
+    });
+  }).catch((err) => {
+    addLog(jobType, "error", `yt-dlp failed for ${url}`, String(err));
+    throw err;
+  });
+
+  onProgress?.(92, "Parsing metadata…");
+
   const files = fs.readdirSync(destDir);
   const infoFile = files.find((f) => f.endsWith(".info.json"));
   const audioFile = files.find(
-    (f) => f.endsWith(".mp3") || f.endsWith(".m4a") || f.endsWith(".webm")
+    (f) => f.endsWith(".mp3") || f.endsWith(".m4a") || f.endsWith(".webm") || f.endsWith(".ogg")
   );
 
-  if (!infoFile || !audioFile) {
-    addLog(
-      "download_audio",
-      "error",
-      `Could not find downloaded files in ${destDir}`
-    );
+  if (!audioFile) {
+    addLog(jobType, "error", `No audio file found in ${destDir}. Files: ${files.join(", ")}`);
     return null;
   }
 
-  const infoPath = path.join(destDir, infoFile);
   const audioPath = path.join(destDir, audioFile);
-
   let metadata: AudioMetadata;
-  try {
-    const info = JSON.parse(fs.readFileSync(infoPath, "utf-8"));
+
+  if (infoFile) {
+    const infoPath = path.join(destDir, infoFile);
+    try {
+      const info = JSON.parse(fs.readFileSync(infoPath, "utf-8"));
+
+      const rawTags: string[] = Array.isArray(info.tags)
+        ? info.tags.filter((t: unknown) => typeof t === "string")
+        : [];
+
+      const descHashtags: string[] = ((info.description as string) || "")
+        .match(/#(\w+)/g)
+        ?.map((h: string) => h.slice(1)) || [];
+
+      const allTags = [...new Set([...rawTags, ...descHashtags])].slice(0, 30);
+
+      metadata = {
+        title: String(info.title || "Untitled").slice(0, 100),
+        description: String(info.description || "").slice(0, 5000),
+        tags: allTags,
+        duration: Number(info.duration) || 0,
+        uploader: String(info.uploader || info.channel || info.creator || ""),
+        filename: audioFile,
+      };
+
+      try { fs.unlinkSync(infoPath); } catch {}
+    } catch {
+      metadata = {
+        title: audioFile.replace(/\.[^.]+$/, ""),
+        description: "",
+        tags: [],
+        duration: 0,
+        uploader: "",
+        filename: audioFile,
+      };
+    }
+  } else {
     metadata = {
-      title: String(info.title || "Untitled").slice(0, 60),
-      description: String(info.description || "").slice(0, 150),
-      tags: Array.isArray(info.tags)
-        ? info.tags.filter((t: unknown) => typeof t === "string").slice(0, 30)
-        : [],
-      duration: Number(info.duration) || 0,
-      uploader: String(info.uploader || info.channel || ""),
+      title: audioFile.replace(/\.[^.]+$/, ""),
+      description: "",
+      tags: [],
+      duration: 0,
+      uploader: "",
       filename: audioFile,
     };
-  } catch {
-    addLog("download_audio", "error", `Failed to parse metadata for ${url}`);
-    return null;
   }
 
-  // Clean up info JSON
-  try {
-    fs.unlinkSync(infoPath);
-  } catch {}
-
   addLog(
-    "download_audio",
+    jobType,
     "success",
-    `Downloaded audio: ${metadata.title} (${metadata.duration}s)`
+    `Downloaded: "${metadata.title}" (${metadata.duration}s, ${metadata.tags.length} tags)`
   );
 
   return { audioPath, metadata };

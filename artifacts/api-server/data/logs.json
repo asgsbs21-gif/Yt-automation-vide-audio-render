@@ -1,5 +1,253 @@
 [
   {
+    "id": "e675be5b-e46d-4a2c-a026-d9a67f2da2a6",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T03:17:06.183Z"
+  },
+  {
+    "id": "cfcc92ef-45ec-48cc-87e9-59cea34a4650",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "Failed after 3 retries: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:25.841Z"
+  },
+  {
+    "id": "ce9e6ee6-bc2a-4f9e-85a5-ff4f9ecb648d",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "yt-dlp failed for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Command failed: yt-dlp --extract-audio --audio-format mp3 --write-info-json --no-playlist --no-warnings --output \"/tmp/audio_0f17da5b-0573-464e-80c9-37d0fe28550f/%(title)s.%(ext)s\" \"https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe\"\n/bin/sh: 1: yt-dlp: not found\n",
+    "createdAt": "2026-05-03T03:00:25.840Z"
+  },
+  {
+    "id": "a7c9eb4b-d74a-4433-bf08-9604c53d634b",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:25.836Z"
+  },
+  {
+    "id": "0ac5e814-1dda-4456-a9e9-6d073501ffe3",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "yt-dlp failed for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Command failed: yt-dlp --extract-audio --audio-format mp3 --write-info-json --no-playlist --no-warnings --output \"/tmp/audio_0f493bf4-11af-4535-a30b-b3e434234319/%(title)s.%(ext)s\" \"https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe\"\n/bin/sh: 1: yt-dlp: not found\n",
+    "createdAt": "2026-05-03T03:00:25.835Z"
+  },
+  {
+    "id": "6cf5d304-b2c9-4f93-86d3-7a67f2df6b09",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:25.829Z"
+  },
+  {
+    "id": "0f4ae07e-ead3-4c42-8b2c-d3106f9542ff",
+    "jobType": "download_audio",
+    "level": "error",
+    "message": "yt-dlp failed for https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Command failed: yt-dlp --extract-audio --audio-format mp3 --write-info-json --no-playlist --no-warnings --output \"/tmp/audio_f24f3788-98c3-43e4-a263-24299d6d9296/%(title)s.%(ext)s\" \"https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe\"\n/bin/sh: 1: yt-dlp: not found\n",
+    "createdAt": "2026-05-03T03:00:25.828Z"
+  },
+  {
+    "id": "35a1dd1c-be32-4286-9511-3d94a04f2923",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:25.807Z"
+  },
+  {
+    "id": "c2aadbbf-3f81-4a24-a22c-ca27c05062f1",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Starting 1 audio download(s) [job 1f220391-ff64-497d-824a-9d5c85c21bec]",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:25.806Z"
+  },
+  {
+    "id": "88dbaced-3833-41eb-b317-a72f6f92c7d0",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed after 3 retries: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.641Z"
+  },
+  {
+    "id": "409c1bc0-fcb7-4561-aaf6-338481b5719d",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.640Z"
+  },
+  {
+    "id": "d3ca2f91-001d-4193-b323-7f5848e06436",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Browser was not found at the configured executablePath (/usr/bin/chromium-browser)",
+    "createdAt": "2026-05-03T03:00:09.640Z"
+  },
+  {
+    "id": "310854c1-05d9-4a97-b85c-ddae676efa68",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.639Z"
+  },
+  {
+    "id": "ab401f9f-e528-4dba-a092-c0d6f62ede80",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.638Z"
+  },
+  {
+    "id": "4fb7b95f-338d-4056-8f1f-05406d7af7f0",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Browser was not found at the configured executablePath (/usr/bin/chromium-browser)",
+    "createdAt": "2026-05-03T03:00:09.638Z"
+  },
+  {
+    "id": "6c2bbd33-efce-4f9d-b263-08954c68fed7",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.637Z"
+  },
+  {
+    "id": "418645f6-5982-4ce6-8598-9a5aafbd9df1",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.637Z"
+  },
+  {
+    "id": "8ae3233b-e800-4709-9982-8d76cafa08b1",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Browser was not found at the configured executablePath (/usr/bin/chromium-browser)",
+    "createdAt": "2026-05-03T03:00:09.636Z"
+  },
+  {
+    "id": "64813573-1638-44d5-aeaa-4590e6a764ad",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.628Z"
+  },
+  {
+    "id": "b7ccfcbc-f4e3-45de-8870-a39a06727c3d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Starting 1 video download(s) [job 43c3d5fd-2a51-4753-af3c-daef13f9562c]",
+    "details": null,
+    "createdAt": "2026-05-03T03:00:09.626Z"
+  },
+  {
+    "id": "83971e65-3827-459d-ab41-392f130b3795",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed after 3 retries: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.185Z"
+  },
+  {
+    "id": "6a94afa0-9d19-4704-bd55-4dadaebf390f",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.184Z"
+  },
+  {
+    "id": "f6a0f63a-7142-4ed9-89d2-332660db542a",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Browser was not found at the configured executablePath (/usr/bin/chromium-browser)",
+    "createdAt": "2026-05-03T02:59:49.184Z"
+  },
+  {
+    "id": "976b3080-8563-470d-aed2-46d223cff2fd",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.183Z"
+  },
+  {
+    "id": "210d0432-3882-4513-902d-d8f6f665d9fb",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.183Z"
+  },
+  {
+    "id": "055883db-b5d4-48b7-bebd-3bdf0618e224",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Browser was not found at the configured executablePath (/usr/bin/chromium-browser)",
+    "createdAt": "2026-05-03T02:59:49.183Z"
+  },
+  {
+    "id": "24bbaac4-daa0-49b2-bbaa-849cf82845a2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.182Z"
+  },
+  {
+    "id": "87952239-1fb5-4711-b0a4-8620b1c4c6dc",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "No video URL found at: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.182Z"
+  },
+  {
+    "id": "f2a27e45-c5ad-4787-984e-3d9be5824212",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Failed to extract video URL from https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": "Error: Browser was not found at the configured executablePath (/usr/bin/chromium-browser)",
+    "createdAt": "2026-05-03T02:59:49.181Z"
+  },
+  {
+    "id": "da88f86e-b8e0-4765-a94b-0decfe47e8d7",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Extracting video from: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.180Z"
+  },
+  {
+    "id": "9539981a-9e3c-4436-8098-5a650f68c50a",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Starting 1 video download(s) [job c43a43bc-9470-4941-aeb6-d4d8a4ff53a1]",
+    "details": null,
+    "createdAt": "2026-05-03T02:59:49.179Z"
+  },
+  {
     "id": "2825815e-0c87-4cf8-8785-54f24ccd6a39",
     "jobType": "schedule",
     "level": "info",
