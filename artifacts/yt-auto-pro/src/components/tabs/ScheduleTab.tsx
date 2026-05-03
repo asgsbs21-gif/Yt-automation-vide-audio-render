@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, Info, Sun, Sunset, Moon, Clock, CheckCircle2 } from "lucide-react";
-import { VIDEO_CATEGORIES } from "@/lib/categories";
 
 const YOUTUBE_CATEGORIES = [
   { id: "1",  name: "Film & Animation" },
@@ -71,7 +70,6 @@ export function ScheduleTab() {
   const [slots, setSlots] = useState<UploadSlot[]>(DEFAULT_SLOTS);
   const [autoCycleEnabled, setAutoCycleEnabled] = useState(false);
   const [maxRetries, setMaxRetries] = useState(3);
-  const [defaultCategory, setDefaultCategory] = useState("satisfying");
   const [youtubeCategoryId, setYoutubeCategoryId] = useState("22");
   const [driveVideoFolderId, setDriveVideoFolderId] = useState("");
   const [driveAudioFolderId, setDriveAudioFolderId] = useState("");
@@ -95,7 +93,6 @@ export function ScheduleTab() {
 
       setAutoCycleEnabled((settings as any).autoCycleEnabled ?? false);
       setMaxRetries((settings as any).maxRetries ?? 3);
-      setDefaultCategory((settings as any).defaultCategory ?? "satisfying");
       setYoutubeCategoryId((settings as any).youtubeCategoryId ?? "22");
       setDriveVideoFolderId((settings as any).driveVideoFolderId ?? "");
       setDriveAudioFolderId((settings as any).driveAudioFolderId ?? "");
@@ -115,7 +112,6 @@ export function ScheduleTab() {
           uploadSlots: slots,
           autoCycleEnabled,
           maxRetries,
-          defaultCategory,
           youtubeCategoryId,
           driveVideoFolderId: driveVideoFolderId || null,
           driveAudioFolderId: driveAudioFolderId || null,
@@ -275,17 +271,6 @@ export function ScheduleTab() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label>Default Video Category (for cycling)</Label>
-              <Select value={defaultCategory} onValueChange={setDefaultCategory}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {VIDEO_CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
             <div className="space-y-2">
               <Label>YouTube Category</Label>
               <Select value={youtubeCategoryId} onValueChange={setYoutubeCategoryId}>
