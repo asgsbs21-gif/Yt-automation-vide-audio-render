@@ -4,8 +4,10 @@ import {
   usePreviewProcess,
   useProcessVideo,
   useGetSettings,
+  useUpdateSettings,
   getListQueueQueryKey,
   getGetStatusQueryKey,
+  getGetSettingsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -19,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSocket } from "@/hooks/useSocket";
 import {
   Loader2, Settings2, Play, AlertCircle, Clock, Video, Music, Scissors,
-  ImagePlus, Gauge, Volume2, CheckCircle2, Trash2,
+  ImagePlus, Gauge, Volume2, CheckCircle2, Trash2, Globe,
 } from "lucide-react";
 import { VIDEO_CATEGORIES } from "@/lib/categories";
 
@@ -45,24 +47,47 @@ export function ProcessTab() {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [hasWatermark, setHasWatermark] = useState(false);
   const [watermarkUploading, setWatermarkUploading] = useState(false);
+  const [globalSaved, setGlobalSaved] = useState(false);
 
   const { data: audios, isLoading: audiosLoading } = useListAudios();
   const { data: settings } = useGetSettings();
+  const updateSettingsMutation = useUpdateSettings();
   const previewMutation = usePreviewProcess();
   const processMutation = useProcessVideo();
   const { jobs } = useSocket();
 
+  const initRef = useRef(false);
   const activeJob = activeJobId ? jobs.find((j) => j.jobId === activeJobId) : null;
 
-  // Load defaults from settings
+  // Load defaults from settings ONCE on first load
   useEffect(() => {
-    if (settings) {
+    if (settings && !initRef.current) {
+      initRef.current = true;
       const s = settings as any;
       setSpeedMultiplier(s.speedMultiplier ?? 1.0);
       setNormalizeVolume(s.normalizeVolume ?? false);
       setWatermarkEnabled(s.watermarkEnabled ?? false);
     }
   }, [settings]);
+
+  // Auto-save speed / normalize / watermark to global settings whenever they change
+  useEffect(() => {
+    if (!initRef.current) return;
+    const timer = setTimeout(() => {
+      updateSettingsMutation.mutate(
+        { data: { speedMultiplier, normalizeVolume, watermarkEnabled } as any },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+            setGlobalSaved(true);
+            setTimeout(() => setGlobalSaved(false), 2000);
+          },
+        }
+      );
+    }, 300);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [speedMultiplier, normalizeVolume, watermarkEnabled]);
 
   // Check if watermark PNG exists on server
   useEffect(() => {
@@ -225,9 +250,19 @@ export function ProcessTab() {
             <div className="border-t border-border pt-4 space-y-4">
               {/* Speed control */}
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
-                  <Label className="text-sm">Video Speed: <span className="font-bold text-primary">{speedMultiplier}×</span></Label>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
+                    <Label className="text-sm">Video Speed: <span className="font-bold text-primary">{speedMultiplier}×</span></Label>
+                  </div>
+                  {globalSaved && (
+                    <span className="flex items-center gap-1 text-[10px] text-green-500 font-medium">
+                      <Globe className="w-2.5 h-2.5" /> Saved globally
+                    </span>
+                  )}
+                  {updateSettingsMutation.isPending && (
+                    <Loader2 className="w-2.5 h-2.5 animate-spin text-muted-foreground" />
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {SPEED_OPTIONS.map((opt) => (

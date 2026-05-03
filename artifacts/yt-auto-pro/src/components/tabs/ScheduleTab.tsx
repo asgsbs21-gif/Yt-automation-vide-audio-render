@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Info, Sun, Sunset, Moon, Clock, CheckCircle2, Bell, RefreshCw } from "lucide-react";
+import { Loader2, Save, Info, Sun, Sunset, Moon, Clock, CheckCircle2, Bell, RefreshCw, Gauge, Volume2, ImagePlus } from "lucide-react";
 
 const YOUTUBE_CATEGORIES = [
   { id: "1",  name: "Film & Animation" },
@@ -71,6 +71,10 @@ export function ScheduleTab() {
   const [telegramBotToken, setTelegramBotToken] = useState("");
   const [telegramChatId, setTelegramChatId] = useState("");
   const [testingTelegram, setTestingTelegram] = useState(false);
+  const [speedMultiplier, setSpeedMultiplier] = useState(1.0);
+  const [normalizeVolume, setNormalizeVolume] = useState(false);
+  const [watermarkEnabled, setWatermarkEnabled] = useState(false);
+  const [hasWatermark, setHasWatermark] = useState(false);
 
   const initRef = useRef(false);
 
@@ -100,7 +104,14 @@ export function ScheduleTab() {
       setTelegramEnabled(s.telegramEnabled ?? false);
       setTelegramBotToken(s.telegramBotToken ?? "");
       setTelegramChatId(s.telegramChatId ?? "");
+      setSpeedMultiplier(s.speedMultiplier ?? 1.0);
+      setNormalizeVolume(s.normalizeVolume ?? false);
+      setWatermarkEnabled(s.watermarkEnabled ?? false);
     }
+    // Check if watermark file exists
+    fetch("/api/watermark", { method: "HEAD" })
+      .then((r) => setHasWatermark(r.ok))
+      .catch(() => setHasWatermark(false));
   }, [settings]);
 
   const updateSlot = (id: string, patch: Partial<UploadSlot>) =>
@@ -147,6 +158,9 @@ export function ScheduleTab() {
           telegramEnabled,
           telegramBotToken: telegramBotToken || null,
           telegramChatId: telegramChatId || null,
+          speedMultiplier,
+          normalizeVolume,
+          watermarkEnabled,
         } as any,
       },
       {
@@ -399,6 +413,83 @@ export function ScheduleTab() {
                 : <Bell className="w-3.5 h-3.5 mr-2" />}
               Send Test Message
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Auto-Cycle Processing Defaults */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gauge className="w-4 h-4" /> Auto-Cycle Processing Defaults
+            </CardTitle>
+            <CardDescription>
+              These settings are applied to every video auto-cycle processes. Changes here are also reflected in the Process tab.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {/* Speed */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5 text-sm">
+                <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
+                Video Speed: <span className="font-bold text-primary ml-1">{speedMultiplier}×</span>
+              </Label>
+              <div className="flex gap-2">
+                {([1.0, 1.1, 1.25, 1.5] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setSpeedMultiplier(v)}
+                    className={`flex-1 py-2 rounded text-sm font-medium border transition-all ${
+                      speedMultiplier === v
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "border-border hover:border-primary/50 text-muted-foreground"
+                    }`}
+                  >
+                    {v}×
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">Video clips play faster; audio stays at 1×</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-border pt-4">
+              {/* Normalize */}
+              <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                <div>
+                  <Label className="flex items-center gap-1.5 text-sm">
+                    <Volume2 className="w-3.5 h-3.5 text-muted-foreground" /> Normalize Volume
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Apply loudnorm filter to all auto-cycle videos</p>
+                </div>
+                <Switch checked={normalizeVolume} onCheckedChange={setNormalizeVolume} />
+              </div>
+
+              {/* Watermark */}
+              <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                <div>
+                  <Label className="flex items-center gap-1.5 text-sm">
+                    <ImagePlus className="w-3.5 h-3.5 text-muted-foreground" /> Watermark Overlay
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {hasWatermark ? "PNG uploaded — overlay bottom-right" : "No watermark uploaded yet (upload in Process tab)"}
+                  </p>
+                </div>
+                <Switch
+                  checked={watermarkEnabled && hasWatermark}
+                  onCheckedChange={(v) => { if (hasWatermark) setWatermarkEnabled(v); }}
+                  disabled={!hasWatermark}
+                />
+              </div>
+            </div>
+
+            {/* Summary banner */}
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/40 px-4 py-2.5 text-xs text-blue-700 dark:text-blue-400 flex items-center gap-2">
+              <Info className="w-3.5 h-3.5 shrink-0" />
+              Auto-cycle will use: <strong>{speedMultiplier}× speed</strong>
+              {normalizeVolume && <> · <strong>loudnorm</strong></>}
+              {watermarkEnabled && hasWatermark && <> · <strong>watermark</strong></>}
+              . These are saved automatically when you change them in the Process tab too.
+            </div>
           </CardContent>
         </Card>
 
