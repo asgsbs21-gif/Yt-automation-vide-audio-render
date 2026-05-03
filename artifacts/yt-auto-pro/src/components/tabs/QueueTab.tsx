@@ -236,7 +236,16 @@ export function QueueTab() {
                           </div>
                         </TableCell>
 
-                        <TableCell>{getStatusBadge(item.status)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {getStatusBadge(item.status)}
+                            {(item.retryCount ?? 0) > 0 && (
+                              <Badge variant="outline" className="text-orange-500 border-orange-500/30 text-[10px] px-1.5">
+                                Retry {item.retryCount}
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
 
                         {/* Storage indicator */}
                         <TableCell>

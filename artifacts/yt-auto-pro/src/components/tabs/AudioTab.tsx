@@ -12,14 +12,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Download, Music, Loader2, ExternalLink, Upload,
   HardDriveUpload, FolderOpen, Tag, HardDrive,
-  CheckCircle2, Trash2, ChevronDown, ChevronRight,
+  CheckCircle2, Trash2, ChevronDown, ChevronRight, Scissors,
 } from "lucide-react";
 import { VIDEO_CATEGORIES } from "@/lib/categories";
+
+interface TrimState {
+  start: string;
+  end: string;
+  saving: boolean;
+}
 
 export function AudioTab() {
   const { toast } = useToast();
@@ -35,11 +42,78 @@ export function AudioTab() {
   const [savingToDriveId, setSavingToDriveId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [trimStates, setTrimStates] = useState<Record<string, TrimState>>({});
 
   const { data: audios, isLoading } = useListAudios();
   const downloadMutation = useDownloadAudios();
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getListAudiosQueryKey() });
+
+  const handleExpand = (audioId: string, audio: any) => {
+    const next = expandedId === audioId ? null : audioId;
+    setExpandedId(next);
+    if (next && !trimStates[audioId]) {
+      setTrimStates((prev) => ({
+        ...prev,
+        [audioId]: {
+          start: audio.trimStart != null ? String(audio.trimStart) : "",
+          end: audio.trimEnd != null ? String(audio.trimEnd) : "",
+          saving: false,
+        },
+      }));
+    }
+  };
+
+  const handleSetTrim = async (audioId: string, duration: number) => {
+    const state = trimStates[audioId];
+    if (!state) return;
+
+    const trimStart = state.start !== "" ? parseFloat(state.start) : null;
+    const trimEnd = state.end !== "" ? parseFloat(state.end) : null;
+
+    if (trimStart != null && isNaN(trimStart)) {
+      toast({ title: "Invalid Start", description: "Enter a valid number for trim start.", variant: "destructive" });
+      return;
+    }
+    if (trimEnd != null && isNaN(trimEnd)) {
+      toast({ title: "Invalid End", description: "Enter a valid number for trim end.", variant: "destructive" });
+      return;
+    }
+
+    setTrimStates((prev) => ({ ...prev, [audioId]: { ...prev[audioId], saving: true } }));
+    try {
+      const res = await fetch(`/api/audios/${audioId}/trim`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trimStart, trimEnd }),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Failed to save trim");
+      const effective = (trimEnd ?? duration) - (trimStart ?? 0);
+      toast({ title: "Trim Saved", description: `Audio trimmed to ${effective.toFixed(1)}s (${trimStart ?? 0}s → ${trimEnd ?? duration}s)` });
+      invalidate();
+    } catch (err: any) {
+      toast({ title: "Trim Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setTrimStates((prev) => ({ ...prev, [audioId]: { ...prev[audioId], saving: false } }));
+    }
+  };
+
+  const handleClearTrim = async (audioId: string) => {
+    setTrimStates((prev) => ({ ...prev, [audioId]: { start: "", end: "", saving: true } }));
+    try {
+      await fetch(`/api/audios/${audioId}/trim`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trimStart: null, trimEnd: null }),
+      });
+      toast({ title: "Trim Cleared", description: "Audio will use full duration." });
+      invalidate();
+    } catch (err: any) {
+      toast({ title: "Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setTrimStates((prev) => ({ ...prev, [audioId]: { ...prev[audioId], saving: false } }));
+    }
+  };
 
   const handleDownload = () => {
     const urlList = urls.split("\n").map((u) => u.trim()).filter(Boolean);
@@ -119,7 +193,7 @@ export function AudioTab() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Audio</h2>
         <p className="text-muted-foreground">
-          Download audio from any URL — title, tags, and description are auto-extracted and stored for YouTube uploads. Saved locally, no Google needed.
+          Download audio from any URL — title, tags, and description are auto-extracted. Set trim points per track.
         </p>
       </div>
 
@@ -127,9 +201,7 @@ export function AudioTab() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Download className="w-4 h-4" /> Download from URL</CardTitle>
-          <CardDescription>
-            Any yt-dlp supported URL (YouTube, SoundCloud, etc.). Metadata extracted automatically.
-          </CardDescription>
+          <CardDescription>Any yt-dlp supported URL (YouTube, SoundCloud, etc.). Metadata extracted automatically.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
@@ -209,7 +281,7 @@ export function AudioTab() {
       <Card>
         <CardHeader>
           <CardTitle>Audio Library ({audios?.length ?? 0})</CardTitle>
-          <CardDescription>Click a row to view extracted metadata. "Save to Drive" is an optional backup.</CardDescription>
+          <CardDescription>Click a row to view metadata and set trim points. Trim is applied in FFmpeg during processing.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -232,7 +304,7 @@ export function AudioTab() {
                   {(audios as any[]).map((audio) => (
                     <>
                       <TableRow key={audio.id} className="cursor-pointer hover:bg-accent/30"
-                        onClick={() => setExpandedId(expandedId === audio.id ? null : audio.id)}>
+                        onClick={() => handleExpand(audio.id, audio)}>
                         <TableCell className="pr-0">
                           {expandedId === audio.id
                             ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
@@ -252,7 +324,17 @@ export function AudioTab() {
                             ? <Badge variant="secondary" className="capitalize">{audio.category}</Badge>
                             : <span className="text-muted-foreground text-sm">—</span>}
                         </TableCell>
-                        <TableCell className="text-muted-foreground tabular-nums">{fmt(audio.duration)}</TableCell>
+                        <TableCell className="text-muted-foreground tabular-nums">
+                          <div>
+                            {fmt(audio.duration)}
+                            {(audio.trimStart != null || audio.trimEnd != null) && (
+                              <div className="text-xs text-orange-500 mt-0.5 flex items-center gap-0.5">
+                                <Scissors className="w-2.5 h-2.5" />
+                                {audio.trimStart ?? 0}s→{audio.trimEnd ?? "end"}s
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
                             {audio.localExists ? (
@@ -308,15 +390,18 @@ export function AudioTab() {
                       {expandedId === audio.id && (
                         <TableRow key={`${audio.id}-exp`} className="bg-muted/20 hover:bg-muted/20">
                           <TableCell colSpan={7} className="px-6 py-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                              {audio.description ? (
-                                <div>
-                                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">YouTube Description</p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                              {/* Description */}
+                              <div>
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">YouTube Description</p>
+                                {audio.description ? (
                                   <p className="text-foreground/80 whitespace-pre-wrap line-clamp-5 text-xs leading-relaxed">{audio.description}</p>
-                                </div>
-                              ) : (
-                                <div><p className="text-xs text-muted-foreground italic">No description extracted</p></div>
-                              )}
+                                ) : (
+                                  <p className="text-xs text-muted-foreground italic">No description extracted</p>
+                                )}
+                              </div>
+
+                              {/* Tags */}
                               <div>
                                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
                                   <Tag className="w-3 h-3" /> Tags ({audio.tags?.length ?? 0})
@@ -333,6 +418,80 @@ export function AudioTab() {
                                 {audio.uploader && (
                                   <p className="text-xs text-muted-foreground mt-2">Uploader: {audio.uploader}</p>
                                 )}
+                              </div>
+
+                              {/* Trim Controls */}
+                              <div>
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1">
+                                  <Scissors className="w-3 h-3" /> Audio Trim (seconds)
+                                </p>
+                                <div className="space-y-2">
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">Start (s)</Label>
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        step={0.1}
+                                        placeholder="0"
+                                        className="h-8 text-sm"
+                                        value={trimStates[audio.id]?.start ?? ""}
+                                        onChange={(e) =>
+                                          setTrimStates((prev) => ({
+                                            ...prev,
+                                            [audio.id]: { ...prev[audio.id], start: e.target.value },
+                                          }))
+                                        }
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label className="text-xs">End (s) — blank = full</Label>
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        step={0.1}
+                                        placeholder={audio.duration > 0 ? String(Math.floor(audio.duration)) : "end"}
+                                        className="h-8 text-sm"
+                                        value={trimStates[audio.id]?.end ?? ""}
+                                        onChange={(e) =>
+                                          setTrimStates((prev) => ({
+                                            ...prev,
+                                            [audio.id]: { ...prev[audio.id], end: e.target.value },
+                                          }))
+                                        }
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                    <Button
+                                      size="sm"
+                                      className="flex-1 h-7 text-xs"
+                                      disabled={trimStates[audio.id]?.saving}
+                                      onClick={() => handleSetTrim(audio.id, audio.duration)}
+                                    >
+                                      {trimStates[audio.id]?.saving ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Scissors className="w-3 h-3 mr-1" />}
+                                      Set Trim
+                                    </Button>
+                                    {(audio.trimStart != null || audio.trimEnd != null) && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-xs"
+                                        disabled={trimStates[audio.id]?.saving}
+                                        onClick={() => handleClearTrim(audio.id)}
+                                      >
+                                        Clear
+                                      </Button>
+                                    )}
+                                  </div>
+                                  {(audio.trimStart != null || audio.trimEnd != null) && (
+                                    <p className="text-xs text-orange-500">
+                                      Active: {audio.trimStart ?? 0}s → {audio.trimEnd != null ? `${audio.trimEnd}s` : "end"} ({((audio.trimEnd ?? audio.duration) - (audio.trimStart ?? 0)).toFixed(1)}s effective)
+                                    </p>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </TableCell>

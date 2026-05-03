@@ -55,6 +55,8 @@ export interface Audio {
   used: boolean;
   driveLink: string | null;
   addedAt: string;
+  trimStart: number | null;
+  trimEnd: number | null;
 }
 
 export type QueueStatus =
@@ -78,6 +80,8 @@ export interface QueueItem {
   error: string | null;
   createdAt: string;
   thumbnailPath: string | null;
+  retryCount: number;
+  lastRetryAt: string | null;
 }
 
 export interface UploadSlot {
@@ -100,6 +104,13 @@ export interface AppSettings {
   dailyUploadTime?: string;
   thumbnailEnabled: boolean;
   thumbnailBgColor: string;
+  telegramEnabled: boolean;
+  telegramBotToken: string | null;
+  telegramChatId: string | null;
+  watermarkEnabled: boolean;
+  speedMultiplier: number;
+  normalizeVolume: boolean;
+  autoRetryEnabled: boolean;
 }
 
 export type LogLevel = "info" | "warn" | "error" | "success";
@@ -138,6 +149,13 @@ const defaultSettings: AppSettings = {
   driveOutputFolderId: null,
   thumbnailEnabled: false,
   thumbnailBgColor: "yellow",
+  telegramEnabled: false,
+  telegramBotToken: null,
+  telegramChatId: null,
+  watermarkEnabled: false,
+  speedMultiplier: 1.0,
+  normalizeVolume: false,
+  autoRetryEnabled: false,
 };
 
 // ── Auto-cycle category rotation state ───────────────────────────────────────
@@ -336,16 +354,20 @@ export function markVideosUsed(ids: string[]): void {
 // ── Audios ───────────────────────────────────────────────────────────────────
 
 export function getAudios(): Audio[] {
-  return readJson<Audio[]>("audios.json", []);
+  return readJson<Audio[]>("audios.json", []).map((a) => ({
+    trimStart: null,
+    trimEnd: null,
+    ...a,
+  }));
 }
 
 export function saveAudios(audios: Audio[]): void {
   writeJson("audios.json", audios);
 }
 
-export function addAudio(audio: Omit<Audio, "id" | "addedAt">): Audio {
+export function addAudio(audio: Omit<Audio, "id" | "addedAt" | "trimStart" | "trimEnd">): Audio {
   const audios = getAudios();
-  const newAudio: Audio = { ...audio, id: uuidv4(), addedAt: new Date().toISOString() };
+  const newAudio: Audio = { trimStart: null, trimEnd: null, ...audio, id: uuidv4(), addedAt: new Date().toISOString() };
   audios.push(newAudio);
   saveAudios(audios);
   return newAudio;
@@ -380,16 +402,22 @@ export function markAudioUsed(id: string): void {
 // ── Queue ─────────────────────────────────────────────────────────────────────
 
 export function getQueue(): QueueItem[] {
-  return readJson<QueueItem[]>("queue.json", []);
+  return readJson<QueueItem[]>("queue.json", []).map((q) => ({
+    retryCount: 0,
+    lastRetryAt: null,
+    jobId: null,
+    thumbnailPath: null,
+    ...q,
+  }));
 }
 
 export function saveQueue(queue: QueueItem[]): void {
   writeJson("queue.json", queue);
 }
 
-export function addQueueItem(item: Omit<QueueItem, "id" | "createdAt">): QueueItem {
+export function addQueueItem(item: Omit<QueueItem, "id" | "createdAt" | "retryCount" | "lastRetryAt">): QueueItem {
   const queue = getQueue();
-  const newItem: QueueItem = { ...item, id: uuidv4(), createdAt: new Date().toISOString() };
+  const newItem: QueueItem = { retryCount: 0, lastRetryAt: null, ...item, id: uuidv4(), createdAt: new Date().toISOString() };
   queue.push(newItem);
   saveQueue(queue);
   return newItem;

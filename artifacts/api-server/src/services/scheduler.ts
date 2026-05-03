@@ -24,12 +24,14 @@ import { uploadToYouTube, setYouTubeThumbnail } from "./youtube.js";
 import { mergeVideoWithAudio, getVideoDuration, extractThumbnail } from "./ffmpeg.js";
 import { composeThumbnailWithText } from "./thumbnail.js";
 import { uploadFileToDrive } from "./drive.js";
+import { sendTelegramNotification } from "./telegram.js";
 import { emitJobUpdate } from "../lib/socket.js";
 import { v4 as uuidv4 } from "uuid";
 
 let schedulerTask: cron.ScheduledTask | null = null;
 
 const OUTPUT_DIR = path.resolve(process.cwd(), "data", "output");
+const WATERMARK_PATH = path.resolve(process.cwd(), "data", "watermark.png");
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 const firedSlots = new Set<string>();
@@ -62,12 +64,39 @@ export async function processQueueItem(
   const item = queue.find((q) => q.id === itemId);
   if (!item) throw new Error(`Queue item ${itemId} not found`);
 
+  const settings = getSettings();
+
+  // ── Duplicate check: same title uploaded within last 30 days ────────────────
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const isDuplicate = getQueue().some(
+    (q) =>
+      q.status === "uploaded" &&
+      q.youtubeId != null &&
+      q.title === item.title &&
+      new Date(q.createdAt) > thirtyDaysAgo &&
+      q.id !== item.id
+  );
+  if (isDuplicate) {
+    updateQueueItem(itemId, {
+      status: "failed",
+      error: "Duplicate: same title already uploaded within 30 days",
+    });
+    addLog("upload", "warn", `Duplicate skip: "${item.title}" was already uploaded recently`);
+    emitJobUpdate({
+      jobId: itemId,
+      jobType: "upload",
+      status: "error",
+      message: `Skipped (duplicate): "${item.title}"`,
+      progress: 0,
+    });
+    return;
+  }
+
   updateQueueItem(itemId, { status: "uploading" });
   addLog("upload", "info", `Starting upload: ${item.title}`);
   emitJobUpdate({ jobId: itemId, jobType: "upload", status: "running", message: `Uploading: ${item.title}`, progress: 10 });
 
   const auth = createAuthenticatedClient(tokens);
-  const settings = getSettings();
   const tmpFile = path.join(os.tmpdir(), `upload_${Date.now()}.mp4`);
 
   try {
@@ -102,6 +131,17 @@ export async function processQueueItem(
     updateQueueItem(itemId, { status: "uploaded", youtubeId, youtubeUrl });
     addLog("upload", "success", `Uploaded: ${item.title} → ${youtubeUrl}`);
     emitJobUpdate({ jobId: itemId, jobType: "upload", status: "done", message: `Uploaded! ${youtubeUrl}`, progress: 100 });
+
+    // ── Telegram notification ──────────────────────────────────────────────────
+    if (settings.telegramEnabled && settings.telegramBotToken && settings.telegramChatId) {
+      const msg =
+        `✅ <b>YouTube Upload Complete!</b>\n\n` +
+        `📹 <b>${item.title}</b>\n` +
+        `🔗 ${youtubeUrl}`;
+      sendTelegramNotification(settings.telegramBotToken, settings.telegramChatId, msg).catch(
+        (e) => addLog("upload", "warn", "Telegram notification failed (non-fatal)", String(e))
+      );
+    }
   } catch (err) {
     const msg = String(err);
     updateQueueItem(itemId, { status: "failed", error: msg });
@@ -114,18 +154,6 @@ export async function processQueueItem(
 }
 
 // ── Auto-cycle: category-locked clip selection with round-robin rotation ───────
-//
-// Selection rules (per user spec):
-//   1. Get all distinct categories that have ≥1 available video, sorted A-Z.
-//   2. Advance one step past `lastAutoCycleCategory` in the sorted list
-//      (wraps around). This is the "chosen category" for this entire cycle.
-//   3. ALL clips — initial + fill rounds — are drawn exclusively from that
-//      category. Videos from other categories are never mixed in.
-//   4. Within the category, always pick least-used clip first (ties: oldest
-//      lastUsed wins). This is enforced by pickVideosForDuration /
-//      pickAdditionalVideos which both sort by usedCount asc, lastUsed asc.
-//   5. After the run completes the chosen category is saved to state.json so
-//      the next auto-cycle advances to the following category.
 
 async function runAutoCycle(
   tokens: { access_token: string; refresh_token?: string | null },
@@ -139,7 +167,7 @@ async function runAutoCycle(
   emitJobUpdate({ jobId, jobType: "process", status: "running", message: `Auto-cycle [${slotLabel}]: selecting category…`, progress: 2 });
 
   // ── Step 1: Rotate to next category ─────────────────────────────────────────
-  const categories = getDistinctVideoCategories(); // sorted, only categories with available videos
+  const categories = getDistinctVideoCategories();
   if (categories.length === 0) {
     addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no available videos in any category`);
     emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No videos available`, progress: 0 });
@@ -148,14 +176,11 @@ async function runAutoCycle(
 
   const lastCategory = getLastAutoCycleCategory();
   const lastIdx = lastCategory ? categories.indexOf(lastCategory) : -1;
-  // Advance one step; if lastCategory not found (-1) or was last in list, wrap to 0
   const nextIdx = (lastIdx + 1) % categories.length;
   const chosenCategory = categories[nextIdx];
-
-  // Persist immediately so concurrent slots don't pick the same category
   setLastAutoCycleCategory(chosenCategory);
 
-  addLog("schedule", "info", `[${slotLabel}] Category rotation: "${lastCategory ?? "none"}" → "${chosenCategory}" (${nextIdx + 1}/${categories.length})`);
+  addLog("schedule", "info", `[${slotLabel}] Category: "${lastCategory ?? "none"}" → "${chosenCategory}"`);
   emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Category: "${chosenCategory}" — picking audio…`, progress: 4 });
 
   // ── Step 2: Pick audio ───────────────────────────────────────────────────────
@@ -166,8 +191,13 @@ async function runAutoCycle(
     return;
   }
 
-  // ── Step 3: Initial video selection — LOCKED to chosenCategory ───────────────
-  const initialVideos = pickVideosForDuration(chosenCategory, audio.duration);
+  // Effective duration accounts for audio trim
+  const audioTrimStart = audio.trimStart ?? null;
+  const audioTrimEnd = audio.trimEnd ?? null;
+  const effectiveAudioDuration = (audioTrimEnd ?? audio.duration) - (audioTrimStart ?? 0);
+
+  // ── Step 3: Initial video selection locked to chosenCategory ─────────────────
+  const initialVideos = pickVideosForDuration(chosenCategory, effectiveAudioDuration);
   if (initialVideos.length === 0) {
     addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no videos in category "${chosenCategory}"`);
     emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No videos in "${chosenCategory}"`, progress: 0 });
@@ -178,7 +208,7 @@ async function runAutoCycle(
   fs.mkdirSync(tmpDir, { recursive: true });
 
   try {
-    // ── Step 4: Download initial clips ───────────────────────────────────────
+    // ── Step 4: Download initial clips ────────────────────────────────────────
     emitJobUpdate({
       jobId, jobType: "process", status: "running",
       message: `[${slotLabel}] [${chosenCategory}] Downloading ${initialVideos.length} clip(s)…`,
@@ -196,51 +226,42 @@ async function runAutoCycle(
       usedVideoIds.add(video.id);
       totalActualDuration += actualDuration;
       addLog("schedule", "info",
-        `[${slotLabel}] [${chosenCategory}] Clip ${i + 1}: ${video.filename} — ${actualDuration.toFixed(1)}s (used×${video.usedCount})`);
+        `[${slotLabel}] [${chosenCategory}] Clip ${i + 1}: ${video.filename} — ${actualDuration.toFixed(1)}s`);
     }
 
-    // ── Step 5: Fill gap — STILL locked to chosenCategory ────────────────────
+    // ── Step 5: Fill gap ──────────────────────────────────────────────────────
     let fillRound = 0;
-    while (totalActualDuration < audio.duration && fillRound < 10) {
+    while (totalActualDuration < effectiveAudioDuration && fillRound < 10) {
       fillRound++;
-      const stillNeeded = audio.duration - totalActualDuration;
-
-      // pickAdditionalVideos with chosenCategory ensures NO cross-category mixing
+      const stillNeeded = effectiveAudioDuration - totalActualDuration;
       const moreVideos = pickAdditionalVideos(chosenCategory, usedVideoIds, stillNeeded);
 
       if (moreVideos.length === 0) {
-        // Category pool exhausted — allow re-using already-selected clips from
-        // the same category rather than crossing category boundaries
-        addLog("schedule", "warn",
-          `[${slotLabel}] [${chosenCategory}] Unique pool exhausted at ${totalActualDuration.toFixed(1)}s` +
-          ` (need ${audio.duration.toFixed(1)}s) — proceeding with available coverage`);
+        addLog("schedule", "warn", `[${slotLabel}] Pool exhausted at ${totalActualDuration.toFixed(1)}s — proceeding`);
         break;
       }
 
       emitJobUpdate({
         jobId, jobType: "process", status: "running",
-        message: `[${slotLabel}] [${chosenCategory}] Fill round ${fillRound}: need ${stillNeeded.toFixed(1)}s more, fetching ${moreVideos.length} clip(s)…`,
+        message: `[${slotLabel}] Fill round ${fillRound}: need ${stillNeeded.toFixed(1)}s more…`,
         progress: 20,
       });
 
       for (const video of moreVideos) {
-        if (totalActualDuration >= audio.duration) break;
+        if (totalActualDuration >= effectiveAudioDuration) break;
         const { localPath, actualDuration } = await downloadVideoFile(
           video, tmpDir, `fill${fillRound}_${video.id.slice(0, 8)}`, auth
         );
         videoPaths.push(localPath);
         usedVideoIds.add(video.id);
         totalActualDuration += actualDuration;
-        addLog("schedule", "info",
-          `[${slotLabel}] [${chosenCategory}] + clip: ${video.filename} ${actualDuration.toFixed(1)}s → total ${totalActualDuration.toFixed(1)}s`);
       }
     }
 
     addLog("schedule", "info",
-      `[${slotLabel}] [${chosenCategory}] Final: ${videoPaths.length} clip(s), ` +
-      `${totalActualDuration.toFixed(1)}s video → trimmed to ${audio.duration.toFixed(1)}s audio`);
+      `[${slotLabel}] Final: ${videoPaths.length} clip(s), ${totalActualDuration.toFixed(1)}s → trimmed to ${effectiveAudioDuration.toFixed(1)}s`);
 
-    // ── Step 6: Download audio ───────────────────────────────────────────────
+    // ── Step 6: Download audio ────────────────────────────────────────────────
     emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Preparing audio…`, progress: 28 });
     const audioDest = path.join(tmpDir, "audio.mp3");
     if (!audio.driveId.startsWith("/")) {
@@ -249,41 +270,53 @@ async function runAutoCycle(
       fs.copyFileSync(audio.driveId, audioDest);
     }
 
-    // ── Step 7: Merge ────────────────────────────────────────────────────────
+    // ── Step 7: Merge ─────────────────────────────────────────────────────────
     emitJobUpdate({
       jobId, jobType: "process", status: "running",
-      message: `[${slotLabel}] [${chosenCategory}] Merging ${videoPaths.length} clip(s) → ${audio.duration.toFixed(1)}s…`,
+      message: `[${slotLabel}] Merging ${videoPaths.length} clip(s) → ${effectiveAudioDuration.toFixed(1)}s…`,
       progress: 32,
     });
 
     const outputFilename = `output_${jobId}.mp4`;
     const outputPath = path.join(OUTPUT_DIR, outputFilename);
 
-    await mergeVideoWithAudio(videoPaths, audioDest, outputPath, (pct, msg) => {
-      emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 32 + Math.round(pct * 0.48) });
-    }, audio.duration);
+    const hasWatermark = settings.watermarkEnabled && fs.existsSync(WATERMARK_PATH);
+    await mergeVideoWithAudio(
+      videoPaths,
+      audioDest,
+      outputPath,
+      (pct, msg) => {
+        emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 32 + Math.round(pct * 0.48) });
+      },
+      effectiveAudioDuration,
+      {
+        watermarkPath: hasWatermark ? WATERMARK_PATH : null,
+        speedMultiplier: settings.speedMultiplier ?? 1.0,
+        normalizeVolume: settings.normalizeVolume ?? false,
+        audioTrimStart,
+        audioTrimEnd,
+      }
+    );
 
-    // ── Step 8: Optional thumbnail extraction + Bengali text overlay ─────────
+    // ── Step 8: Optional thumbnail ────────────────────────────────────────────
     let thumbnailPath: string | null = null;
     if (settings.thumbnailEnabled) {
       const thumbFile = path.join(OUTPUT_DIR, `thumb_${jobId}.jpg`);
       try {
-        emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Extracting thumbnail frame…`, progress: 82 });
+        emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Extracting thumbnail…`, progress: 82 });
         await extractThumbnail(outputPath, thumbFile);
         thumbnailPath = thumbFile;
-        // Auto-overlay audio title as Bengali text on the thumbnail
         try {
-          emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Composing thumbnail with Bengali title text…`, progress: 83 });
           await composeThumbnailWithText(thumbFile, thumbFile, audio.title, settings.thumbnailBgColor);
         } catch (composeErr) {
-          addLog("schedule", "warn", `[${slotLabel}] Thumbnail text overlay failed — using raw frame`, String(composeErr));
+          addLog("schedule", "warn", `[${slotLabel}] Thumbnail text overlay failed`, String(composeErr));
         }
       } catch {
         addLog("schedule", "warn", `[${slotLabel}] Thumbnail extraction failed (non-fatal)`);
       }
     }
 
-    // ── Step 9: Optional Drive upload ────────────────────────────────────────
+    // ── Step 9: Optional Drive upload ─────────────────────────────────────────
     if (settings.driveOutputFolderId) {
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading to Drive…`, progress: 83 });
       try {
@@ -293,7 +326,7 @@ async function runAutoCycle(
       }
     }
 
-    // ── Step 9: Mark used, queue, upload ─────────────────────────────────────
+    // ── Step 10: Mark used, queue, upload ─────────────────────────────────────
     markVideosUsed([...usedVideoIds]);
     markAudioUsed(audio.id);
 
@@ -357,6 +390,29 @@ export function startScheduler(): void {
     );
     for (const item of due) {
       try { await processQueueItem(item.id, tokens); } catch {}
+    }
+
+    // ── Auto-retry: re-queue failed items after 30 min ─────────────────────────
+    if (settings.autoRetryEnabled) {
+      const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const maxRetries = settings.maxRetries ?? 3;
+      const retryItems = getQueue().filter(
+        (q) =>
+          q.status === "failed" &&
+          (q.retryCount ?? 0) < maxRetries &&
+          (!q.lastRetryAt || new Date(q.lastRetryAt) < thirtyMinAgo)
+      );
+      for (const item of retryItems) {
+        const newCount = (item.retryCount ?? 0) + 1;
+        updateQueueItem(item.id, {
+          status: "pending",
+          error: null,
+          retryCount: newCount,
+          lastRetryAt: new Date().toISOString(),
+        });
+        addLog("upload", "info", `Auto-retry ${newCount}/${maxRetries}: "${item.title}"`);
+        processQueueItem(item.id, tokens).catch(() => {});
+      }
     }
 
     if (!settings.autoCycleEnabled) return;

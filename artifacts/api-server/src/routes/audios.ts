@@ -1,7 +1,7 @@
 import { Router } from "express";
 import path from "path";
 import fs from "fs";
-import { getAudios, saveAudios, addLog } from "../services/data.js";
+import { getAudios, saveAudios, updateAudio, addLog } from "../services/data.js";
 
 const router = Router();
 
@@ -64,6 +64,24 @@ router.get("/audios/:id/file", (req, res) => {
     "Content-Disposition": `inline; filename="${encodeURIComponent(path.basename(filePath))}"`,
   });
   fs.createReadStream(filePath).pipe(res);
+});
+
+// PATCH /api/audios/:id/trim — update trim start/end for an audio file
+router.patch("/audios/:id/trim", (req, res) => {
+  const { trimStart, trimEnd } = req.body as {
+    trimStart?: number | null;
+    trimEnd?: number | null;
+  };
+
+  const updated = updateAudio(req.params.id, {
+    trimStart: trimStart ?? null,
+    trimEnd: trimEnd ?? null,
+  });
+
+  if (!updated) { res.status(404).json({ error: "Audio not found" }); return; }
+
+  addLog("process", "info", `Trim updated: ${updated.title} [${trimStart ?? 0}s → ${trimEnd ?? "end"}s]`);
+  res.json(updated);
 });
 
 export default router;

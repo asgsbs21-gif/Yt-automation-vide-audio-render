@@ -37,80 +37,124 @@ export async function getVideoDuration(filePath: string): Promise<number> {
 //                   When omitted the encode falls back to -shortest (safe but
 //                   may be slightly off if container duration is imprecise).
 
+export interface VideoMergeOptions {
+  watermarkPath?: string | null;
+  speedMultiplier?: number;
+  normalizeVolume?: boolean;
+  audioTrimStart?: number | null;
+  audioTrimEnd?: number | null;
+}
+
 export async function mergeVideoWithAudio(
   videoPaths: string[],
   audioPath: string,
   outputPath: string,
   onProgress?: (progress: number, message: string) => void,
-  audioDuration?: number
+  audioDuration?: number,
+  opts: VideoMergeOptions = {}
 ): Promise<string> {
   if (videoPaths.length === 0) throw new Error("No video paths provided to mergeVideoWithAudio");
+
+  const {
+    watermarkPath = null,
+    speedMultiplier = 1.0,
+    normalizeVolume = false,
+    audioTrimStart = null,
+    audioTrimEnd = null,
+  } = opts;
+
+  const hasWatermark = !!(watermarkPath && fs.existsSync(watermarkPath));
+  const hasSpeed = speedMultiplier > 1.0 && speedMultiplier <= 4.0;
+  const n = videoPaths.length;
 
   addLog(
     "process",
     "info",
-    `Merging ${videoPaths.length} clip(s) with audio (target ${audioDuration?.toFixed(1) ?? "?"}s)…`
+    `Merging ${n} clip(s) with audio (target ${audioDuration?.toFixed(1) ?? "?"}s, ` +
+    `speed=${speedMultiplier}x, watermark=${hasWatermark}, loudnorm=${normalizeVolume})`
   );
-  onProgress?.(5, `Setting up FFmpeg pipeline (${videoPaths.length} clip(s))…`);
+  onProgress?.(5, `Setting up FFmpeg pipeline (${n} clip(s))…`);
 
-  // Build the trim option: prefer hard -t trim over -shortest so the output
-  // matches audio length precisely even when clips slightly overshoot.
+  // Per-clip video filter: optional speed + scale/pad to 1080×1920
+  const speedPart = hasSpeed ? `setpts=PTS/${speedMultiplier},` : "";
+  const clipVideoFilter = `${speedPart}${SCALE_FILTER}`;
+
+  const audioIdx = n;           // audio input index
+  const wmIdx = n + 1;          // watermark input index (only when hasWatermark)
+
   const trimOpts =
     audioDuration && audioDuration > 0
       ? [`-t ${audioDuration.toFixed(3)}`]
       : ["-shortest"];
+
+  const codecOpts = [
+    `-c:v libx264`,
+    `-preset fast`,
+    `-crf 23`,
+    `-c:a aac`,
+    `-b:a 128k`,
+    ...trimOpts,
+    `-movflags +faststart`,
+    `-avoid_negative_ts make_zero`,
+  ];
 
   return new Promise((resolve, reject) => {
     const cmd = ffmpeg();
 
     for (const vp of videoPaths) cmd.input(vp);
     cmd.input(audioPath);
+    if (hasWatermark) cmd.input(watermarkPath!);
 
-    const n = videoPaths.length;
-    const audioIdx = n; // audio input is always after all video inputs
-
-    if (n === 1) {
-      // Single clip: scale/pad, overlay audio, trim
+    if (n === 1 && !hasWatermark) {
+      // ── Simplest path: single clip, no watermark — use -vf ─────────────────
       cmd.outputOptions([
-        `-vf ${SCALE_FILTER}`,
+        `-vf ${clipVideoFilter}`,
         `-map 0:v:0`,
         `-map ${audioIdx}:a:0`,
-        `-c:v libx264`,
-        `-preset fast`,
-        `-crf 23`,
-        `-c:a aac`,
-        `-b:a 128k`,
-        ...trimOpts,
-        `-movflags +faststart`,
-        `-avoid_negative_ts make_zero`,
+        ...codecOpts,
       ]);
     } else {
-      // Multi-clip: scale/pad each clip individually, then concat, overlay audio
-      // Each clip gets scaled to 1080×1920 BEFORE concat to avoid resolution
-      // mismatches that cause the concat filter to fail or produce corrupted output.
-      const scaledLabels = videoPaths.map((_, i) => `[v${i}]`).join("");
-      const scaleFilters = videoPaths
-        .map((_, i) => `[${i}:v]${SCALE_FILTER}[v${i}]`)
-        .join(";");
-      const filterComplex =
-        `${scaleFilters};` +
-        `${scaledLabels}concat=n=${n}:v=1:a=0[outv]`;
+      // ── Complex filter path (multi-clip or watermark) ─────────────────────
+      let filterComplex: string;
 
-      cmd
-        .complexFilter(filterComplex)
-        .outputOptions([
-          `-map [outv]`,
-          `-map ${audioIdx}:a:0`,
-          `-c:v libx264`,
-          `-preset fast`,
-          `-crf 23`,
-          `-c:a aac`,
-          `-b:a 128k`,
-          ...trimOpts,
-          `-movflags +faststart`,
-          `-avoid_negative_ts make_zero`,
-        ]);
+      if (n === 1) {
+        // Single clip + watermark
+        filterComplex =
+          `[0:v]${clipVideoFilter}[scaled];` +
+          `[scaled][${wmIdx}:v]overlay=W-w-20:H-h-20:alpha=0.7[outv]`;
+      } else if (!hasWatermark) {
+        // Multi-clip, no watermark
+        const scaleFilters = videoPaths.map((_, i) => `[${i}:v]${clipVideoFilter}[v${i}]`).join(";");
+        const labels = videoPaths.map((_, i) => `[v${i}]`).join("");
+        filterComplex = `${scaleFilters};${labels}concat=n=${n}:v=1:a=0[outv]`;
+      } else {
+        // Multi-clip + watermark
+        const scaleFilters = videoPaths.map((_, i) => `[${i}:v]${clipVideoFilter}[v${i}]`).join(";");
+        const labels = videoPaths.map((_, i) => `[v${i}]`).join("");
+        filterComplex =
+          `${scaleFilters};` +
+          `${labels}concat=n=${n}:v=1:a=0[concatv];` +
+          `[concatv][${wmIdx}:v]overlay=W-w-20:H-h-20:alpha=0.7[outv]`;
+      }
+
+      cmd.complexFilter(filterComplex).outputOptions([
+        `-map [outv]`,
+        `-map ${audioIdx}:a:0`,
+        ...codecOpts,
+      ]);
     }
+
+    // ── Audio filters: trim + loudnorm ─────────────────────────────────────
+    const audioFilters: string[] = [];
+    if (audioTrimStart != null || audioTrimEnd != null) {
+      const parts: string[] = [];
+      if (audioTrimStart != null) parts.push(`start=${audioTrimStart}`);
+      if (audioTrimEnd != null) parts.push(`end=${audioTrimEnd}`);
+      audioFilters.push(`atrim=${parts.join(":")}`);
+      audioFilters.push("asetpts=PTS-STARTPTS");
+    }
+    if (normalizeVolume) audioFilters.push("loudnorm");
+    if (audioFilters.length > 0) cmd.audioFilters(audioFilters);
 
     cmd
       .output(outputPath)

@@ -24,8 +24,10 @@ const router = Router();
 
 // ── Local storage dirs ────────────────────────────────────────────────────────
 
+const DATA_DIR = path.resolve(process.cwd(), "data");
 const VIDEO_DIR = path.resolve(process.cwd(), "data", "videos");
 const AUDIO_DIR = path.resolve(process.cwd(), "data", "audios");
+const WATERMARK_PATH = path.join(DATA_DIR, "watermark.png");
 fs.mkdirSync(VIDEO_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
@@ -58,6 +60,18 @@ const audioUpload = multer({
   fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith("audio/")) return cb(null, true);
     cb(new Error("Only audio files are allowed"));
+  },
+});
+
+const watermarkUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => { fs.mkdirSync(DATA_DIR, { recursive: true }); cb(null, DATA_DIR); },
+    filename: (_req, _file, cb) => cb(null, "watermark.png"),
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === "image/png") return cb(null, true);
+    cb(new Error("Only PNG files are allowed for watermark"));
   },
 });
 
@@ -106,6 +120,30 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
 
   addLog("download_audio", "success", `Uploaded from device: ${file.filename}`);
   res.json(audio);
+});
+
+// ── POST /api/upload/watermark — upload PNG watermark ────────────────────────
+
+router.post("/upload/watermark", watermarkUpload.single("file"), (req, res) => {
+  if (!req.file) { res.status(400).json({ error: "No PNG file uploaded" }); return; }
+  addLog("process", "info", `Watermark uploaded: ${(req.file.size / 1024).toFixed(1)} KB`);
+  res.json({ success: true, size: req.file.size });
+});
+
+// ── GET /api/watermark — serve current watermark PNG ─────────────────────────
+
+router.get("/watermark", (_req, res) => {
+  if (!fs.existsSync(WATERMARK_PATH)) { res.status(404).json({ error: "No watermark uploaded" }); return; }
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Cache-Control", "no-cache");
+  fs.createReadStream(WATERMARK_PATH).pipe(res);
+});
+
+// ── DELETE /api/watermark — remove watermark ──────────────────────────────────
+
+router.delete("/watermark", (_req, res) => {
+  if (fs.existsSync(WATERMARK_PATH)) { try { fs.unlinkSync(WATERMARK_PATH); } catch {} }
+  res.json({ success: true });
 });
 
 // ── POST /api/videos/:id/mute-and-drive ──────────────────────────────────────

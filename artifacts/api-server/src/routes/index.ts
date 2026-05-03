@@ -10,6 +10,7 @@ import settingsRouter from "./settings.js";
 import statusRouter from "./status.js";
 import logsRouter from "./logs.js";
 import uploadRouter from "./upload.js";
+import statsRouter from "./stats.js";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(settingsRouter);
 router.use(statusRouter);
 router.use(logsRouter);
 router.use(uploadRouter);
+router.use(statsRouter);
 
 export default router;
