@@ -1,5 +1,13 @@
 [
   {
+    "id": "b5c144cb-abd3-4f57-b4bb-55e5dad08d86",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T04:55:42.140Z"
+  },
+  {
     "id": "23417865-253d-43e3-b0e0-fc534921e6df",
     "jobType": "schedule",
     "level": "info",
@@ -3990,13 +3998,5 @@
     "message": "[download] 100% of    3.19MiB in 00:00:00 at 41.85MiB/s",
     "details": null,
     "createdAt": "2026-05-03T03:34:16.454Z"
-  },
-  {
-    "id": "171ca476-166d-46f8-98f2-f3fb1b92a54d",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[download] 100.0% of    3.19MiB at   53.43MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T03:34:16.446Z"
   }
 ]

@@ -134,6 +134,42 @@ const defaultSettings: AppSettings = {
   driveOutputFolderId: null,
 };
 
+// ── Auto-cycle category rotation state ───────────────────────────────────────
+//
+// Persisted in data/state.json so rotation survives server restarts.
+
+interface AutoCycleState {
+  lastCategory: string | null;
+}
+
+function readState(): AutoCycleState {
+  return readJson<AutoCycleState>("state.json", { lastCategory: null });
+}
+
+function writeState(state: AutoCycleState): void {
+  writeJson("state.json", state);
+}
+
+/** Returns the category used in the most recent auto-cycle run. */
+export function getLastAutoCycleCategory(): string | null {
+  return readState().lastCategory;
+}
+
+/** Persists the category chosen for this auto-cycle run. */
+export function setLastAutoCycleCategory(category: string): void {
+  writeState({ ...readState(), lastCategory: category });
+}
+
+/**
+ * Returns sorted unique category names that currently have at least one
+ * available video. Used by the scheduler to build the rotation list.
+ */
+export function getDistinctVideoCategories(): string[] {
+  const videos = getVideos().filter((v) => v.available && v.status === "available");
+  const cats = [...new Set(videos.map((v) => v.category))];
+  return cats.sort();
+}
+
 // ── Videos ───────────────────────────────────────────────────────────────────
 
 export function getVideos(): Video[] {

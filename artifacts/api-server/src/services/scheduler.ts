@@ -13,6 +13,9 @@ import {
   addQueueItem,
   updateQueueItem,
   addLog,
+  getDistinctVideoCategories,
+  getLastAutoCycleCategory,
+  setLastAutoCycleCategory,
   type Video,
 } from "./data.js";
 import { getGlobalTokens, createAuthenticatedClient } from "./auth.js";
@@ -100,13 +103,19 @@ export async function processQueueItem(
   }
 }
 
-// ── Auto-cycle: pick clips, fill to audio duration, merge, save, upload ───────
+// ── Auto-cycle: category-locked clip selection with round-robin rotation ───────
 //
-// Concat logic mirrors process.ts:
-//  1. pickVideosForDuration → initial clip set (uses stored durations as estimate)
-//  2. Download each → probe actual duration via ffprobe
-//  3. If total < audio.duration → pickAdditionalVideos → download+probe, repeat
-//  4. mergeVideoWithAudio with audioDuration → hard -t trim to exact length
+// Selection rules (per user spec):
+//   1. Get all distinct categories that have ≥1 available video, sorted A-Z.
+//   2. Advance one step past `lastAutoCycleCategory` in the sorted list
+//      (wraps around). This is the "chosen category" for this entire cycle.
+//   3. ALL clips — initial + fill rounds — are drawn exclusively from that
+//      category. Videos from other categories are never mixed in.
+//   4. Within the category, always pick least-used clip first (ties: oldest
+//      lastUsed wins). This is enforced by pickVideosForDuration /
+//      pickAdditionalVideos which both sort by usedCount asc, lastUsed asc.
+//   5. After the run completes the chosen category is saved to state.json so
+//      the next auto-cycle advances to the following category.
 
 async function runAutoCycle(
   tokens: { access_token: string; refresh_token?: string | null },
@@ -117,8 +126,29 @@ async function runAutoCycle(
   const auth = createAuthenticatedClient(tokens);
 
   addLog("schedule", "info", `Auto-cycle [${slotLabel}]: starting…`);
-  emitJobUpdate({ jobId, jobType: "process", status: "running", message: `Auto-cycle [${slotLabel}]: picking audio…`, progress: 3 });
+  emitJobUpdate({ jobId, jobType: "process", status: "running", message: `Auto-cycle [${slotLabel}]: selecting category…`, progress: 2 });
 
+  // ── Step 1: Rotate to next category ─────────────────────────────────────────
+  const categories = getDistinctVideoCategories(); // sorted, only categories with available videos
+  if (categories.length === 0) {
+    addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no available videos in any category`);
+    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No videos available`, progress: 0 });
+    return;
+  }
+
+  const lastCategory = getLastAutoCycleCategory();
+  const lastIdx = lastCategory ? categories.indexOf(lastCategory) : -1;
+  // Advance one step; if lastCategory not found (-1) or was last in list, wrap to 0
+  const nextIdx = (lastIdx + 1) % categories.length;
+  const chosenCategory = categories[nextIdx];
+
+  // Persist immediately so concurrent slots don't pick the same category
+  setLastAutoCycleCategory(chosenCategory);
+
+  addLog("schedule", "info", `[${slotLabel}] Category rotation: "${lastCategory ?? "none"}" → "${chosenCategory}" (${nextIdx + 1}/${categories.length})`);
+  emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Category: "${chosenCategory}" — picking audio…`, progress: 4 });
+
+  // ── Step 2: Pick audio ───────────────────────────────────────────────────────
   const audio = getRandomUnusedAudio(null);
   if (!audio) {
     addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no unused audio available`);
@@ -126,10 +156,11 @@ async function runAutoCycle(
     return;
   }
 
-  const initialVideos = pickVideosForDuration(null, audio.duration);
+  // ── Step 3: Initial video selection — LOCKED to chosenCategory ───────────────
+  const initialVideos = pickVideosForDuration(chosenCategory, audio.duration);
   if (initialVideos.length === 0) {
-    addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no videos in pool`);
-    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No videos available`, progress: 0 });
+    addLog("schedule", "warn", `Auto-cycle [${slotLabel}]: no videos in category "${chosenCategory}"`);
+    emitJobUpdate({ jobId, jobType: "process", status: "error", message: `[${slotLabel}] No videos in "${chosenCategory}"`, progress: 0 });
     return;
   }
 
@@ -137,8 +168,12 @@ async function runAutoCycle(
   fs.mkdirSync(tmpDir, { recursive: true });
 
   try {
-    // ── Download initial clips ─────────────────────────────────────────────────
-    emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Downloading ${initialVideos.length} clip(s)…`, progress: 10 });
+    // ── Step 4: Download initial clips ───────────────────────────────────────
+    emitJobUpdate({
+      jobId, jobType: "process", status: "running",
+      message: `[${slotLabel}] [${chosenCategory}] Downloading ${initialVideos.length} clip(s)…`,
+      progress: 10,
+    });
 
     const videoPaths: string[] = [];
     const usedVideoIds = new Set<string>();
@@ -150,33 +185,52 @@ async function runAutoCycle(
       videoPaths.push(localPath);
       usedVideoIds.add(video.id);
       totalActualDuration += actualDuration;
-      addLog("schedule", "info", `[${slotLabel}] Clip ${i + 1}: ${video.filename} — ${actualDuration.toFixed(1)}s`);
+      addLog("schedule", "info",
+        `[${slotLabel}] [${chosenCategory}] Clip ${i + 1}: ${video.filename} — ${actualDuration.toFixed(1)}s (used×${video.usedCount})`);
     }
 
-    // ── Supplement if needed ──────────────────────────────────────────────────
+    // ── Step 5: Fill gap — STILL locked to chosenCategory ────────────────────
     let fillRound = 0;
     while (totalActualDuration < audio.duration && fillRound < 10) {
       fillRound++;
       const stillNeeded = audio.duration - totalActualDuration;
-      const moreVideos = pickAdditionalVideos(null, usedVideoIds, stillNeeded);
+
+      // pickAdditionalVideos with chosenCategory ensures NO cross-category mixing
+      const moreVideos = pickAdditionalVideos(chosenCategory, usedVideoIds, stillNeeded);
+
       if (moreVideos.length === 0) {
-        addLog("schedule", "warn", `[${slotLabel}] Pool exhausted at ${totalActualDuration.toFixed(1)}s — proceeding`);
+        // Category pool exhausted — allow re-using already-selected clips from
+        // the same category rather than crossing category boundaries
+        addLog("schedule", "warn",
+          `[${slotLabel}] [${chosenCategory}] Unique pool exhausted at ${totalActualDuration.toFixed(1)}s` +
+          ` (need ${audio.duration.toFixed(1)}s) — proceeding with available coverage`);
         break;
       }
-      emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Topping up: need ${stillNeeded.toFixed(1)}s more…`, progress: 20 });
+
+      emitJobUpdate({
+        jobId, jobType: "process", status: "running",
+        message: `[${slotLabel}] [${chosenCategory}] Fill round ${fillRound}: need ${stillNeeded.toFixed(1)}s more, fetching ${moreVideos.length} clip(s)…`,
+        progress: 20,
+      });
+
       for (const video of moreVideos) {
         if (totalActualDuration >= audio.duration) break;
-        const { localPath, actualDuration } = await downloadVideoFile(video, tmpDir, `fill${fillRound}_${video.id.slice(0, 8)}`, auth);
+        const { localPath, actualDuration } = await downloadVideoFile(
+          video, tmpDir, `fill${fillRound}_${video.id.slice(0, 8)}`, auth
+        );
         videoPaths.push(localPath);
         usedVideoIds.add(video.id);
         totalActualDuration += actualDuration;
-        addLog("schedule", "info", `[${slotLabel}] + Extra clip: ${video.filename} — ${actualDuration.toFixed(1)}s → total ${totalActualDuration.toFixed(1)}s`);
+        addLog("schedule", "info",
+          `[${slotLabel}] [${chosenCategory}] + clip: ${video.filename} ${actualDuration.toFixed(1)}s → total ${totalActualDuration.toFixed(1)}s`);
       }
     }
 
-    addLog("schedule", "info", `[${slotLabel}] Coverage: ${totalActualDuration.toFixed(1)}s video for ${audio.duration.toFixed(1)}s audio (${videoPaths.length} clips)`);
+    addLog("schedule", "info",
+      `[${slotLabel}] [${chosenCategory}] Final: ${videoPaths.length} clip(s), ` +
+      `${totalActualDuration.toFixed(1)}s video → trimmed to ${audio.duration.toFixed(1)}s audio`);
 
-    // ── Download audio ─────────────────────────────────────────────────────────
+    // ── Step 6: Download audio ───────────────────────────────────────────────
     emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Preparing audio…`, progress: 28 });
     const audioDest = path.join(tmpDir, "audio.mp3");
     if (!audio.driveId.startsWith("/")) {
@@ -185,8 +239,12 @@ async function runAutoCycle(
       fs.copyFileSync(audio.driveId, audioDest);
     }
 
-    // ── Merge ──────────────────────────────────────────────────────────────────
-    emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Merging ${videoPaths.length} clips → ${audio.duration.toFixed(1)}s…`, progress: 32 });
+    // ── Step 7: Merge ────────────────────────────────────────────────────────
+    emitJobUpdate({
+      jobId, jobType: "process", status: "running",
+      message: `[${slotLabel}] [${chosenCategory}] Merging ${videoPaths.length} clip(s) → ${audio.duration.toFixed(1)}s…`,
+      progress: 32,
+    });
 
     const outputFilename = `output_${jobId}.mp4`;
     const outputPath = path.join(OUTPUT_DIR, outputFilename);
@@ -195,7 +253,7 @@ async function runAutoCycle(
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] ${msg}`, progress: 32 + Math.round(pct * 0.48) });
     }, audio.duration);
 
-    // ── Optional Drive upload ──────────────────────────────────────────────────
+    // ── Step 8: Optional Drive upload ────────────────────────────────────────
     if (settings.driveOutputFolderId) {
       emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading to Drive…`, progress: 83 });
       try {
@@ -205,7 +263,7 @@ async function runAutoCycle(
       }
     }
 
-    // ── Mark used, queue, upload ───────────────────────────────────────────────
+    // ── Step 9: Mark used, queue, upload ─────────────────────────────────────
     markVideosUsed([...usedVideoIds]);
     markAudioUsed(audio.id);
 
@@ -224,8 +282,8 @@ async function runAutoCycle(
     emitJobUpdate({ jobId, jobType: "process", status: "running", message: `[${slotLabel}] Uploading to YouTube…`, progress: 88 });
     await processQueueItem(queueItem.id, tokens);
 
-    addLog("schedule", "success", `Auto-cycle [${slotLabel}] complete: "${audio.title}"`);
-    emitJobUpdate({ jobId, jobType: "process", status: "done", message: `[${slotLabel}] Done!`, progress: 100 });
+    addLog("schedule", "success", `Auto-cycle [${slotLabel}] [${chosenCategory}] complete: "${audio.title}"`);
+    emitJobUpdate({ jobId, jobType: "process", status: "done", message: `[${slotLabel}] Done! [${chosenCategory}]`, progress: 100 });
 
   } catch (err) {
     addLog("schedule", "error", `Auto-cycle [${slotLabel}] failed`, String(err));
