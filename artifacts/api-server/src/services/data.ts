@@ -5,9 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 const DATA_DIR = path.resolve(process.cwd(), "data");
 
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
 function readJson<T>(filename: string, defaultValue: T): T {
@@ -36,6 +34,7 @@ export interface Video {
   driveId: string;
   filename: string;
   category: string;
+  duration: number;      // seconds; 0 = unknown (legacy video without probed duration)
   usedCount: number;
   lastUsed: string | null;
   available: boolean;
@@ -79,12 +78,10 @@ export interface QueueItem {
   createdAt: string;
 }
 
-// ── Upload slots ──────────────────────────────────────────────────────────────
-
 export interface UploadSlot {
-  id: string;       // stable identifier: "morning" | "afternoon" | "night"
-  label: string;    // English label
-  labelBn: string;  // Bangla label
+  id: string;
+  label: string;
+  labelBn: string;
   time: string;     // "HH:MM" 24-hour
   enabled: boolean;
 }
@@ -98,7 +95,6 @@ export interface AppSettings {
   driveVideoFolderId: string | null;
   driveAudioFolderId: string | null;
   driveOutputFolderId: string | null;
-  // Legacy field kept for backward compatibility — ignored by scheduler
   dailyUploadTime?: string;
 }
 
@@ -141,7 +137,10 @@ const defaultSettings: AppSettings = {
 // ── Videos ───────────────────────────────────────────────────────────────────
 
 export function getVideos(): Video[] {
-  return readJson<Video[]>("videos.json", []);
+  return readJson<Video[]>("videos.json", []).map((v) => ({
+    duration: 0,    // default for legacy records without duration
+    ...v,
+  }));
 }
 
 export function saveVideos(videos: Video[]): void {
@@ -150,11 +149,7 @@ export function saveVideos(videos: Video[]): void {
 
 export function addVideo(video: Omit<Video, "id" | "addedAt">): Video {
   const videos = getVideos();
-  const newVideo: Video = {
-    ...video,
-    id: uuidv4(),
-    addedAt: new Date().toISOString(),
-  };
+  const newVideo: Video = { ...video, id: uuidv4(), addedAt: new Date().toISOString() };
   videos.push(newVideo);
   saveVideos(videos);
   return newVideo;
@@ -169,9 +164,26 @@ export function updateVideo(id: string, update: Partial<Video>): Video | null {
   return videos[idx];
 }
 
-export function getVideosByCategory(category: string): Video[] {
-  return getVideos().filter((v) => v.category === category && v.available);
-}
+/**
+ * Pick videos from the pool whose estimated total duration covers `durationSeconds`.
+ *
+ * Algorithm:
+ *  1. Sort pool by least used (ties broken by oldest lastUsed).
+ *  2. Greedily pick videos until cumulative duration ≥ target.
+ *     Uses stored `duration` when > 0; falls back to FALLBACK_DURATION_S for
+ *     legacy videos whose duration was never probed.
+ *  3. If the entire unique pool is exhausted before covering the target, allow
+ *     re-selecting from the beginning of the sorted pool (pool cycling) up to
+ *     MAX_CYCLES passes. This handles pools where every video is too short.
+ *  4. Auto-resets usedCount for the pool when all clips have been used at least
+ *     once, so the scheduler never runs out of "fresh" videos.
+ *
+ * NOTE: The actual ffmpeg process probes real file durations after download and
+ * fetches additional clips if the total is still short. This function is a fast
+ * pre-selection that minimises unnecessary downloads.
+ */
+const FALLBACK_DURATION_S = 30; // assumed seconds for videos with no stored duration
+const MAX_CYCLES = 5;           // maximum pool wrap-arounds before giving up
 
 export function pickVideosForDuration(
   category: string | null,
@@ -179,28 +191,91 @@ export function pickVideosForDuration(
 ): Video[] {
   let pool = getVideos().filter((v) => v.available && v.status === "available");
   if (category) pool = pool.filter((v) => v.category === category);
+  if (pool.length === 0) return [];
+
+  const sortPool = (p: Video[]) =>
+    [...p].sort((a, b) => {
+      if (a.usedCount !== b.usedCount) return a.usedCount - b.usedCount;
+      const aT = a.lastUsed ? new Date(a.lastUsed).getTime() : 0;
+      const bT = b.lastUsed ? new Date(b.lastUsed).getTime() : 0;
+      return aT - bT;
+    });
+
+  let sorted = sortPool(pool);
+
+  // Auto-reset if every video in the pool has been used at least once
+  if (sorted.every((v) => v.usedCount > 0)) {
+    const all = getVideos();
+    for (const v of sorted) {
+      const idx = all.findIndex((x) => x.id === v.id);
+      if (idx !== -1) all[idx].usedCount = 0;
+    }
+    saveVideos(all);
+    // Re-read after reset so fresh sort order applies
+    pool = getVideos().filter(
+      (v) => v.available && v.status === "available" && (!category || v.category === category)
+    );
+    sorted = sortPool(pool);
+  }
+
+  const selected: Video[] = [];
+  let totalDuration = 0;
+  let cycle = 0;
+  let i = 0;
+
+  while (totalDuration < durationSeconds) {
+    if (i >= sorted.length) {
+      // Wrap around — start a new cycle through the sorted pool
+      cycle++;
+      if (cycle >= MAX_CYCLES) break;
+      i = 0;
+    }
+
+    const v = sorted[i];
+
+    // Safety: don't pick the same clip more than MAX_CYCLES times
+    const alreadyPicked = selected.filter((s) => s.id === v.id).length;
+    if (alreadyPicked >= MAX_CYCLES) { i++; continue; }
+
+    const clipDuration = v.duration > 0 ? v.duration : FALLBACK_DURATION_S;
+    selected.push(v);
+    totalDuration += clipDuration;
+    i++;
+  }
+
+  return selected;
+}
+
+/**
+ * Pick additional videos from the pool, excluding IDs already chosen.
+ * Used by the process/scheduler after probing actual file durations to top up
+ * when the real total duration is still less than the audio duration.
+ */
+export function pickAdditionalVideos(
+  category: string | null,
+  excludeIds: Set<string>,
+  neededSeconds: number
+): Video[] {
+  let pool = getVideos().filter(
+    (v) => v.available && v.status === "available" && !excludeIds.has(v.id)
+  );
+  if (category) pool = pool.filter((v) => v.category === category);
+  if (pool.length === 0) return [];
 
   pool.sort((a, b) => {
     if (a.usedCount !== b.usedCount) return a.usedCount - b.usedCount;
-    const aTime = a.lastUsed ? new Date(a.lastUsed).getTime() : 0;
-    const bTime = b.lastUsed ? new Date(b.lastUsed).getTime() : 0;
-    return aTime - bTime;
+    const aT = a.lastUsed ? new Date(a.lastUsed).getTime() : 0;
+    const bT = b.lastUsed ? new Date(b.lastUsed).getTime() : 0;
+    return aT - bT;
   });
 
-  const avgDuration = 30;
-  const needed = Math.ceil(durationSeconds / avgDuration);
-  const selected = pool.slice(0, Math.max(1, needed));
-
-  const allUsed = pool.every((v) => v.usedCount > 0);
-  if (allUsed && pool.length > 0) {
-    const videos = getVideos();
-    for (const v of pool) {
-      const idx = videos.findIndex((x) => x.id === v.id);
-      if (idx !== -1) videos[idx].usedCount = 0;
-    }
-    saveVideos(videos);
+  const selected: Video[] = [];
+  let total = 0;
+  for (const v of pool) {
+    if (total >= neededSeconds) break;
+    selected.push(v);
+    total += v.duration > 0 ? v.duration : FALLBACK_DURATION_S;
   }
-
   return selected;
 }
 
@@ -228,11 +303,7 @@ export function saveAudios(audios: Audio[]): void {
 
 export function addAudio(audio: Omit<Audio, "id" | "addedAt">): Audio {
   const audios = getAudios();
-  const newAudio: Audio = {
-    ...audio,
-    id: uuidv4(),
-    addedAt: new Date().toISOString(),
-  };
+  const newAudio: Audio = { ...audio, id: uuidv4(), addedAt: new Date().toISOString() };
   audios.push(newAudio);
   saveAudios(audios);
   return newAudio;
@@ -264,7 +335,7 @@ export function markAudioUsed(id: string): void {
   }
 }
 
-// ── Queue ────────────────────────────────────────────────────────────────────
+// ── Queue ─────────────────────────────────────────────────────────────────────
 
 export function getQueue(): QueueItem[] {
   return readJson<QueueItem[]>("queue.json", []);
@@ -274,24 +345,15 @@ export function saveQueue(queue: QueueItem[]): void {
   writeJson("queue.json", queue);
 }
 
-export function addQueueItem(
-  item: Omit<QueueItem, "id" | "createdAt">
-): QueueItem {
+export function addQueueItem(item: Omit<QueueItem, "id" | "createdAt">): QueueItem {
   const queue = getQueue();
-  const newItem: QueueItem = {
-    ...item,
-    id: uuidv4(),
-    createdAt: new Date().toISOString(),
-  };
+  const newItem: QueueItem = { ...item, id: uuidv4(), createdAt: new Date().toISOString() };
   queue.push(newItem);
   saveQueue(queue);
   return newItem;
 }
 
-export function updateQueueItem(
-  id: string,
-  update: Partial<QueueItem>
-): QueueItem | null {
+export function updateQueueItem(id: string, update: Partial<QueueItem>): QueueItem | null {
   const queue = getQueue();
   const idx = queue.findIndex((q) => q.id === id);
   if (idx === -1) return null;
@@ -300,12 +362,11 @@ export function updateQueueItem(
   return queue[idx];
 }
 
-// ── Settings ─────────────────────────────────────────────────────────────────
+// ── Settings ──────────────────────────────────────────────────────────────────
 
 export function getSettings(): AppSettings {
   const raw = readJson<Partial<AppSettings>>("settings.json", {});
 
-  // Migrate: old settings may have dailyUploadTime but no uploadSlots
   if (!raw.uploadSlots || raw.uploadSlots.length === 0) {
     const legacyTime = (raw as any).dailyUploadTime as string | undefined;
     raw.uploadSlots = DEFAULT_SLOTS.map((s, i) =>
@@ -313,7 +374,6 @@ export function getSettings(): AppSettings {
     );
   }
 
-  // Ensure all 3 slot ids exist (in case we add slots in future)
   const existingIds = new Set(raw.uploadSlots.map((s) => s.id));
   for (const def of DEFAULT_SLOTS) {
     if (!existingIds.has(def.id)) raw.uploadSlots.push({ ...def });
@@ -326,7 +386,7 @@ export function saveSettings(settings: AppSettings): void {
   writeJson("settings.json", settings);
 }
 
-// ── Logs ─────────────────────────────────────────────────────────────────────
+// ── Logs ──────────────────────────────────────────────────────────────────────
 
 const MAX_LOGS = 500;
 

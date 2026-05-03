@@ -8,19 +8,57 @@ const SCALE_FILTER =
   "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black," +
   "setsar=1";
 
-// ── Concatenate videos and overlay audio ─────────────────────────────────────
+// ── Probe a video/audio file duration using ffprobe ───────────────────────────
+
+export async function getVideoDuration(filePath: string): Promise<number> {
+  return new Promise((resolve) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) { resolve(0); return; }
+      resolve(metadata.format.duration ?? 0);
+    });
+  });
+}
+
+// ── Concatenate videos and overlay audio ──────────────────────────────────────
 //
-// Output: 9:16 vertical 1080×1920, original video audio muted,
-// downloaded audio overlaid, trimmed to audio length.
+// Outputs 9:16 vertical 1080×1920. Video audio is muted; downloaded audio is
+// overlaid. The output is trimmed to exactly `audioDuration` seconds so that
+// the result matches the audio track length precisely.
+//
+// Both the single-clip path and the multi-clip concat path apply the same
+// scale/pad filter so every clip becomes 1080×1920 before concat.
+//
+// Parameters:
+//   videoPaths    – ordered list of local video file paths (already downloaded)
+//   audioPath     – local audio file path
+//   outputPath    – where to write the result
+//   onProgress    – optional callback for progress updates (0-100, message)
+//   audioDuration – exact audio duration in seconds; output is trimmed to this.
+//                   When omitted the encode falls back to -shortest (safe but
+//                   may be slightly off if container duration is imprecise).
 
 export async function mergeVideoWithAudio(
   videoPaths: string[],
   audioPath: string,
   outputPath: string,
-  onProgress?: (progress: number, message: string) => void
+  onProgress?: (progress: number, message: string) => void,
+  audioDuration?: number
 ): Promise<string> {
-  addLog("process", "info", `Merging ${videoPaths.length} clip(s) with audio…`);
-  onProgress?.(5, `Setting up FFmpeg pipeline (${videoPaths.length} clips)…`);
+  if (videoPaths.length === 0) throw new Error("No video paths provided to mergeVideoWithAudio");
+
+  addLog(
+    "process",
+    "info",
+    `Merging ${videoPaths.length} clip(s) with audio (target ${audioDuration?.toFixed(1) ?? "?"}s)…`
+  );
+  onProgress?.(5, `Setting up FFmpeg pipeline (${videoPaths.length} clip(s))…`);
+
+  // Build the trim option: prefer hard -t trim over -shortest so the output
+  // matches audio length precisely even when clips slightly overshoot.
+  const trimOpts =
+    audioDuration && audioDuration > 0
+      ? [`-t ${audioDuration.toFixed(3)}`]
+      : ["-shortest"];
 
   return new Promise((resolve, reject) => {
     const cmd = ffmpeg();
@@ -29,9 +67,10 @@ export async function mergeVideoWithAudio(
     cmd.input(audioPath);
 
     const n = videoPaths.length;
-    const audioIdx = n;
+    const audioIdx = n; // audio input is always after all video inputs
 
     if (n === 1) {
+      // Single clip: scale/pad, overlay audio, trim
       cmd.outputOptions([
         `-vf ${SCALE_FILTER}`,
         `-map 0:v:0`,
@@ -41,15 +80,21 @@ export async function mergeVideoWithAudio(
         `-crf 23`,
         `-c:a aac`,
         `-b:a 128k`,
-        `-shortest`,
+        ...trimOpts,
         `-movflags +faststart`,
         `-avoid_negative_ts make_zero`,
       ]);
     } else {
-      const videoInputs = videoPaths.map((_, i) => `[${i}:v]`).join("");
+      // Multi-clip: scale/pad each clip individually, then concat, overlay audio
+      // Each clip gets scaled to 1080×1920 BEFORE concat to avoid resolution
+      // mismatches that cause the concat filter to fail or produce corrupted output.
+      const scaledLabels = videoPaths.map((_, i) => `[v${i}]`).join("");
+      const scaleFilters = videoPaths
+        .map((_, i) => `[${i}:v]${SCALE_FILTER}[v${i}]`)
+        .join(";");
       const filterComplex =
-        `${videoInputs}concat=n=${n}:v=1:a=0[concatv];` +
-        `[concatv]${SCALE_FILTER}[outv]`;
+        `${scaleFilters};` +
+        `${scaledLabels}concat=n=${n}:v=1:a=0[outv]`;
 
       cmd
         .complexFilter(filterComplex)
@@ -61,7 +106,7 @@ export async function mergeVideoWithAudio(
           `-crf 23`,
           `-c:a aac`,
           `-b:a 128k`,
-          `-shortest`,
+          ...trimOpts,
           `-movflags +faststart`,
           `-avoid_negative_ts make_zero`,
         ]);
@@ -70,7 +115,7 @@ export async function mergeVideoWithAudio(
     cmd
       .output(outputPath)
       .on("start", (cmdLine: string) => {
-        addLog("process", "info", `FFmpeg started`, cmdLine.slice(0, 300));
+        addLog("process", "info", "FFmpeg started", cmdLine.slice(0, 400));
         onProgress?.(10, "FFmpeg encoding started…");
       })
       .on("progress", (p: { percent?: number; timemark?: string }) => {
@@ -83,7 +128,7 @@ export async function mergeVideoWithAudio(
         resolve(outputPath);
       })
       .on("error", (err: Error, _stdout: string, stderr: string) => {
-        addLog("process", "error", "FFmpeg error", stderr?.slice(-500) || err.message);
+        addLog("process", "error", "FFmpeg error", stderr?.slice(-800) || err.message);
         reject(err);
       })
       .run();
@@ -103,8 +148,8 @@ export async function muteVideo(
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
       .outputOptions([
-        "-c:v copy",   // stream-copy video — no re-encode, very fast
-        "-an",         // drop all audio streams
+        "-c:v copy",
+        "-an",
         "-movflags +faststart",
       ])
       .output(outputPath)
@@ -126,16 +171,5 @@ export async function muteVideo(
         reject(err);
       })
       .run();
-  });
-}
-
-// ── Get video duration using ffprobe ─────────────────────────────────────────
-
-export async function getVideoDuration(filePath: string): Promise<number> {
-  return new Promise((resolve) => {
-    ffmpeg.ffprobe(filePath, (err, metadata) => {
-      if (err) { resolve(0); return; }
-      resolve(metadata.format.duration ?? 0);
-    });
   });
 }

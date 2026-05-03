@@ -6,25 +6,20 @@ import { v4 as uuidv4 } from "uuid";
 import { addVideo, addAudio, addLog, getSettings } from "../services/data.js";
 import { downloadKuaishouVideo } from "../services/kuaishou.js";
 import { downloadVideoWithYtDlp, downloadAudio } from "../services/ytdlp.js";
+import { getVideoDuration } from "../services/ffmpeg.js";
 import { emitJobUpdate } from "../lib/socket.js";
 
 const router = Router();
-
-// ── Local storage directories (always used) ───────────────────────────────────
 
 const VIDEO_DIR = path.resolve(process.cwd(), "data", "videos");
 const AUDIO_DIR = path.resolve(process.cwd(), "data", "audios");
 fs.mkdirSync(VIDEO_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
-// ── Cross-device safe file move (/tmp → /data are different filesystems) ─────
-
 function moveFile(src: string, dest: string): void {
   fs.copyFileSync(src, dest);
   try { fs.unlinkSync(src); } catch {}
 }
-
-// ── Detect Kuaishou / Kwai URLs ───────────────────────────────────────────────
 
 function isKuaishouUrl(url: string): boolean {
   try {
@@ -37,8 +32,6 @@ function isKuaishouUrl(url: string): boolean {
 }
 
 // ── POST /api/download/video ──────────────────────────────────────────────────
-//
-// Always saves to data/videos/ locally. Drive is a separate manual step.
 
 router.post("/download/video", async (req, res) => {
   const { urls, category } = req.body as { urls: string[]; category: string };
@@ -101,9 +94,13 @@ router.post("/download/video", async (req, res) => {
             throw new Error("Download returned no file");
           }
 
+          emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: "Probing duration…", progress: 95 });
+
+          // Probe duration BEFORE moving so we have it for concat planning
+          const probedDuration = await getVideoDuration(downloadedPath);
+
           emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: "Saving to library…", progress: 97 });
 
-          // Cross-device safe move: /tmp → data/videos/
           const filename = path.basename(downloadedPath);
           const destPath = path.join(VIDEO_DIR, filename);
           moveFile(downloadedPath, destPath);
@@ -113,6 +110,7 @@ router.post("/download/video", async (req, res) => {
             driveId: destPath,
             filename,
             category: category || "Uncategorized",
+            duration: probedDuration,   // real duration stored — used by pickVideosForDuration
             usedCount: 0,
             lastUsed: null,
             available: true,
@@ -126,7 +124,7 @@ router.post("/download/video", async (req, res) => {
             jobId,
             jobType: "download_video",
             status: "done",
-            message: `Saved: ${filename} (${(stat.size / 1024 / 1024).toFixed(1)} MB)`,
+            message: `Saved: ${filename} (${(stat.size / 1024 / 1024).toFixed(1)} MB, ${probedDuration.toFixed(1)}s)`,
             progress: 100,
           });
           succeeded = true;
@@ -147,8 +145,6 @@ router.post("/download/video", async (req, res) => {
 });
 
 // ── POST /api/download/audio ──────────────────────────────────────────────────
-//
-// Always saves to data/audios/ locally. Drive is a separate manual step.
 
 router.post("/download/audio", async (req, res) => {
   const { urls, category } = req.body as { urls: string[]; category?: string | null };
@@ -193,10 +189,8 @@ router.post("/download/audio", async (req, res) => {
           }
 
           const { audioPath, metadata } = result;
-
           emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message: "Saving to library…", progress: 97 });
 
-          // Cross-device safe move: /tmp → data/audios/
           const destPath = path.join(AUDIO_DIR, metadata.filename);
           moveFile(audioPath, destPath);
 
@@ -218,7 +212,7 @@ router.post("/download/audio", async (req, res) => {
             jobId,
             jobType: "download_audio",
             status: "done",
-            message: `"${metadata.title}" — ${metadata.tags.length} tags`,
+            message: `"${metadata.title}" — ${metadata.duration.toFixed(1)}s, ${metadata.tags.length} tags`,
             progress: 100,
           });
           succeeded = true;
