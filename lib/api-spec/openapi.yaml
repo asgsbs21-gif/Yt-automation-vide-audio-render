@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: YT Auto Pro API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: videos
+    description: Video pool management
+  - name: audios
+    description: Audio pool management
+  - name: process
+    description: FFmpeg processing jobs
+  - name: queue
+    description: Upload queue management
+  - name: settings
+    description: App settings
+  - name: stats
+    description: Dashboard stats and status
+  - name: logs
+    description: Job logs
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +38,268 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /videos:
+    get:
+      operationId: listVideos
+      tags: [videos]
+      summary: List all videos in the pool
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of videos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Video"
+
+  /videos/{id}/category:
+    patch:
+      operationId: updateVideoCategory
+      tags: [videos]
+      summary: Update video category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVideoCategoryBody"
+      responses:
+        "200":
+          description: Updated video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+
+  /download/video:
+    post:
+      operationId: downloadVideos
+      tags: [videos]
+      summary: Start bulk Kuaishou video download jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadVideosBody"
+      responses:
+        "200":
+          description: Job started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+
+  /audios:
+    get:
+      operationId: listAudios
+      tags: [audios]
+      summary: List all audio in the pool
+      responses:
+        "200":
+          description: List of audios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Audio"
+
+  /download/audio:
+    post:
+      operationId: downloadAudios
+      tags: [audios]
+      summary: Start bulk audio download + metadata extract jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadAudiosBody"
+      responses:
+        "200":
+          description: Job started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+
+  /process:
+    post:
+      operationId: processVideo
+      tags: [process]
+      summary: Merge video(s) + audio via FFmpeg
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcessVideoBody"
+      responses:
+        "200":
+          description: Processing started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+
+  /process/preview:
+    post:
+      operationId: previewProcess
+      tags: [process]
+      summary: Preview which videos will be selected for a process job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreviewProcessBody"
+      responses:
+        "200":
+          description: Preview result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProcessPreview"
+
+  /queue:
+    get:
+      operationId: listQueue
+      tags: [queue]
+      summary: List the upload queue
+      responses:
+        "200":
+          description: Upload queue
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueueItem"
+
+  /schedule:
+    post:
+      operationId: scheduleUpload
+      tags: [queue]
+      summary: Add processed video to the upload queue with a scheduled time
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleUploadBody"
+      responses:
+        "200":
+          description: Scheduled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueueItem"
+
+  /upload-now:
+    post:
+      operationId: uploadNow
+      tags: [queue]
+      summary: Immediately upload a processed video to YouTube
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadNowBody"
+      responses:
+        "200":
+          description: Upload result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobResponse"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get app settings
+      responses:
+        "200":
+          description: App settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppSettings"
+    patch:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update app settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSettingsBody"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppSettings"
+
+  /status:
+    get:
+      operationId: getStatus
+      tags: [stats]
+      summary: Get overall system status and stats
+      responses:
+        "200":
+          description: System status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemStatus"
+
+  /logs:
+    get:
+      operationId: getLogs
+      tags: [logs]
+      summary: Get recent job logs
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: jobType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Recent logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogEntry"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +307,287 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    Video:
+      type: object
+      properties:
+        id:
+          type: string
+        driveId:
+          type: string
+        filename:
+          type: string
+        category:
+          type: string
+        usedCount:
+          type: integer
+        lastUsed:
+          type: string
+          nullable: true
+        available:
+          type: boolean
+        driveLink:
+          type: string
+          nullable: true
+        addedAt:
+          type: string
+        status:
+          type: string
+          enum: [available, processing, unavailable]
+      required: [id, driveId, filename, category, usedCount, available, addedAt, status]
+
+    Audio:
+      type: object
+      properties:
+        id:
+          type: string
+        driveId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        duration:
+          type: number
+        category:
+          type: string
+          nullable: true
+        uploader:
+          type: string
+          nullable: true
+        used:
+          type: boolean
+        driveLink:
+          type: string
+          nullable: true
+        addedAt:
+          type: string
+      required: [id, driveId, title, description, tags, duration, used, addedAt]
+
+    QueueItem:
+      type: object
+      properties:
+        id:
+          type: string
+        driveId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        scheduledAt:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [pending, scheduled, uploading, uploaded, failed]
+        youtubeUrl:
+          type: string
+          nullable: true
+        youtubeId:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, driveId, title, description, tags, status, createdAt]
+
+    AppSettings:
+      type: object
+      properties:
+        dailyUploadTime:
+          type: string
+          description: "HH:MM format"
+        autoCycleEnabled:
+          type: boolean
+        maxRetries:
+          type: integer
+        defaultCategory:
+          type: string
+        youtubeCategoryId:
+          type: string
+      required: [dailyUploadTime, autoCycleEnabled, maxRetries, defaultCategory, youtubeCategoryId]
+
+    SystemStatus:
+      type: object
+      properties:
+        totalVideos:
+          type: integer
+        availableVideos:
+          type: integer
+        totalAudios:
+          type: integer
+        unusedAudios:
+          type: integer
+        queueCount:
+          type: integer
+        scheduledCount:
+          type: integer
+        uploadedCount:
+          type: integer
+        driveConnected:
+          type: boolean
+        youtubeConnected:
+          type: boolean
+        activeJobs:
+          type: integer
+        videosByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCount"
+      required: [totalVideos, availableVideos, totalAudios, unusedAudios, queueCount, scheduledCount, uploadedCount, driveConnected, youtubeConnected, activeJobs, videosByCategory]
+
+    CategoryCount:
+      type: object
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+        usedCount:
+          type: integer
+      required: [category, count, usedCount]
+
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        jobType:
+          type: string
+          enum: [download_video, download_audio, process, upload, schedule]
+        level:
+          type: string
+          enum: [info, warn, error, success]
+        message:
+          type: string
+        details:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, jobType, level, message, createdAt]
+
+    JobResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+      required: [jobId, message, status]
+
+    DownloadVideosBody:
+      type: object
+      properties:
+        urls:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+      required: [urls, category]
+
+    DownloadAudiosBody:
+      type: object
+      properties:
+        urls:
+          type: array
+          items:
+            type: string
+        category:
+          type: string
+          nullable: true
+      required: [urls]
+
+    ProcessVideoBody:
+      type: object
+      properties:
+        audioId:
+          type: string
+          nullable: true
+          description: "Specific audio ID or null for random"
+        categoryFilter:
+          type: string
+          nullable: true
+        addToQueue:
+          type: boolean
+          default: true
+      required: [addToQueue]
+
+    PreviewProcessBody:
+      type: object
+      properties:
+        audioId:
+          type: string
+          nullable: true
+        categoryFilter:
+          type: string
+          nullable: true
+      required: []
+
+    ProcessPreview:
+      type: object
+      properties:
+        audio:
+          $ref: "#/components/schemas/Audio"
+        videos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Video"
+        estimatedDuration:
+          type: number
+        videoCount:
+          type: integer
+      required: [videos, estimatedDuration, videoCount]
+
+    ScheduleUploadBody:
+      type: object
+      properties:
+        queueItemId:
+          type: string
+        scheduledAt:
+          type: string
+          description: ISO datetime string
+      required: [queueItemId, scheduledAt]
+
+    UploadNowBody:
+      type: object
+      properties:
+        queueItemId:
+          type: string
+      required: [queueItemId]
+
+    UpdateVideoCategoryBody:
+      type: object
+      properties:
+        category:
+          type: string
+      required: [category]
+
+    UpdateSettingsBody:
+      type: object
+      properties:
+        dailyUploadTime:
+          type: string
+        autoCycleEnabled:
+          type: boolean
+        maxRetries:
+          type: integer
+        defaultCategory:
+          type: string
+        youtubeCategoryId:
+          type: string

@@ -1,0 +1,203 @@
+Build a complete YouTube Shorts automation web app with Node.js + Express. Here's the full spec:
+
+## PROJECT NAME: YT Auto Pro
+
+## CORE FLOW:
+1. User pastes Kuaishou video URLs (bulk, one per line) with category tags
+2. App downloads videos using Puppeteer (headless browser)
+3. Downloaded videos upload to Google Drive with category metadata
+4. User pastes YouTube/any platform audio URLs - app downloads audio + scrapes title, description, hashtags using yt-dlp
+5. Audio saved to Drive with full metadata JSON sidecar file
+6. When processing: randomly pick unused audio, match video category if set, concatenate videos by audio duration
+7. FFmpeg: mute original + overlay audio
+8. Upload to YouTube using audio's saved metadata (title/tags/description) - NO AI generation needed
+9. Daily cycling queue with scheduled uploads
+10. Video cycle tracking - no video reused until all are exhausted
+
+## TECH STACK:
+- Node.js + Express
+- Puppeteer (Kuaishou video download)
+- yt-dlp (audio download from YouTube/any platform + metadata extraction)
+- fluent-ffmpeg + ffmpeg-static
+- googleapis (Drive + YouTube API)
+- node-cron (scheduling)
+- Socket.io (real-time progress)
+- multer (local file handling)
+
+## WEB UI (single page, mobile-friendly, dark theme):
+Tabs:
+1. **Videos Tab**
+   - Textarea for bulk Kuaishou URLs
+   - Category dropdown/input per batch (Fish Cutting, Cooking, Cake Making, Woodwork, Custom...)
+   - Download button + progress list
+   - Video pool table: filename, category, used count, last used, status
+
+2. **Audio Tab**
+   - Textarea for bulk audio URLs (YouTube Shorts waz/motivational)
+   - Download button - fetches audio + metadata automatically via yt-dlp
+   - Audio pool table: title, duration, hashtags preview, category match, drive link
+
+3. **Process Tab**
+   - Select audio from pool (or random)
+   - Select video category filter
+   - Preview: which videos will be used, estimated duration
+   - Process button → FFmpeg merge job
+
+4. **Queue Tab**
+   - Processed videos ready to upload
+   - Schedule time picker per video
+   - Manual upload now button
+   - Upload status (scheduled/uploaded/failed)
+
+5. **Schedule Tab**
+   - Daily auto-upload time setting
+   - Auto-cycle toggle (uploads one per day automatically)
+   - Upcoming uploads list
+
+6. **Logs Tab**
+   - Real-time Socket.io job logs
+
+## API ENDPOINTS:
+- POST /api/download/video - bulk Kuaishou URLs + category, start download jobs
+- POST /api/download/audio - bulk audio URLs, yt-dlp download + metadata extract
+- GET /api/videos - list video pool with category, used status
+- GET /api/audios - list audio pool with metadata
+- POST /api/process - merge video(s) + audio, use audio metadata for YouTube
+- POST /api/schedule - add to upload queue with datetime
+- POST /api/upload-now - immediate YouTube upload
+- GET /api/queue - current upload queue
+- PATCH /api/videos/:id/category - update video category
+- GET /api/status - overall system status
+
+## KUAISHOU VIDEO DOWNLOADER:
+Use Puppeteer:
+- headless: true
+- args: ['--no-sandbox', '--disable-setuid-sandbox']
+- User-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36
+- Referer: https://www.kuaishou.com
+- Intercept network requests, find URLs containing 'video' and '.mp4' or 'kpcdn' or 'gifshow'
+- Pick highest resolution URL
+- Download via axios with spoofed headers
+- Save to /tmp, upload to Google Drive video folder
+
+## AUDIO DOWNLOADER + METADATA:
+Use yt-dlp:
+- Command: yt-dlp --extract-audio --audio-format mp3 --write-info-json --no-playlist -o "%(title)s.%(ext)s" [URL]
+- Parse the generated .info.json file to extract:
+  - title (use as YouTube video title, trim to 60 chars)
+  - description (trim to 150 chars)  
+  - tags (use as YouTube hashtags)
+  - duration (seconds)
+  - uploader
+- Save audio .mp3 + metadata .json sidecar to Google Drive audio folder
+- Store in local DB (JSON file): { id, driveId, title, description, tags, duration, category, used: false, addedAt }
+
+## VIDEO CYCLE SYSTEM:
+- Each video tracked in videos.json: { id, driveId, filename, category, usedCount, lastUsed, available: true }
+- When picking videos for processing:
+  1. Filter by requested category
+  2. Sort by usedCount ASC, then lastUsed ASC (least used first)
+  3. Pick required number based on audio duration
+  4. After processing: increment usedCount, set lastUsed = now
+  5. If ALL videos in category used at least once: reset cycle (set usedCount = 0 for all in category)
+- This ensures fair rotation, no video repeats until all used
+
+## CATEGORY SYSTEM:
+Video categories (user can add custom):
+- fish_cutting (মাছ কাটা)
+- cooking (রান্না)  
+- cake_making (কেক বানানো)
+- woodwork (কাঠের কাজ)
+- satisfying (সাটিস্ফাইয়িং)
+- custom (কাস্টম)
+
+Audio can optionally have preferred category match.
+When processing: if audio has category preference, pick videos from that category.
+
+## FFMPEG PROCESSING:
+- Download video files from Drive to /tmp
+- If audio duration > single video: concatenate multiple videos with concat filter
+- Remove original audio: -an flag
+- Overlay new audio track
+- Output: 9:16 vertical, 1080x1920 or keep original if already vertical
+- Format: mp4, libx264, aac 128k
+- Clean up /tmp after Drive upload
+
+## YOUTUBE UPLOAD:
+- OAuth2 auth
+- Title: from audio metadata (trimmed to 60 chars) + " #Shorts"
+- Description: audio metadata description + "\n\n" + hashtags joined
+- Tags: from audio metadata tags array
+- Category ID: 22 (People & Blogs) or 24 (Entertainment)
+- For scheduled: set status=private + publishAt datetime
+- For immediate: status=public
+- Add #Shorts to description always
+
+## GOOGLE DRIVE:
+- Service account JSON auth
+- Folders: DRIVE_VIDEO_FOLDER_ID, DRIVE_AUDIO_FOLDER_ID, DRIVE_OUTPUT_FOLDER_ID
+- Stream upload from /tmp
+- Return file ID + webViewLink
+
+## DATA STORAGE (JSON files, no database):
+/data/videos.json - video pool
+/data/audios.json - audio pool  
+/data/queue.json - upload queue
+/data/settings.json - app settings (upload time, auto-cycle, etc)
+/data/logs.json - recent job logs
+
+## ENVIRONMENT VARIABLES:
+GROQ_API_KEY= (optional, keep for future)
+GOOGLE_SERVICE_ACCOUNT_JSON=
+YOUTUBE_CLIENT_ID=
+YOUTUBE_CLIENT_SECRET=
+YOUTUBE_REFRESH_TOKEN=
+DRIVE_VIDEO_FOLDER_ID=
+DRIVE_AUDIO_FOLDER_ID=
+DRIVE_OUTPUT_FOLDER_ID=
+PORT=3000
+
+## FILE STRUCTURE:
+/src
+  server.js
+  /routes
+    download.js
+    process.js
+    schedule.js
+    upload.js
+  /services
+    kuaishou.js
+    drive.js
+    ffmpeg.js
+    youtube.js
+    ytdlp.js
+  /jobs
+    scheduler.js
+    queue.js
+/data
+  videos.json
+  audios.json
+  queue.json
+  settings.json
+/public
+  index.html
+  app.js
+  style.css
+replit.nix
+package.json
+.env.example
+
+## REPLIT.NIX - include these packages:
+pkgs.ffmpeg
+pkgs.yt-dlp
+pkgs.chromium (for Puppeteer)
+
+## IMPORTANT:
+- Mobile responsive, dark theme UI
+- All jobs async with Socket.io real-time updates
+- Retry failed downloads max 3 times
+- Error handling everywhere
+- yt-dlp path: use 'yt-dlp' command (installed via nix)
+- Puppeteer use system Chromium: executablePath: '/usr/bin/chromium'
+- No database - JSON files only
+- Comments in code explaining each section

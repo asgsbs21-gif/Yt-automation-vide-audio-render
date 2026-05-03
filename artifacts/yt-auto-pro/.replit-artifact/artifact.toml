@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "YT Auto Pro"
+version = "1.0.0"
+id = "artifacts/yt-auto-pro"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25901
+
+[services.development]
+run = "pnpm --filter @workspace/yt-auto-pro run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/yt-auto-pro", "run", "build" ]
+publicDir = "artifacts/yt-auto-pro/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25901"
+BASE_PATH = "/"
