@@ -72,10 +72,10 @@
       "#jin him"
     ],
     "scheduledAt": null,
-    "status": "pending",
+    "status": "failed",
     "youtubeUrl": null,
     "youtubeId": null,
-    "error": null,
+    "error": "Duplicate: same title already uploaded within 30 days",
     "id": "7ab05d40-aac3-4fa9-986a-0da163d7c78b",
     "createdAt": "2026-05-03T06:06:20.115Z"
   },
@@ -112,9 +112,9 @@
       "#jin him"
     ],
     "scheduledAt": null,
-    "status": "pending",
-    "youtubeUrl": null,
-    "youtubeId": null,
+    "status": "uploaded",
+    "youtubeUrl": "https://www.youtube.com/watch?v=mm02Pzu400g",
+    "youtubeId": "mm02Pzu400g",
     "error": null,
     "id": "3399f9c9-7cb1-48f5-935e-dfb83208a3ca",
     "createdAt": "2026-05-03T06:16:23.508Z"
@@ -156,9 +156,9 @@
       "sungjinwoo"
     ],
     "scheduledAt": null,
-    "status": "pending",
-    "youtubeUrl": null,
-    "youtubeId": null,
+    "status": "uploaded",
+    "youtubeUrl": "https://www.youtube.com/watch?v=_knCk8m5k_0",
+    "youtubeId": "_knCk8m5k_0",
     "error": null,
     "id": "49310792-90bd-480b-bcc9-46b27e018afb",
     "createdAt": "2026-05-03T09:17:15.684Z"
@@ -167,6 +167,7 @@
     "retryCount": 0,
     "lastRetryAt": null,
     "jobId": "bc7245b3-ddbe-4e98-83ae-e0c21219fee7",
+    "thumbnailPath": null,
     "driveId": "/home/runner/workspace/artifacts/api-server/data/output/output_bc7245b3-ddbe-4e98-83ae-e0c21219fee7.mp4",
     "title": "Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts",
     "description": "Edit Made By [Jin Him]\n🎞️ Anime: [Solo Leveling]\n🎧 Music: [Canta lala]\n\n⚠️ Copyright Disclaimer:\nI do not own the anime, images, or music used in this video.\nAll rights belong to their respective owners.\nThis video is made for entertainment and transformative purposes under fair use (Section 107 of the Copyright Act)\n\nSubscribe for more ❤️",
@@ -195,11 +196,10 @@
       "#jin him"
     ],
     "scheduledAt": null,
-    "status": "pending",
+    "status": "failed",
     "youtubeUrl": null,
     "youtubeId": null,
-    "error": null,
-    "thumbnailPath": null,
+    "error": "Duplicate: same title already uploaded within 30 days",
     "id": "1a2f04ec-d1df-4efd-bd77-954a771f77db",
     "createdAt": "2026-05-03T09:50:10.778Z"
   }

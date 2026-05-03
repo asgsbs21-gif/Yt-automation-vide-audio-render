@@ -5,8 +5,6 @@ import { execSync } from "child_process";
 import { addLog } from "./data.js";
 import type { JobType } from "../lib/socket.js";
 
-// ── Locate yt-dlp binary ──────────────────────────────────────────────────────
-
 const WORKSPACE_BIN = "/home/runner/workspace/bin";
 
 function ensureYtDlpBinary(): void {
@@ -21,12 +19,10 @@ function ensureYtDlpBinary(): void {
   } catch {}
 }
 
-// Always ensure binary exists on module load
 ensureYtDlpBinary();
 
 function findYtDlp(): string {
   const candidates = [
-    // PyInstaller standalone binary — no Python dependency
     path.join(WORKSPACE_BIN, "yt-dlp-linux"),
     path.resolve(process.cwd(), "../../bin/yt-dlp-linux"),
   ];
@@ -50,8 +46,6 @@ function findYtDlp(): string {
 
 export const YT_DLP_BIN = findYtDlp();
 
-// ── Metadata extracted from info.json ────────────────────────────────────────
-
 export interface AudioMetadata {
   title: string;
   description: string;
@@ -61,7 +55,10 @@ export interface AudioMetadata {
   filename: string;
 }
 
-// ── Shared: run yt-dlp and stream output to logs + progress ─────────────────
+function getCookieArgs(): string[] {
+  const cookiePath = path.resolve(process.cwd(), "data", "cookies.txt");
+  return fs.existsSync(cookiePath) ? ["--cookies", cookiePath] : [];
+}
 
 async function runYtDlp(
   args: string[],
@@ -71,10 +68,11 @@ async function runYtDlp(
   startPct = 5,
   endPct = 92
 ): Promise<{ stdout: string; stderr: string }> {
-  addLog(jobType, "info", `yt-dlp ${YT_DLP_BIN}`, args.join(" "));
+  const finalArgs = [...getCookieArgs(), ...args];
+  addLog(jobType, "info", `yt-dlp ${YT_DLP_BIN}`, finalArgs.join(" "));
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(YT_DLP_BIN, args, { cwd });
+    const proc = spawn(YT_DLP_BIN, finalArgs, { cwd });
     let lastPct = startPct;
     const stdoutLines: string[] = [];
     const stderrLines: string[] = [];
@@ -85,11 +83,7 @@ async function runYtDlp(
 
       for (const line of lines) {
         stdoutLines.push(line);
-
-        // Always log every line so user can see actual yt-dlp output
         addLog(jobType, "info", line.trim().slice(0, 300));
-
-        // Parse progress percentage
         const pctMatch = line.match(/\[download\]\s+([\d.]+)%/);
         if (pctMatch) {
           const raw = parseFloat(pctMatch[1]);
@@ -132,8 +126,6 @@ async function runYtDlp(
   });
 }
 
-// ── Download VIDEO with yt-dlp (non-Kuaishou URLs) ───────────────────────────
-
 export async function downloadVideoWithYtDlp(
   url: string,
   destDir: string,
@@ -167,7 +159,6 @@ export async function downloadVideoWithYtDlp(
     return null;
   }
 
-  // Find the output file
   const files = fs.readdirSync(destDir);
   const videoFile = files.find(
     (f) => f.startsWith(jobId) && (f.endsWith(".mp4") || f.endsWith(".mkv") || f.endsWith(".webm"))
@@ -183,8 +174,6 @@ export async function downloadVideoWithYtDlp(
   onProgress?.(100, `Done: ${videoFile}`);
   return videoPath;
 }
-
-// ── Download AUDIO + metadata with yt-dlp ────────────────────────────────────
 
 export async function downloadAudio(
   url: string,
@@ -240,15 +229,12 @@ export async function downloadAudio(
     const infoPath = path.join(destDir, infoFile);
     try {
       const info = JSON.parse(fs.readFileSync(infoPath, "utf-8"));
-
       const rawTags: string[] = Array.isArray(info.tags)
         ? info.tags.filter((t: unknown) => typeof t === "string")
         : [];
-
       const descHashtags: string[] = ((info.description as string) || "")
         .match(/#(\w+)/g)
         ?.map((h: string) => h.slice(1)) || [];
-
       const allTags = [...new Set([...rawTags, ...descHashtags])].slice(0, 30);
 
       metadata = {
@@ -282,11 +268,6 @@ export async function downloadAudio(
     };
   }
 
-  addLog(
-    jobType,
-    "success",
-    `Downloaded: "${metadata.title}" (${metadata.duration}s, ${metadata.tags.length} tags)`
-  );
-
+  addLog(jobType, "success", `Downloaded: "${metadata.title}" (${metadata.duration}s, ${metadata.tags.length} tags)`);
   return { audioPath, metadata };
 }
