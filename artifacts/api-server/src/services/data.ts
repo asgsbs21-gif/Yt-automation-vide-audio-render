@@ -111,6 +111,8 @@ export interface AppSettings {
   speedMultiplier: number;
   normalizeVolume: boolean;
   autoRetryEnabled: boolean;
+  googleClientId: string;
+  googleClientSecret: string;
 }
 
 export type LogLevel = "info" | "warn" | "error" | "success";
@@ -156,6 +158,8 @@ const defaultSettings: AppSettings = {
   speedMultiplier: 1.0,
   normalizeVolume: false,
   autoRetryEnabled: false,
+  googleClientId: "",
+  googleClientSecret: "",
 };
 
 // ── Auto-cycle category rotation state ───────────────────────────────────────

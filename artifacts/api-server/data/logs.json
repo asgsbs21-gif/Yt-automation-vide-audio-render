@@ -1,5 +1,85 @@
 [
   {
+    "id": "3b4c99c4-5bf4-4337-9b86-bab33e03d383",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T10:44:56.803Z"
+  },
+  {
+    "id": "608d2e11-bb88-4542-8ed6-cc8bb34df0a4",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T10:41:22.877Z"
+  },
+  {
+    "id": "bd7f76f9-1443-4f3f-805b-df971443af13",
+    "jobType": "process",
+    "level": "success",
+    "message": "Complete: \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts\" → output_bc7245b3-ddbe-4e98-83ae-e0c21219fee7.mp4",
+    "details": null,
+    "createdAt": "2026-05-03T09:50:10.779Z"
+  },
+  {
+    "id": "020f2df3-6623-438b-a1a4-7ee071dfbb82",
+    "jobType": "process",
+    "level": "success",
+    "message": "Merge complete → output_bc7245b3-ddbe-4e98-83ae-e0c21219fee7.mp4",
+    "details": null,
+    "createdAt": "2026-05-03T09:50:10.775Z"
+  },
+  {
+    "id": "8dcb5c5c-a34e-4060-b6bc-b90385136f6d",
+    "jobType": "process",
+    "level": "info",
+    "message": "FFmpeg started",
+    "details": "ffmpeg -i /tmp/process_bc7245b3-ddbe-4e98-83ae-e0c21219fee7/v0_video_1777793638939_a70ce7f6.mp4 -i /tmp/process_bc7245b3-ddbe-4e98-83ae-e0c21219fee7/v1_dl_1777799607703.mp4 -i /tmp/process_bc7245b3-ddbe-4e98-83ae-e0c21219fee7/audio.mp3 -i /home/runner/workspace/artifacts/api-server/data/watermark.png -y -filter_complex [0:v]setpts=PTS/1.1,scale=1080:1920:force_original_aspect_ratio=decrease,pad=10",
+    "createdAt": "2026-05-03T09:49:44.526Z"
+  },
+  {
+    "id": "13ca606f-ad0c-4165-83bd-cbbdb3e01fa3",
+    "jobType": "process",
+    "level": "info",
+    "message": "Merging 2 clip(s) with audio (target 56.0s, speed=1.1x, watermark=true, loudnorm=true)",
+    "details": null,
+    "createdAt": "2026-05-03T09:49:44.168Z"
+  },
+  {
+    "id": "caf97e06-dc52-44e6-8306-4e41c4ce4dbb",
+    "jobType": "process",
+    "level": "info",
+    "message": "Coverage: 245.1s for 56.0s (2 clips)",
+    "details": null,
+    "createdAt": "2026-05-03T09:49:44.069Z"
+  },
+  {
+    "id": "28d2e496-6150-4e94-a162-84faea45dc73",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 2: dl_1777799607703.mp4 — 189.1s",
+    "details": null,
+    "createdAt": "2026-05-03T09:49:44.067Z"
+  },
+  {
+    "id": "0ff4c40a-ddbb-43e5-b1c4-e3259b729ca5",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 1: video_1777793638939_a70ce7f6.mp4 — 56.0s",
+    "details": null,
+    "createdAt": "2026-05-03T09:49:43.616Z"
+  },
+  {
+    "id": "1d3267e2-f74c-422e-8dcc-6de708b85256",
+    "jobType": "process",
+    "level": "info",
+    "message": "Process [bc7245b3-ddbe-4e98-83ae-e0c21219fee7]: 2 clip(s) + \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts\" (56.0s, speed=1.1x, wm=true, loudnorm=true)",
+    "details": null,
+    "createdAt": "2026-05-03T09:49:43.287Z"
+  },
+  {
     "id": "012ecc7a-ae49-44b5-90de-1a80d3af422c",
     "jobType": "schedule",
     "level": "info",
@@ -3918,85 +3998,5 @@
     "message": "[youtube] Extracting URL: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
     "details": null,
     "createdAt": "2026-05-03T04:17:40.545Z"
-  },
-  {
-    "id": "6039a8bb-2f52-4951-8ee4-15db172558b7",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_d84abfee-a62a-4ae7-a342-f6e3db835030/%(id)s.%(ext)s https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
-    "createdAt": "2026-05-03T04:17:39.665Z"
-  },
-  {
-    "id": "2b5ce5f6-1ebe-4f95-8893-6757ed23a069",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Starting audio download: https://youtube.com/shorts/8XlpCUDJ3Ak?si=9ruaPgXcojnoppGe",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:39.653Z"
-  },
-  {
-    "id": "aca35a54-cd6f-413b-a0f4-fb947e50caaf",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Batch 0b281f8f-dd47-4d9d-b6ab-a583dc80495e: 1 audio URL(s)",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:39.651Z"
-  },
-  {
-    "id": "ebcdd572-2c5d-4891-9b88-629173b161a0",
-    "jobType": "download_audio",
-    "level": "success",
-    "message": "Downloaded: \"অ/প/হর/ণের ৯ দিন পর পরিবারের কাছে ফিরলো সেই কিশোরী! | ATN Bangla News\" (194s, 30 tags)",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:19.732Z"
-  },
-  {
-    "id": "e1364d2d-06e0-4385-8ff4-1bd7a842f5de",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Deleting original file /tmp/audio_91051e07-63d4-459e-be61-94c5a08ed1ca/aFDy54VgEYo.webm (pass -k to keep)",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:19.600Z"
-  },
-  {
-    "id": "f572fefd-9925-4c56-ba63-5b3f16d23c12",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[ExtractAudio] Destination: /tmp/audio_91051e07-63d4-459e-be61-94c5a08ed1ca/aFDy54VgEYo.mp3",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:15.398Z"
-  },
-  {
-    "id": "6fc75a13-00a3-4d7a-9981-eb7510ab2fd8",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[download] 100% of    3.19MiB in 00:00:00 at 52.90MiB/s",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:14.948Z"
-  },
-  {
-    "id": "e5e8da55-0dab-48f3-85f1-d55666a6ea46",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[download] 100.0% of    3.19MiB at   92.04MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:14.937Z"
-  },
-  {
-    "id": "b040cdf3-03e5-4865-b4a4-9c9aef55910a",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[download]  62.7% of    3.19MiB at  193.57MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:14.934Z"
-  },
-  {
-    "id": "9a2f2b5c-2fe2-4c44-bd83-579a71b5dc8b",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[download]  31.3% of    3.19MiB at  133.09MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T04:17:14.931Z"
   }
 ]

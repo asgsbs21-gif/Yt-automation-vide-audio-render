@@ -7,6 +7,7 @@ import { ProcessTab } from "./components/tabs/ProcessTab";
 import { QueueTab } from "./components/tabs/QueueTab";
 import { ScheduleTab } from "./components/tabs/ScheduleTab";
 import { LogsTab } from "./components/tabs/LogsTab";
+import { SettingsTab } from "./components/tabs/SettingsTab";
 import { JobProgressPanel } from "./components/JobProgressPanel";
 import { useSocket } from "./hooks/useSocket";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,10 @@ import {
   LogOut,
   Chrome,
   Loader2,
+  SlidersHorizontal,
 } from "lucide-react";
 
-type TabId = "dashboard" | "videos" | "audio" | "process" | "queue" | "schedule" | "logs";
+type TabId = "dashboard" | "videos" | "audio" | "process" | "queue" | "schedule" | "logs" | "settings";
 
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, component: DashboardTab },
@@ -33,6 +35,7 @@ const TABS = [
   { id: "queue",     label: "Queue",     icon: ListOrdered,     component: QueueTab },
   { id: "schedule",  label: "Schedule",  icon: CalendarClock,   component: ScheduleTab },
   { id: "logs",      label: "Logs",      icon: TerminalSquare,  component: LogsTab },
+  { id: "settings",  label: "Settings",  icon: SlidersHorizontal, component: SettingsTab },
 ] as const;
 
 export default function App() {

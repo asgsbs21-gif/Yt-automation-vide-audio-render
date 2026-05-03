@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import type { OAuth2Client } from "google-auth-library";
+import { getSettings } from "./data.js";
 
 // ── Scopes ────────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,21 @@ export function getGlobalTokens(): TokenSet | null {
   return _globalTokens;
 }
 
+// ── Resolve credentials (settings.json first, then env vars) ─────────────────
+
+function resolveCredentials(): { clientId: string; clientSecret: string } {
+  const settings = getSettings();
+  const clientId =
+    (settings.googleClientId && settings.googleClientId.trim()) ||
+    process.env["YOUTUBE_CLIENT_ID"] ||
+    "";
+  const clientSecret =
+    (settings.googleClientSecret && settings.googleClientSecret.trim()) ||
+    process.env["YOUTUBE_CLIENT_SECRET"] ||
+    "";
+  return { clientId, clientSecret };
+}
+
 // ── Build redirect URI ────────────────────────────────────────────────────────
 
 export function getRedirectUri(host?: string): string {
@@ -47,8 +63,7 @@ export function getRedirectUri(host?: string): string {
 // ── Create OAuth2 client ──────────────────────────────────────────────────────
 
 export function createOAuth2Client(host?: string): OAuth2Client {
-  const clientId = process.env["YOUTUBE_CLIENT_ID"] || "";
-  const clientSecret = process.env["YOUTUBE_CLIENT_SECRET"] || "";
+  const { clientId, clientSecret } = resolveCredentials();
   const redirectUri = getRedirectUri(host);
   return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 }
@@ -115,7 +130,6 @@ export function createAuthenticatedClient(
 // ── Check if credentials are configured ──────────────────────────────────────
 
 export function isOAuthConfigured(): boolean {
-  return Boolean(
-    process.env["YOUTUBE_CLIENT_ID"] && process.env["YOUTUBE_CLIENT_SECRET"]
-  );
+  const { clientId, clientSecret } = resolveCredentials();
+  return Boolean(clientId && clientSecret);
 }
