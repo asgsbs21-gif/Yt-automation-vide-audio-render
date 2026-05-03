@@ -1,5 +1,13 @@
 [
   {
+    "id": "8a0635a3-1797-4d8b-ae58-1c78b37e4903",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-03T02:45:05.678Z"
+  },
+  {
     "id": "cd65c91a-eab1-4a6e-9279-8c2b34645f4e",
     "jobType": "schedule",
     "level": "info",

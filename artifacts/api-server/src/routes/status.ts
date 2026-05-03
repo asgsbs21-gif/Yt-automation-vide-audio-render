@@ -3,12 +3,12 @@ import { getVideos, getAudios, getQueue } from "../services/data.js";
 import { createAuthenticatedClient } from "../services/auth.js";
 import { checkDriveConnected } from "../services/drive.js";
 import { checkYouTubeConnected } from "../services/youtube.js";
-import { requireAuth, getSessionTokens } from "../middlewares/auth.js";
+import { getSessionTokens } from "../middlewares/auth.js";
 
 const router = Router();
 
 // GET /api/status
-router.get("/status", requireAuth, async (req, res) => {
+router.get("/status", async (req, res) => {
   const videos = getVideos();
   const audios = getAudios();
   const queue = getQueue();
@@ -25,7 +25,6 @@ router.get("/status", requireAuth, async (req, res) => {
     ]);
   }
 
-  // Category breakdown
   const categoryMap = new Map<string, { count: number; usedCount: number }>();
   for (const v of videos) {
     const entry = categoryMap.get(v.category) ?? { count: 0, usedCount: 0 };

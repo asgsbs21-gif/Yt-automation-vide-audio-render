@@ -1,17 +1,17 @@
 import { Router } from "express";
 import { getQueue, updateQueueItem, addLog } from "../services/data.js";
 import { processQueueItem } from "../services/scheduler.js";
-import { requireAuth, getSessionTokens } from "../middlewares/auth.js";
+import { getSessionTokens } from "../middlewares/auth.js";
 
 const router = Router();
 
-// GET /api/queue
-router.get("/queue", requireAuth, (req, res) => {
+// GET /api/queue — no auth required
+router.get("/queue", (req, res) => {
   res.json(getQueue());
 });
 
-// POST /api/schedule
-router.post("/schedule", requireAuth, (req, res) => {
+// POST /api/schedule — no auth required (just updates local data)
+router.post("/schedule", (req, res) => {
   const { queueItemId, scheduledAt } = req.body as {
     queueItemId: string;
     scheduledAt: string;
@@ -22,11 +22,7 @@ router.post("/schedule", requireAuth, (req, res) => {
     return;
   }
 
-  const updated = updateQueueItem(queueItemId, {
-    scheduledAt,
-    status: "scheduled",
-  });
-
+  const updated = updateQueueItem(queueItemId, { scheduledAt, status: "scheduled" });
   if (!updated) {
     res.status(404).json({ error: "Queue item not found" });
     return;
@@ -36,8 +32,8 @@ router.post("/schedule", requireAuth, (req, res) => {
   res.json(updated);
 });
 
-// POST /api/upload-now
-router.post("/upload-now", requireAuth, async (req, res) => {
+// POST /api/upload-now — requires Google auth
+router.post("/upload-now", async (req, res) => {
   const { queueItemId } = req.body as { queueItemId: string };
 
   if (!queueItemId) {
@@ -47,7 +43,10 @@ router.post("/upload-now", requireAuth, async (req, res) => {
 
   const tokens = getSessionTokens(req);
   if (!tokens) {
-    res.status(401).json({ error: "Not authenticated" });
+    res.status(401).json({
+      error: "Google account not connected. Click 'Connect Google' in the sidebar first.",
+      requiresAuth: true,
+    });
     return;
   }
 

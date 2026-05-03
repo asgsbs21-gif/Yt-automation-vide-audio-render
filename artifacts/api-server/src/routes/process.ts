@@ -16,18 +16,18 @@ import {
 import { mergeVideoWithAudio } from "../services/ffmpeg.js";
 import { downloadFromDrive, uploadFileToDrive } from "../services/drive.js";
 import { createAuthenticatedClient } from "../services/auth.js";
-import { requireAuth, getSessionTokens } from "../middlewares/auth.js";
+import { getSessionTokens } from "../middlewares/auth.js";
 
 const router = Router();
 
-// POST /api/process/preview
-router.post("/process/preview", requireAuth, (req, res) => {
+// POST /api/process/preview — no auth required
+router.post("/process/preview", (req, res) => {
   const { audioId, categoryFilter } = req.body as {
     audioId?: string | null;
     categoryFilter?: string | null;
   };
 
-  let audio = audioId
+  const audio = audioId
     ? getAudios().find((a) => a.id === audioId) ?? null
     : getRandomUnusedAudio(categoryFilter);
 
@@ -46,8 +46,8 @@ router.post("/process/preview", requireAuth, (req, res) => {
   });
 });
 
-// POST /api/process
-router.post("/process", requireAuth, async (req, res) => {
+// POST /api/process — no auth required (Drive upload skipped when not connected)
+router.post("/process", async (req, res) => {
   const { audioId, categoryFilter, addToQueue = true } = req.body as {
     audioId?: string | null;
     categoryFilter?: string | null;
@@ -74,7 +74,6 @@ router.post("/process", requireAuth, async (req, res) => {
   addLog("process", "info", `Starting process job [${jobId}]: ${videos.length} video(s) + "${audio.title}"`);
   res.json({ jobId, message: "Processing started", status: "started" });
 
-  // Run processing in background
   (async () => {
     const settings = getSettings();
     const tokens = getSessionTokens(req);
@@ -83,14 +82,13 @@ router.post("/process", requireAuth, async (req, res) => {
 
     const auth = tokens ? createAuthenticatedClient(tokens) : null;
 
-    // Download videos from Drive (or use local path)
+    // Download videos (from Drive if connected, else use local path)
     const videoPaths: string[] = [];
     for (const video of videos) {
       const dest = path.join(tmpDir, video.filename);
       if (auth && !video.driveId.startsWith("/")) {
         await downloadFromDrive(auth, video.driveId, dest);
       } else {
-        // Local file path
         fs.copyFileSync(video.driveId, dest);
       }
       videoPaths.push(dest);
@@ -104,32 +102,26 @@ router.post("/process", requireAuth, async (req, res) => {
       fs.copyFileSync(audio.driveId, audioDest);
     }
 
-    // Merge with FFmpeg
+    // Merge
     const outputPath = path.join(tmpDir, `output_${jobId}.mp4`);
     await mergeVideoWithAudio(videoPaths, audioDest, outputPath);
 
-    // Upload output to Drive
+    // Upload output to Drive if connected, else keep local
     let outputDriveId = outputPath;
     let outputDriveLink: string | null = null;
     const outputFolderId = settings.driveOutputFolderId;
 
     if (auth && outputFolderId) {
       const driveFile = await uploadFileToDrive(
-        auth,
-        outputPath,
-        outputFolderId,
-        "video/mp4",
-        `output_${jobId}.mp4`
+        auth, outputPath, outputFolderId, "video/mp4", `output_${jobId}.mp4`
       );
       outputDriveId = driveFile.id;
       outputDriveLink = driveFile.webViewLink;
     }
 
-    // Mark videos and audio as used
     markVideosUsed(videos.map((v) => v.id));
     markAudioUsed(audio.id);
 
-    // Add to queue if requested
     if (addToQueue) {
       addQueueItem({
         driveId: outputDriveId,
@@ -146,7 +138,6 @@ router.post("/process", requireAuth, async (req, res) => {
 
     addLog("process", "success", `Processing complete: "${audio.title}"`);
 
-    // Cleanup tmp (keep output if local)
     try {
       for (const p of videoPaths) fs.unlinkSync(p);
       fs.unlinkSync(audioDest);

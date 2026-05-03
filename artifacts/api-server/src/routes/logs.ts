@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { getLogs } from "../services/data.js";
-import { requireAuth } from "../middlewares/auth.js";
 
 const router = Router();
 
 // GET /api/logs
-router.get("/logs", requireAuth, (req, res) => {
+router.get("/logs", (req, res) => {
   const limit = Math.min(Number(req.query.limit) || 100, 500);
   const jobType = req.query.jobType as string | undefined;
 

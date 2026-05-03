@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { getVideos, updateVideo } from "../services/data.js";
-import { requireAuth } from "../middlewares/auth.js";
 
 const router = Router();
 
 // GET /api/videos
-router.get("/videos", requireAuth, (req, res) => {
+router.get("/videos", (req, res) => {
   let videos = getVideos();
   const { category, status } = req.query;
   if (category) videos = videos.filter((v) => v.category === String(category));
@@ -14,7 +13,7 @@ router.get("/videos", requireAuth, (req, res) => {
 });
 
 // PATCH /api/videos/:id/category
-router.patch("/videos/:id/category", requireAuth, (req, res) => {
+router.patch("/videos/:id/category", (req, res) => {
   const { id } = req.params;
   const { category } = req.body as { category: string };
   if (!category) {
