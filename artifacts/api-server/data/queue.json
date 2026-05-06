@@ -202,5 +202,22 @@
     "error": "Duplicate: same title already uploaded within 30 days",
     "id": "1a2f04ec-d1df-4efd-bd77-954a771f77db",
     "createdAt": "2026-05-03T09:50:10.778Z"
+  },
+  {
+    "retryCount": 0,
+    "lastRetryAt": null,
+    "jobId": "19d85b91-bc14-47ae-b225-4f1dde99003c",
+    "driveId": "/home/runner/workspace/artifacts/api-server/data/output/output_19d85b91-bc14-47ae-b225-4f1dde99003c.mp4",
+    "title": "NO BATIDÃO (Ultra Slowed)",
+    "description": "",
+    "tags": [],
+    "scheduledAt": null,
+    "status": "pending",
+    "youtubeUrl": null,
+    "youtubeId": null,
+    "error": null,
+    "thumbnailPath": null,
+    "id": "9beb284d-a40a-4e62-a88d-ecee2bf577cc",
+    "createdAt": "2026-05-06T06:31:38.948Z"
   }
 ]

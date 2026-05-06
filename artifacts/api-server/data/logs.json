@@ -1,5 +1,997 @@
 [
   {
+    "id": "fbc6a189-a692-4e07-9426-f2dcba4f1e8a",
+    "jobType": "download_video",
+    "level": "success",
+    "message": "Downloaded: dl_1778049469939.mp4",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.942Z"
+  },
+  {
+    "id": "549d9f9d-390b-4ca3-84e3-511a7d581d33",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Deleting original file /tmp/video_582dabef-993d-4133-9d3f-e49a25560c7a/dl_1778049469939.f399.mp4 (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.801Z"
+  },
+  {
+    "id": "d2ce44ed-9e86-4f9e-8be4-07771f0cf2e5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Deleting original file /tmp/video_582dabef-993d-4133-9d3f-e49a25560c7a/dl_1778049469939.f140.m4a (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.798Z"
+  },
+  {
+    "id": "38b67f49-f2f9-4d31-8290-0323d5915f73",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[Merger] Merging formats into \"/tmp/video_582dabef-993d-4133-9d3f-e49a25560c7a/dl_1778049469939.mp4\"",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.611Z"
+  },
+  {
+    "id": "9e3ceff3-33d5-407e-8ec5-1b703fd7117d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100% of  462.43KiB in 00:00:00 at 19.21MiB/s",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.608Z"
+  },
+  {
+    "id": "a666d4c7-cf8c-43df-ba5b-01d38e0d58bc",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100.0% of  462.43KiB at   95.46MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.606Z"
+  },
+  {
+    "id": "fc08925d-c197-4e41-9af4-93bb471f95ac",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  55.1% of  462.43KiB at   77.24MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.603Z"
+  },
+  {
+    "id": "436e039c-3a37-4d90-9527-32c57610d51a",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  27.5% of  462.43KiB at   47.58MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.601Z"
+  },
+  {
+    "id": "b70116b7-70f5-44f5-b729-fd07180af190",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  13.6% of  462.43KiB at   30.35MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.598Z"
+  },
+  {
+    "id": "a452d04f-504e-4aa1-8296-e61138ad2037",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   6.7% of  462.43KiB at   18.78MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.595Z"
+  },
+  {
+    "id": "4aa23a85-c19e-4a5d-b540-bc148591a7b1",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   3.2% of  462.43KiB at   11.00MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.578Z"
+  },
+  {
+    "id": "72914a3a-3cc3-4a5b-ab57-6a1195f147c2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   1.5% of  462.43KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.576Z"
+  },
+  {
+    "id": "8d957470-84e1-4057-8fc8-3b33eaa816a1",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.6% of  462.43KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.573Z"
+  },
+  {
+    "id": "c2fb0775-66dd-4fa6-a7e5-06773a7d537c",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.2% of  462.43KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.561Z"
+  },
+  {
+    "id": "da86f12f-fd1a-4705-8653-b5d940725fc7",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] Destination: /tmp/video_582dabef-993d-4133-9d3f-e49a25560c7a/dl_1778049469939.f140.m4a",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.558Z"
+  },
+  {
+    "id": "58c8fefa-8a95-40f0-b765-b2b1e66e29a2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100% of    7.99MiB in 00:00:00 at 56.48MiB/s",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.540Z"
+  },
+  {
+    "id": "64a57c30-7c07-4fe1-b0e5-2352295291bb",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100.0% of    7.99MiB at   83.68MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.515Z"
+  },
+  {
+    "id": "da0c25fa-9f26-4c7c-a752-0f8242cf548b",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  50.0% of    7.99MiB at   80.92MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.469Z"
+  },
+  {
+    "id": "1a5537da-012a-4560-a4f1-027fdc804815",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  25.0% of    7.99MiB at   48.37MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.461Z"
+  },
+  {
+    "id": "164690d9-01d5-4eea-a69f-5ea216c709f1",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  12.5% of    7.99MiB at   66.55MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.452Z"
+  },
+  {
+    "id": "77df22f4-7727-4ea6-9c64-812908cb95b5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   6.2% of    7.99MiB at   41.26MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.448Z"
+  },
+  {
+    "id": "a9f5b9d6-2956-4c63-aae4-419675ec0926",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   3.1% of    7.99MiB at   29.25MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.445Z"
+  },
+  {
+    "id": "16a5d67b-7a6d-4d36-86c6-e245e65a09a2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   1.6% of    7.99MiB at   19.06MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.442Z"
+  },
+  {
+    "id": "6a21dd12-874b-4548-b00e-011f663d1bcf",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.8% of    7.99MiB at   15.38MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.438Z"
+  },
+  {
+    "id": "0fb6eae9-78d5-47db-9bd1-d1b6215b2227",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.4% of    7.99MiB at   12.90MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.435Z"
+  },
+  {
+    "id": "de7ac93c-8f57-4fab-8dfd-48fe69454680",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.2% of    7.99MiB at    8.65MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.432Z"
+  },
+  {
+    "id": "1794c11d-1990-4d1c-80d7-c0970002ebb7",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.1% of    7.99MiB at    5.08MiB/s ETA 00:01",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.429Z"
+  },
+  {
+    "id": "dcfee12c-0382-4ad9-a400-cb87fc096ad5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of    7.99MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.426Z"
+  },
+  {
+    "id": "d949d334-d378-4f4e-826f-bfde8dd0f4bf",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of    7.99MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.423Z"
+  },
+  {
+    "id": "3ea6713e-788d-4723-8637-21c822e7ab48",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] Destination: /tmp/video_582dabef-993d-4133-9d3f-e49a25560c7a/dl_1778049469939.f399.mp4",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.420Z"
+  },
+  {
+    "id": "2b1aa17f-348c-489d-bb6b-7e652b12fce7",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[info] BFqENWGHLv4: Downloading 1 format(s): 399+140",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:52.205Z"
+  },
+  {
+    "id": "829a008a-f590-497c-8055-86652c11360f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] BFqENWGHLv4: Downloading android vr player API JSON",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:51.943Z"
+  },
+  {
+    "id": "25d9be90-9f86-426a-84ef-19ffb61a63ac",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] BFqENWGHLv4: Downloading webpage",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:50.965Z"
+  },
+  {
+    "id": "97c29f13-93a0-47fb-8c84-c7de8bf5f4ed",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] Extracting URL: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:50.962Z"
+  },
+  {
+    "id": "ce9cc746-620a-46fe-a6da-4e6c63cfd9df",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_582dabef-993d-4133-9d3f-e49a25560c7a/dl_1778049469939.%(ext)s https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "createdAt": "2026-05-06T06:37:49.947Z"
+  },
+  {
+    "id": "56dd77d4-631d-451e-8180-fa517f3c8500",
+    "jobType": "download_video",
+    "level": "warn",
+    "message": "cookies.txt invalid format — skipping",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:49.944Z"
+  },
+  {
+    "id": "ce7216ba-77e2-4b71-9647-aa0d22ba35c7",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:49.940Z"
+  },
+  {
+    "id": "f08caa2d-ad6e-4a3f-b605-78ed63f8ece9",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[1/1] yt-dlp: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:49.928Z"
+  },
+  {
+    "id": "ce3a94fe-a701-46ac-9255-13e1f48b5220",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Batch ac43f200-81ca-4903-b885-3284df8e1f53: 1 video URL(s)",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:49.926Z"
+  },
+  {
+    "id": "9e4f6788-5d4f-4d5f-80b5-c97482959006",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-06T06:37:29.346Z"
+  },
+  {
+    "id": "6c9d6610-1924-4616-ae09-1698664fcd07",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "Attempt 3/3 for https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": "Error: Download returned no file",
+    "createdAt": "2026-05-06T06:33:26.680Z"
+  },
+  {
+    "id": "18fdf2ab-3260-4aae-af4d-6a131b4b6441",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp video download failed: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": "Error: yt-dlp exited with code 1:\nWARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'\nWARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'\nWARNING: skipping cookie file entry due to ",
+    "createdAt": "2026-05-06T06:33:26.677Z"
+  },
+  {
+    "id": "9024d42b-7400-4e01-a49f-dd2a8811a19e",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: ERROR: '/home/runner/workspace/artifacts/api-server/data/cookies.txt' does not look like a Netscape format cookies file",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.657Z"
+  },
+  {
+    "id": "35e8b775-3128-4e8f-8d2f-1126072df9a8",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.162\\t6fff8e7a29ce\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.654Z"
+  },
+  {
+    "id": "5e7d84b9-2a98-49db-ba64-1c73c0f20073",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\toidc.replit.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.651Z"
+  },
+  {
+    "id": "b74b4a7f-0e6d-4efe-9ba3-92f1bd3ba9fb",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\thost.docker.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.649Z"
+  },
+  {
+    "id": "345e9bb4-de9b-47d9-9e67-3791f683d7f0",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::2\\tip6-allrouters\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.647Z"
+  },
+  {
+    "id": "afd93cbd-cc6b-432a-b564-30149d42b24d",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.644Z"
+  },
+  {
+    "id": "4fbf2209-02d8-467b-a5a9-7b8ffab392a9",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.595Z"
+  },
+  {
+    "id": "2adf1f1e-68ad-4bd7-8156-294b493c1bd6",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.592Z"
+  },
+  {
+    "id": "c3254b22-b6b9-4ec6-bafd-01660ffcb214",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.589Z"
+  },
+  {
+    "id": "9e08d0fb-2038-4ac5-b714-8c9aa0c8d6ca",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.586Z"
+  },
+  {
+    "id": "a04b7a6a-cc3a-410c-94e6-ba1d4e7c608a",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: ERROR: '/home/runner/workspace/artifacts/api-server/data/cookies.txt' does not look like a Netscape format cookies file",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.582Z"
+  },
+  {
+    "id": "a6ffd6be-384d-436e-a13f-2476f452a9e4",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.162\\t6fff8e7a29ce\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.577Z"
+  },
+  {
+    "id": "80be0eb6-8c03-4663-ada9-be442e1469e1",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\toidc.replit.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.575Z"
+  },
+  {
+    "id": "07c073c3-ed34-49bb-b840-410af166194c",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\thost.docker.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.572Z"
+  },
+  {
+    "id": "fa200639-d736-4c02-ac44-ebaac085626d",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::2\\tip6-allrouters\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.569Z"
+  },
+  {
+    "id": "7dacc332-9036-4f0a-9c39-efe66028011a",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.566Z"
+  },
+  {
+    "id": "28ae6c71-9b90-413d-a001-14df89974911",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.563Z"
+  },
+  {
+    "id": "d966608e-bc21-47d6-abbf-6b850b9e2087",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.560Z"
+  },
+  {
+    "id": "2b28f409-12be-459c-9337-daba0427206c",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.557Z"
+  },
+  {
+    "id": "390fbf98-055d-4c5e-b505-22acb2d9cefa",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:26.553Z"
+  },
+  {
+    "id": "60ef63d6-b9c7-42e3-b0e1-63e76c33f10f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "--cookies /home/runner/workspace/artifacts/api-server/data/cookies.txt -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_a40009b0-92ae-4dc3-b61c-16a59cde9419/dl_1778049205631.%(ext)s https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "createdAt": "2026-05-06T06:33:25.634Z"
+  },
+  {
+    "id": "afdaa444-e682-4cbb-88ef-4e9497a02c83",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.632Z"
+  },
+  {
+    "id": "60cdd638-40e7-4d04-bb3f-b9b51c57ac87",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp video download failed: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": "Error: yt-dlp exited with code 1:\nWARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'\nWARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'\nWARNING: skipping cookie file entry due to ",
+    "createdAt": "2026-05-06T06:33:25.629Z"
+  },
+  {
+    "id": "f06ef766-bb2e-4b30-8f03-17c57c16dbf2",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: ERROR: '/home/runner/workspace/artifacts/api-server/data/cookies.txt' does not look like a Netscape format cookies file",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.593Z"
+  },
+  {
+    "id": "7d2601fc-2a7c-42c6-abcf-bb73321c3970",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.162\\t6fff8e7a29ce\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.581Z"
+  },
+  {
+    "id": "f9c043f4-99de-47a0-8e6d-46c319e16b07",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\toidc.replit.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.579Z"
+  },
+  {
+    "id": "af4d1910-cd39-4632-830c-f9249394ba62",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\thost.docker.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.577Z"
+  },
+  {
+    "id": "ce984723-bee1-4706-969e-65b956bc0257",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::2\\tip6-allrouters\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.574Z"
+  },
+  {
+    "id": "7c76c064-dc32-4e91-a5fd-97d2f3ba0af0",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.571Z"
+  },
+  {
+    "id": "9c8f017c-a27a-4258-b548-5efbf31fb1d6",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.569Z"
+  },
+  {
+    "id": "01d8ed23-86c8-4a68-a005-d9c2f1f60533",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.567Z"
+  },
+  {
+    "id": "5dee4190-afd3-4bef-b5cc-88e049ba0a78",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.564Z"
+  },
+  {
+    "id": "4a203d49-4f47-4336-b1a8-9ed0990c6055",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.562Z"
+  },
+  {
+    "id": "3485e0e3-e254-4243-be51-dfd46efac142",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: ERROR: '/home/runner/workspace/artifacts/api-server/data/cookies.txt' does not look like a Netscape format cookies file",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.560Z"
+  },
+  {
+    "id": "d935cdcb-05cc-46a5-b119-a7019a3b92b4",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.162\\t6fff8e7a29ce\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.555Z"
+  },
+  {
+    "id": "984cd6e5-6798-47db-b804-478a19a01fdf",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\toidc.replit.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.552Z"
+  },
+  {
+    "id": "c66c2982-ef6c-4173-90f4-87e779919050",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\thost.docker.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.550Z"
+  },
+  {
+    "id": "83611d13-5323-448f-a1db-916128cbe50a",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::2\\tip6-allrouters\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.548Z"
+  },
+  {
+    "id": "442d65f9-9d0a-4398-af3a-36e9f260872f",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.545Z"
+  },
+  {
+    "id": "843876ad-75b8-4aeb-b9f1-53d9929e1932",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.543Z"
+  },
+  {
+    "id": "64cc5844-62ab-486e-8f8a-2b9793b994d1",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.540Z"
+  },
+  {
+    "id": "73db484e-b89e-4e12-a6f3-76a67be85fb7",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.525Z"
+  },
+  {
+    "id": "3f88a711-c2ed-4b71-aaa3-d4e7765b2b07",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:25.522Z"
+  },
+  {
+    "id": "e928f970-a9b6-4479-9210-87850f679379",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "--cookies /home/runner/workspace/artifacts/api-server/data/cookies.txt -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_04573f2a-017a-4547-ac34-fa48705aae4f/dl_1778049204445.%(ext)s https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "createdAt": "2026-05-06T06:33:24.449Z"
+  },
+  {
+    "id": "98d99697-9d84-4146-824f-bf1e752b1540",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.445Z"
+  },
+  {
+    "id": "48dbca90-7b1f-48ed-94ce-cbe2ebe09973",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp video download failed: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": "Error: yt-dlp exited with code 1:\nWARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'\nWARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'\nWARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'\nWARNING: skipping cookie file entry due to ",
+    "createdAt": "2026-05-06T06:33:24.443Z"
+  },
+  {
+    "id": "1b4ae546-5b5a-439e-9f1f-3e9cf9e5093e",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: ERROR: '/home/runner/workspace/artifacts/api-server/data/cookies.txt' does not look like a Netscape format cookies file",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.389Z"
+  },
+  {
+    "id": "303ff7c5-4c2f-45bf-b15f-944b7bb80f9e",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.162\\t6fff8e7a29ce\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.386Z"
+  },
+  {
+    "id": "f14106a8-1028-4a63-a88a-0f1ee9c57a65",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\toidc.replit.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.383Z"
+  },
+  {
+    "id": "f2c04140-1638-40aa-b614-c6486e84d690",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\thost.docker.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.381Z"
+  },
+  {
+    "id": "9a22325f-72fb-4003-9a62-c1a1f3c68c88",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::2\\tip6-allrouters\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.378Z"
+  },
+  {
+    "id": "2a1786c4-f0d9-43b8-8473-5216d6af900b",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.375Z"
+  },
+  {
+    "id": "1d6ec039-76c0-4563-90ad-23508baaa005",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.373Z"
+  },
+  {
+    "id": "bd1a006a-26cd-458a-a2d4-ab9bfda787b7",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.370Z"
+  },
+  {
+    "id": "e4abfa7e-2042-48d0-b451-360a88d92a80",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.368Z"
+  },
+  {
+    "id": "06990eb0-d030-43f9-8b21-49ca5ac83b19",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.365Z"
+  },
+  {
+    "id": "093a8cfe-4c8e-4638-a1d6-16521b969a97",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: ERROR: '/home/runner/workspace/artifacts/api-server/data/cookies.txt' does not look like a Netscape format cookies file",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.362Z"
+  },
+  {
+    "id": "366eb6af-a790-4e8a-8706-ee47580e97ea",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.162\\t6fff8e7a29ce\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.358Z"
+  },
+  {
+    "id": "0cbbee6b-cab8-45a4-b954-675254521286",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\toidc.replit.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.355Z"
+  },
+  {
+    "id": "d481656e-18c0-455f-8102-ae57c43a9ad1",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '172.31.91.161\\thost.docker.internal\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.352Z"
+  },
+  {
+    "id": "a3db4b91-1485-40b3-afc0-50509ada09b4",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::2\\tip6-allrouters\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.349Z"
+  },
+  {
+    "id": "bcbeaecc-ada3-4290-92d2-33f4450a3c03",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff02::1\\tip6-allnodes\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.338Z"
+  },
+  {
+    "id": "2ab0a70d-7fb2-4006-b49e-f13310279dc0",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'ff00::0\\tip6-mcastprefix\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.336Z"
+  },
+  {
+    "id": "0ee8007b-859f-45dd-bc60-5d2fb80785c3",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: 'fe00::0\\tip6-localnet\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.333Z"
+  },
+  {
+    "id": "5eb1d932-bcfe-4923-8667-72129d2b559e",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '::1\\tlocalhost ip6-localhost ip6-loopback\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.330Z"
+  },
+  {
+    "id": "6b4980fc-367a-4929-ae6c-357b8d32a523",
+    "jobType": "download_video",
+    "level": "error",
+    "message": "yt-dlp stderr: WARNING: skipping cookie file entry due to invalid length 2: '127.0.0.1\\tlocalhost\\n'",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:24.327Z"
+  },
+  {
+    "id": "79bb9f35-c4c2-449b-9882-7b6ccbdbb14e",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "--cookies /home/runner/workspace/artifacts/api-server/data/cookies.txt -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_c8684024-e738-4441-9dcb-b74238771a5d/dl_1778049203307.%(ext)s https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "createdAt": "2026-05-06T06:33:23.311Z"
+  },
+  {
+    "id": "486dec4a-2246-43c4-b821-e093efbc1891",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:23.308Z"
+  },
+  {
+    "id": "16911330-4c1f-452e-b6ad-ce6b6072df40",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[1/1] yt-dlp: https://youtube.com/shorts/BFqENWGHLv4?si=jb5P4PaAMDyARCP1",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:23.304Z"
+  },
+  {
+    "id": "d910e7b2-f20a-4da3-9f1f-7dec351d0217",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Batch 645586e2-d74a-4996-8187-7fbac3ae3785: 1 video URL(s)",
+    "details": null,
+    "createdAt": "2026-05-06T06:33:23.302Z"
+  },
+  {
+    "id": "9976f96c-8907-4c56-91c3-fa4fd5ac6f1c",
+    "jobType": "process",
+    "level": "success",
+    "message": "Complete: \"NO BATIDÃO (Ultra Slowed)\" → output_19d85b91-bc14-47ae-b225-4f1dde99003c.mp4",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:38.949Z"
+  },
+  {
+    "id": "6907cfc4-fc51-42b4-81a3-32e3cff91a55",
+    "jobType": "process",
+    "level": "success",
+    "message": "Merge complete → output_19d85b91-bc14-47ae-b225-4f1dde99003c.mp4",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:38.942Z"
+  },
+  {
+    "id": "5612dc71-04e6-4347-a1a3-89fac0b182fa",
+    "jobType": "process",
+    "level": "info",
+    "message": "FFmpeg started",
+    "details": "ffmpeg -i /tmp/process_19d85b91-bc14-47ae-b225-4f1dde99003c/v0_video_1777880839619_51892bc0.mp4 -i /tmp/process_19d85b91-bc14-47ae-b225-4f1dde99003c/v1_video_1777880839612_171742ac.mp4 -i /tmp/process_19d85b91-bc14-47ae-b225-4f1dde99003c/v2_video_1777880839613_cbbc72d7.mp4 -i /tmp/process_19d85b91-bc14-47ae-b225-4f1dde99003c/v3_video_1777880839603_8cdc187b.mp4 -i /tmp/process_19d85b91-bc14-47ae-b2",
+    "createdAt": "2026-05-06T06:31:19.465Z"
+  },
+  {
+    "id": "a9b0324a-7601-419b-a9b7-b46134bf0988",
+    "jobType": "process",
+    "level": "info",
+    "message": "Merging 5 clip(s) with audio (target 126.1s, speed=1x, watermark=false, loudnorm=false)",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:19.050Z"
+  },
+  {
+    "id": "92e8b8d0-4627-4f1e-b14f-56ff59578fe9",
+    "jobType": "process",
+    "level": "info",
+    "message": "Coverage: 398.6s for 126.1s (5 clips)",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:19.034Z"
+  },
+  {
+    "id": "e7d4e92a-2438-4bde-95ca-5d52f02ea433",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 5: video_1777880839619_51892bc0.mp4 — 56.3s",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:19.031Z"
+  },
+  {
+    "id": "e58f970b-6bd5-46ab-82ee-4081d7fcbd94",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 4: video_1777880839603_8cdc187b.mp4 — 194.0s",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:18.791Z"
+  },
+  {
+    "id": "d48700a9-bc0e-4054-a97b-edda7bd9aa58",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 3: video_1777880839613_cbbc72d7.mp4 — 56.0s",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:18.495Z"
+  },
+  {
+    "id": "a4851a9f-2553-4a92-8384-43cc95a78fcd",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 2: video_1777880839612_171742ac.mp4 — 36.0s",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:18.275Z"
+  },
+  {
+    "id": "b6fc041b-18be-4f5a-83ad-84131b0204b0",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 1: video_1777880839619_51892bc0.mp4 — 56.3s",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:17.998Z"
+  },
+  {
+    "id": "dccd7987-a665-4773-99b3-b0fc99a652b5",
+    "jobType": "process",
+    "level": "info",
+    "message": "Process [19d85b91-bc14-47ae-b225-4f1dde99003c]: 5 clip(s) + \"NO BATIDÃO (Ultra Slowed)\" (126.1s, speed=1x, wm=false, loudnorm=false)",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:17.363Z"
+  },
+  {
+    "id": "e5003657-ae1f-45cd-aca5-6e6d43cc8572",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-06T06:31:06.279Z"
+  },
+  {
     "id": "63525125-bde0-4439-b218-5058d1850c59",
     "jobType": "schedule",
     "level": "info",
@@ -3006,997 +3998,5 @@
     "message": "[download]  80.4% of   60.17MiB at  Unknown B/s ETA Unknown",
     "details": null,
     "createdAt": "2026-05-03T09:13:32.553Z"
-  },
-  {
-    "id": "36f1a04d-271d-4142-8b70-3005b7bcbc60",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  80.4% of   60.17MiB at   60.44MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.542Z"
-  },
-  {
-    "id": "44973685-1675-406b-b954-dbe5dbfac9c4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  77.9% of   60.17MiB at   55.60MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.528Z"
-  },
-  {
-    "id": "882b67a0-a071-4cf2-918c-8c9d7f43fcf0",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  71.2% of   60.17MiB at   46.03MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.471Z"
-  },
-  {
-    "id": "c1f6a5a8-df36-4751-b642-8e8e9dcfadb7",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  67.9% of   60.17MiB at   58.82MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.418Z"
-  },
-  {
-    "id": "a1f69508-a162-46db-bb5e-1dc8ae025e91",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  66.2% of   60.17MiB at  198.86MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.403Z"
-  },
-  {
-    "id": "2fa12337-acf2-4848-bb49-b44353a6fe20",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  65.4% of   60.17MiB at  138.47MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.401Z"
-  },
-  {
-    "id": "e20c9935-11c8-4dfa-a0de-b8ff12561582",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  65.0% of   60.17MiB at   90.47MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.399Z"
-  },
-  {
-    "id": "e4ea71fe-6040-4d81-b944-486569113607",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.8% of   60.17MiB at   56.69MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.397Z"
-  },
-  {
-    "id": "46560a84-f835-47ef-a8a7-0226624b6214",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.7% of   60.17MiB at   34.74MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.395Z"
-  },
-  {
-    "id": "fb004bc5-8d5d-4996-bec9-c859a46ae796",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.6% of   60.17MiB at   21.57MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.394Z"
-  },
-  {
-    "id": "eb8d1e35-a4bc-4c56-ae97-2379641c180f",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.391Z"
-  },
-  {
-    "id": "61259d82-88d1-4852-b14f-1133e91e4dc1",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.390Z"
-  },
-  {
-    "id": "313c5ac0-db9d-42e6-8592-f9aecc80c84b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.388Z"
-  },
-  {
-    "id": "751b489c-099d-4f0d-97b6-c57485812a06",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.385Z"
-  },
-  {
-    "id": "70b99c7b-b912-4852-bc14-671ae04dbb4f",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  64.6% of   60.17MiB at   78.22MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.374Z"
-  },
-  {
-    "id": "eb365492-26d9-4ccf-b7d6-803663820127",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  61.7% of   60.17MiB at   77.34MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.353Z"
-  },
-  {
-    "id": "7b12bead-b9aa-4032-a861-cb1a31deff64",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.1% of   60.17MiB at   71.51MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.306Z"
-  },
-  {
-    "id": "e9d9dfc5-07ed-4258-a3af-72740b070749",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  51.7% of   60.17MiB at   61.59MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.282Z"
-  },
-  {
-    "id": "bc374ba6-c4da-45e7-81ec-8ef3d4d8202c",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  50.1% of   60.17MiB at   33.81MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.279Z"
-  },
-  {
-    "id": "48105c5e-64ac-418d-a879-ec02f04384a9",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  49.2% of   60.17MiB at  136.68MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.267Z"
-  },
-  {
-    "id": "9f2435b1-a837-41c7-bac9-adbfed31c9a8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.8% of   60.17MiB at   88.72MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.266Z"
-  },
-  {
-    "id": "90e28c7b-830f-4bc9-b876-d8c0f3f9a52e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.6% of   60.17MiB at   54.95MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.263Z"
-  },
-  {
-    "id": "bb877748-d0cb-43fa-b577-f96b62f87d20",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.5% of   60.17MiB at   33.69MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.261Z"
-  },
-  {
-    "id": "9425dab7-b628-4346-9d40-2fe2baf548d1",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.5% of   60.17MiB at   20.65MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.259Z"
-  },
-  {
-    "id": "2a73680c-2e84-4fea-acf4-2cce5cb98337",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.4% of   60.17MiB at   13.34MiB/s ETA 00:02",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.257Z"
-  },
-  {
-    "id": "65803019-bb35-40d6-8fb7-0217b9927cca",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.255Z"
-  },
-  {
-    "id": "9be808f2-2b38-4fbe-8f81-a4558448b72c",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.253Z"
-  },
-  {
-    "id": "bfdae824-28a3-49f5-9267-99e4c02f3e6c",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.250Z"
-  },
-  {
-    "id": "01c624d9-4ac5-47e9-8ab3-4f9cce60e249",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  48.4% of   60.17MiB at   54.22MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.239Z"
-  },
-  {
-    "id": "a7012dc5-13b2-441e-acb7-3bfe193d3719",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  45.8% of   60.17MiB at   52.02MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.216Z"
-  },
-  {
-    "id": "18e9ef22-9c2a-45f9-9e61-637d65e32c05",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  39.2% of   60.17MiB at   43.45MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.155Z"
-  },
-  {
-    "id": "2560b178-db4b-4e47-bb0a-ff27a8a64b78",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  35.9% of   60.17MiB at   66.20MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.093Z"
-  },
-  {
-    "id": "98c81fb2-2070-4759-8bca-a49d2f418e2f",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  34.2% of   60.17MiB at   35.68MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.091Z"
-  },
-  {
-    "id": "347f58ed-98cf-4aa8-8578-4958f6f908f0",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  33.4% of   60.17MiB at   19.04MiB/s ETA 00:02",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.089Z"
-  },
-  {
-    "id": "e2a03ba6-7438-4d02-93ce-1cd83c870ee6",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  33.0% of   60.17MiB at   92.88MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.077Z"
-  },
-  {
-    "id": "8c4aa1fd-d3e7-4967-8f2d-df744175fef8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.8% of   60.17MiB at   58.94MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.075Z"
-  },
-  {
-    "id": "17228428-c90a-45e5-9896-2e4b31199f0d",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.7% of   60.17MiB at   36.76MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.073Z"
-  },
-  {
-    "id": "01b67824-509e-4413-93c2-ba0a9d240b15",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.6% of   60.17MiB at   23.35MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.071Z"
-  },
-  {
-    "id": "483cb759-dec4-4673-b523-ff0955819acf",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.069Z"
-  },
-  {
-    "id": "e1d49ece-9e27-4c38-9823-e852b6114635",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.068Z"
-  },
-  {
-    "id": "6f6c0329-d2d3-4fe7-bc57-371dc9d0f680",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.066Z"
-  },
-  {
-    "id": "b237d002-f580-451a-aeb3-d4e9c2fc8b26",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.6% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.064Z"
-  },
-  {
-    "id": "d67e3fed-a1c8-416a-82c2-fcd6edb9f706",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  32.5% of   60.17MiB at   98.45MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.053Z"
-  },
-  {
-    "id": "da46d6ca-0903-4d7a-89c8-097b1083628a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  29.7% of   60.17MiB at  104.23MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:32.031Z"
-  },
-  {
-    "id": "1d24c0d5-be54-4957-8cdf-152b6bbe2f12",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  23.1% of   60.17MiB at  147.13MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.981Z"
-  },
-  {
-    "id": "1091e05c-a9b6-46ba-a5db-f1f4b4426ae7",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  19.7% of   60.17MiB at   86.59MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.978Z"
-  },
-  {
-    "id": "ac9fcb3e-7e48-474b-babb-fdc6a2f0a465",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  18.1% of   60.17MiB at   48.02MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.976Z"
-  },
-  {
-    "id": "e3906b50-e5ea-4f85-8bc1-8db959eacc50",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  17.2% of   60.17MiB at   26.13MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.974Z"
-  },
-  {
-    "id": "696505c3-9822-4e00-aa2a-82bcd7b391b4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.8% of   60.17MiB at   14.23MiB/s ETA 00:03",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.972Z"
-  },
-  {
-    "id": "6cab3299-4ad6-4ab6-bb0a-d40ba141fd3c",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.6% of   60.17MiB at   67.38MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.965Z"
-  },
-  {
-    "id": "0b9e2619-6c53-4ef5-adf7-12c471dd6538",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.5% of   60.17MiB at   42.94MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.964Z"
-  },
-  {
-    "id": "06a97eff-bc96-419b-b133-2df28c7085d4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.5% of   60.17MiB at   26.20MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.962Z"
-  },
-  {
-    "id": "121a7f6e-7ba2-47d0-a25d-812f864bc642",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.960Z"
-  },
-  {
-    "id": "23df6bd7-c6c3-4a0a-b865-c48d9b7fea15",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.958Z"
-  },
-  {
-    "id": "93ec318e-5c4d-4bb8-adb0-6455feb720f3",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.956Z"
-  },
-  {
-    "id": "67d66fbb-4cc8-4034-a6a3-6b69d20ed01a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.4% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.954Z"
-  },
-  {
-    "id": "1cacd40a-fa93-4b2f-85ad-39f3dd8c27ee",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.4% of   60.17MiB at   40.02MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.945Z"
-  },
-  {
-    "id": "c9b3fb78-b27e-422a-bd5f-2dd27560bfb5",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  13.3% of   60.17MiB at   71.55MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.810Z"
-  },
-  {
-    "id": "bbc3837d-818a-4978-8b51-a1d79b911ef9",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   6.6% of   60.17MiB at   99.22MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.738Z"
-  },
-  {
-    "id": "9e359c5b-739c-4d2b-884f-946e1e5a83a3",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   3.3% of   60.17MiB at  143.16MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.724Z"
-  },
-  {
-    "id": "42badc64-43c5-4a51-ae3c-a42b63057608",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   1.7% of   60.17MiB at   89.16MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.722Z"
-  },
-  {
-    "id": "292c9468-d783-4243-b386-9128ac532c5b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.8% of   60.17MiB at   55.03MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.720Z"
-  },
-  {
-    "id": "79b553b4-235e-4a57-b3e0-0b9f97f93c01",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.4% of   60.17MiB at   32.53MiB/s ETA 00:01",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.718Z"
-  },
-  {
-    "id": "9c391aad-a6af-41da-9760-788af8ed7a43",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.2% of   60.17MiB at   25.02MiB/s ETA 00:02",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.716Z"
-  },
-  {
-    "id": "bd1bf220-309d-4e59-8b1c-015fe65aa47e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.1% of   60.17MiB at   20.04MiB/s ETA 00:03",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.714Z"
-  },
-  {
-    "id": "bcc4dee3-76ff-4e75-bc49-a9780a057ee4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.1% of   60.17MiB at   18.66MiB/s ETA 00:03",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.712Z"
-  },
-  {
-    "id": "fb2d1c2a-c9c2-4f68-8b1c-ed0544dca8d7",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   60.17MiB at   11.68MiB/s ETA 00:05",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.709Z"
-  },
-  {
-    "id": "ed31a340-4481-4294-a241-704b414529f4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.707Z"
-  },
-  {
-    "id": "cdaf63ee-0fcf-47b0-976b-635dea452b13",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.704Z"
-  },
-  {
-    "id": "59ce3d8e-fac1-4542-a8f2-c44d3fb2fc3a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of   60.17MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.701Z"
-  },
-  {
-    "id": "829c3449-b949-468a-bea3-cb61372e8c45",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] Destination: /tmp/video_4881bb6d-5701-4345-a61e-411487ef1372/dl_1777799607703.f399.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:31.698Z"
-  },
-  {
-    "id": "7aa1468d-1714-4479-8f46-fd9d1aaadced",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[info] LENd3eMSXys: Downloading 1 format(s): 399+140",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:30.457Z"
-  },
-  {
-    "id": "926ed1a5-684c-4bf2-89e6-f59cfa599595",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] LENd3eMSXys: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:29.918Z"
-  },
-  {
-    "id": "5c07833e-86dc-47b5-b3ce-08c397edf1a4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] LENd3eMSXys: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:28.751Z"
-  },
-  {
-    "id": "e05623ef-f368-4e98-b7fb-28f96e72b069",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtu.be/LENd3eMSXys?si=FlhH8GTCgkJm5DDB",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:28.747Z"
-  },
-  {
-    "id": "e94fdc8e-89c1-4f9f-b5f0-d5bd864d9123",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_4881bb6d-5701-4345-a61e-411487ef1372/dl_1777799607703.%(ext)s https://youtu.be/LENd3eMSXys?si=FlhH8GTCgkJm5DDB",
-    "createdAt": "2026-05-03T09:13:27.709Z"
-  },
-  {
-    "id": "4d2b2938-591c-492c-b1ac-25a8fda8dccc",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Downloading video via yt-dlp: https://youtu.be/LENd3eMSXys?si=FlhH8GTCgkJm5DDB",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:27.704Z"
-  },
-  {
-    "id": "7d9240ac-38f2-4d49-8585-eafd354e7b6a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[1/1] yt-dlp: https://youtu.be/LENd3eMSXys?si=FlhH8GTCgkJm5DDB",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:27.692Z"
-  },
-  {
-    "id": "4119405c-72a3-4c2e-a389-4b3995b62753",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Batch 6655e6e1-f3c7-4960-adcf-fb224dc4910a: 1 video URL(s)",
-    "details": null,
-    "createdAt": "2026-05-03T09:13:27.690Z"
-  },
-  {
-    "id": "93c1095d-e6fd-45fc-8c92-cd5ec11c152b",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T09:11:34.473Z"
-  },
-  {
-    "id": "2d13dd06-0ffc-43f6-823b-c44bf1ed6781",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T08:16:03.578Z"
-  },
-  {
-    "id": "6b84c340-ede5-4da9-9751-00917922d590",
-    "jobType": "process",
-    "level": "info",
-    "message": "Watermark uploaded: 143.5 KB",
-    "details": null,
-    "createdAt": "2026-05-03T07:37:38.620Z"
-  },
-  {
-    "id": "3d53408e-80d7-407e-8411-57a7da5dfc88",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Device upload received: 1000127720.mp4 (10.4 MB)",
-    "details": null,
-    "createdAt": "2026-05-03T07:34:00.690Z"
-  },
-  {
-    "id": "eb4f59e8-4b07-48ca-8e1a-703be5f2dab2",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T07:19:40.918Z"
-  },
-  {
-    "id": "5d659dcb-8457-4e92-8f27-f0db13350d2c",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T07:04:11.247Z"
-  },
-  {
-    "id": "1c04c3f6-fb7e-49fd-aaa9-9db49a1c9b05",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T06:24:50.069Z"
-  },
-  {
-    "id": "ac58ae16-7bd9-4ad1-9e9a-afe16190fc0d",
-    "jobType": "process",
-    "level": "success",
-    "message": "Complete: \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts\" → output_726552ce-e8a7-4f80-90f2-e3f7b0a5c714.mp4 (1 clips, 130.1s → trimmed to 56.0s)",
-    "details": null,
-    "createdAt": "2026-05-03T06:16:23.509Z"
-  },
-  {
-    "id": "8b8196bf-3456-497b-8503-d2e6ff012fb1",
-    "jobType": "process",
-    "level": "success",
-    "message": "Merge complete → output_726552ce-e8a7-4f80-90f2-e3f7b0a5c714.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T06:16:23.506Z"
-  },
-  {
-    "id": "91df0fa5-fa77-4786-a1df-04db3e75914b",
-    "jobType": "process",
-    "level": "info",
-    "message": "FFmpeg started",
-    "details": "ffmpeg -i /tmp/process_726552ce-e8a7-4f80-90f2-e3f7b0a5c714/v0_dl_1777788886557.mp4 -i /tmp/process_726552ce-e8a7-4f80-90f2-e3f7b0a5c714/audio.mp3 -y -vf scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,setsar=1 -map 0:v:0 -map 1:a:0 -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -t 56.000 -movflags +faststart -avoid_negative_ts make_zero /home/run",
-    "createdAt": "2026-05-03T06:15:59.270Z"
-  },
-  {
-    "id": "156b9548-5c1a-4dce-b49d-b7dc7b1a553a",
-    "jobType": "process",
-    "level": "info",
-    "message": "Merging 1 clip(s) with audio (target 56.0s)…",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:59.259Z"
-  },
-  {
-    "id": "0860e810-24a5-4097-974b-50b48baa12d3",
-    "jobType": "process",
-    "level": "info",
-    "message": "Video coverage: 130.1s for 56.0s audio using 1 clip(s)",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:59.251Z"
-  },
-  {
-    "id": "f61472d8-4935-4b79-b5e1-85afa4ce38da",
-    "jobType": "process",
-    "level": "info",
-    "message": "Clip 1: dl_1777788886557.mp4 — 130.1s (actual)",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:59.249Z"
-  },
-  {
-    "id": "f6bd821c-e113-4246-8709-082dc50591a1",
-    "jobType": "process",
-    "level": "info",
-    "message": "Process job [726552ce-e8a7-4f80-90f2-e3f7b0a5c714]: 1 initial clip(s) + \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts\" (56.0s)",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:59.059Z"
-  },
-  {
-    "id": "e499d422-3810-466c-9715-365abeb111f6",
-    "jobType": "download_video",
-    "level": "success",
-    "message": "Downloaded: dl_1777788915466.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.973Z"
-  },
-  {
-    "id": "c1df390e-1cf0-4cb8-b23c-08cd1cf72b23",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleting original file /tmp/video_d98ee134-e523-44cd-99e2-d06d492b9466/dl_1777788915466.f399.mp4 (pass -k to keep)",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.855Z"
-  },
-  {
-    "id": "f53f03f7-de5e-4c32-af95-d2a6ff09d0c2",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleting original file /tmp/video_d98ee134-e523-44cd-99e2-d06d492b9466/dl_1777788915466.f140.m4a (pass -k to keep)",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.852Z"
-  },
-  {
-    "id": "3b6db637-3996-4143-b5b5-cb1548524f34",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[Merger] Merging formats into \"/tmp/video_d98ee134-e523-44cd-99e2-d06d492b9466/dl_1777788915466.mp4\"",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.606Z"
-  },
-  {
-    "id": "0914d581-9db5-4e49-a939-92331c521ed8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100% of    2.99MiB in 00:00:00 at 50.40MiB/s",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.599Z"
-  },
-  {
-    "id": "4a5a9804-0c30-4425-9899-840494bc5e20",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100.0% of    2.99MiB at  115.21MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.590Z"
-  },
-  {
-    "id": "0feb0fdc-5c08-4b5f-b615-bb9a5ea0113b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  66.8% of    2.99MiB at  242.08MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.587Z"
-  },
-  {
-    "id": "499ad865-077e-4999-a7e7-08cb8f88af84",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  33.4% of    2.99MiB at  189.47MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.585Z"
-  },
-  {
-    "id": "f750aacf-546c-4cc8-8ef2-1c21c1a74b68",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  16.7% of    2.99MiB at  137.81MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.583Z"
-  },
-  {
-    "id": "7dd51e47-0773-4899-b740-7d99473cb0e9",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   8.3% of    2.99MiB at   90.91MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.581Z"
-  },
-  {
-    "id": "9ba03c2f-9953-4def-8697-188804f8a7e4",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   4.1% of    2.99MiB at   57.34MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.580Z"
-  },
-  {
-    "id": "6b22f2ca-90e2-4fcf-8427-c9a3b9f69dd1",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   2.1% of    2.99MiB at   35.31MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.577Z"
-  },
-  {
-    "id": "a59c5c93-fd02-43b1-8e1b-a1a23db64f9b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   1.0% of    2.99MiB at   22.31MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.575Z"
-  },
-  {
-    "id": "bb796d3e-18ee-4536-91b7-4443db164125",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.5% of    2.99MiB at   13.62MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.573Z"
-  },
-  {
-    "id": "632f44b3-adeb-43e2-be19-3a20d61de6ed",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.2% of    2.99MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.571Z"
-  },
-  {
-    "id": "211593dc-c537-445c-ab5f-25fbe583ec66",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.1% of    2.99MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.569Z"
-  },
-  {
-    "id": "f0393fd9-f605-4bae-a34f-ca463019b6ab",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]   0.0% of    2.99MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.567Z"
-  },
-  {
-    "id": "1e380354-94c8-4755-a638-f37cdba986f5",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] Destination: /tmp/video_d98ee134-e523-44cd-99e2-d06d492b9466/dl_1777788915466.f140.m4a",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.564Z"
-  },
-  {
-    "id": "dbdd736a-d6d2-4369-b32b-058a8ec5790e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100% of   17.35MiB in 00:00:00 at 93.93MiB/s",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.537Z"
-  },
-  {
-    "id": "569101a8-c05d-46db-8e86-3b1889c80806",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download] 100.0% of   17.35MiB at  162.44MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.493Z"
-  },
-  {
-    "id": "1c9f4736-225d-4d6a-b752-6d23b5cde1ea",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  77.8% of   17.35MiB at  235.06MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.469Z"
-  },
-  {
-    "id": "dd6a1d7a-9d5c-4eaf-b234-a2e2d1e46b21",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  66.3% of   17.35MiB at  245.87MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.467Z"
-  },
-  {
-    "id": "552963f7-692c-42d8-a615-42d498a8cb8a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  60.6% of   17.35MiB at  201.05MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.465Z"
-  },
-  {
-    "id": "c32066cc-b0d3-4ef7-9ef5-200022e4ccfc",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  57.7% of   17.35MiB at  136.54MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.463Z"
-  },
-  {
-    "id": "7c8fafc3-f693-4bbe-b140-c3c76e52d295",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  56.2% of   17.35MiB at  100.05MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.460Z"
-  },
-  {
-    "id": "121bddba-f89b-42f0-9e54-36ad5a81d6df",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.5% of   17.35MiB at   62.66MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.458Z"
-  },
-  {
-    "id": "5235bff6-4607-4f79-b4d8-bc691b5b1d97",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.1% of   17.35MiB at   38.94MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.456Z"
-  },
-  {
-    "id": "1f5521e4-7a6e-4af1-b842-91e0a6b0a7db",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  55.0% of   17.35MiB at   24.52MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.454Z"
-  },
-  {
-    "id": "51d2a70f-e014-42e0-a801-4132efccd3ac",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  54.9% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.451Z"
-  },
-  {
-    "id": "60b21d3f-1020-4052-a027-25c76e1c1706",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  54.8% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.450Z"
-  },
-  {
-    "id": "e94d02a6-079e-4ad0-b03d-4801a12b67a8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  54.8% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.448Z"
   }
 ]

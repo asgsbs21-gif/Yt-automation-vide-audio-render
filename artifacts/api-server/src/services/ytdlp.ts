@@ -19,6 +19,18 @@ function ensureYtDlpBinary(): void {
   } catch {}
 }
 
+
+function getDurationFfprobe(audioPath: string): number {
+  try {
+    const result = execSync(
+      `ffprobe -v quiet -show_entries format=duration -of csv=p=0 "${audioPath}"`,
+      { encoding: "utf8", timeout: 10000 }
+    ).trim();
+    const d = parseFloat(result);
+    return isNaN(d) ? 0 : d;
+  } catch { return 0; }
+}
+
 ensureYtDlpBinary();
 
 function findYtDlp(): string {
@@ -57,7 +69,16 @@ export interface AudioMetadata {
 
 function getCookieArgs(): string[] {
   const cookiePath = path.resolve(process.cwd(), "data", "cookies.txt");
-  return fs.existsSync(cookiePath) ? ["--cookies", cookiePath] : [];
+  if (!fs.existsSync(cookiePath)) return [];
+  try {
+    const txt = fs.readFileSync(cookiePath, "utf-8").trim();
+    if (!txt || txt.length < 10) return [];
+    if (!txt.startsWith("# Netscape HTTP Cookie File") && !txt.startsWith("# HTTP Cookie File")) {
+      addLog("download_video", "warn", "cookies.txt invalid format — skipping");
+      return [];
+    }
+    return ["--cookies", cookiePath];
+  } catch { return []; }
 }
 
 async function runYtDlp(
@@ -241,7 +262,7 @@ export async function downloadAudio(
         title: String(info.title || "Untitled").slice(0, 100),
         description: String(info.description || "").slice(0, 5000),
         tags: allTags,
-        duration: Number(info.duration) || 0,
+        duration: Number(info.duration) || getDurationFfprobe(audioPath),
         uploader: String(info.uploader || info.channel || info.creator || ""),
         filename: audioFile,
       };
@@ -252,7 +273,7 @@ export async function downloadAudio(
         title: audioFile.replace(/\.[^.]+$/, ""),
         description: "",
         tags: [],
-        duration: 0,
+        duration: getDurationFfprobe(audioPath),
         uploader: "",
         filename: audioFile,
       };
@@ -262,7 +283,7 @@ export async function downloadAudio(
       title: audioFile.replace(/\.[^.]+$/, ""),
       description: "",
       tags: [],
-      duration: 0,
+      duration: getDurationFfprobe(audioPath),
       uploader: "",
       filename: audioFile,
     };

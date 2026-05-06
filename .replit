@@ -42,3 +42,6 @@ externalPort = 3000
 [[ports]]
 localPort = 25901
 externalPort = 80
+
+[deployment.run]
+args = ["sh", "-c", "mkdir -p /home/runner/workspace/bin && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o /home/runner/workspace/bin/yt-dlp-linux && chmod +x /home/runner/workspace/bin/yt-dlp-linux && which ffmpeg || (apt-get install -y ffmpeg 2>/dev/null || nix-env -iA nixpkgs.ffmpeg 2>/dev/null || true) && PORT=8080 node --enable-source-maps /home/runner/workspace/artifacts/api-server/dist/index.mjs"]
