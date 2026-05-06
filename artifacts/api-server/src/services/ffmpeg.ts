@@ -4,8 +4,8 @@ import fs from "fs";
 import { addLog } from "./data.js";
 
 const SCALE_FILTER =
-  "scale=1080:1920:force_original_aspect_ratio=decrease," +
-  "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black," +
+  "scale=720:1280:force_original_aspect_ratio=decrease," +
+  "pad=720:1280:(ow-iw)/2:(oh-ih)/2:black," +
   "setsar=1";
 
 // ── Probe a video/audio file duration using ffprobe ───────────────────────────
@@ -89,8 +89,8 @@ export async function mergeVideoWithAudio(
 
   const codecOpts = [
     `-c:v libx264`,
-    `-preset fast`,
-    `-crf 23`,
+    `-preset ultrafast`,
+    `-crf 28`,
     `-c:a aac`,
     `-b:a 128k`,
     ...trimOpts,

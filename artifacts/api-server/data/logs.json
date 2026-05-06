@@ -1,5 +1,21 @@
 [
   {
+    "id": "63525125-bde0-4439-b218-5058d1850c59",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-06T06:13:01.093Z"
+  },
+  {
+    "id": "2c55ed5d-53e7-4129-b06a-eb6b38efdad2",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-06T05:59:52.074Z"
+  },
+  {
     "id": "7b1956a4-63e4-4fcc-be13-0748dba14a79",
     "jobType": "schedule",
     "level": "info",
@@ -3982,21 +3998,5 @@
     "message": "[download]  54.8% of   17.35MiB at  Unknown B/s ETA Unknown",
     "details": null,
     "createdAt": "2026-05-03T06:15:19.448Z"
-  },
-  {
-    "id": "1d3cbd6f-3049-4462-9f8d-e445771f9787",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  54.8% of   17.35MiB at  Unknown B/s ETA Unknown",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.445Z"
-  },
-  {
-    "id": "a9070fe4-9662-4f3d-97b9-3a9be1167474",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[download]  54.8% of   17.35MiB at  157.07MiB/s ETA 00:00",
-    "details": null,
-    "createdAt": "2026-05-03T06:15:19.427Z"
   }
 ]
