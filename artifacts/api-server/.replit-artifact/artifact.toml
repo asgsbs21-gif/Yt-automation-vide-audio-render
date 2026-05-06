@@ -21,7 +21,7 @@ args = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
 NODE_ENV = "production"
 
 [services.production.run]
-args = ["sh", "-c", "mkdir -p /home/runner/workspace/bin && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o /home/runner/workspace/bin/yt-dlp-linux && chmod +x /home/runner/workspace/bin/yt-dlp-linux && node --enable-source-maps artifacts/api-server/dist/index.mjs"]
+args = ["sh", "-c", "export PATH=/home/runner/workspace/bin:$PATH && node --enable-source-maps artifacts/api-server/dist/index.mjs"]
 
 [services.production.run.env]
 PORT = "8080"

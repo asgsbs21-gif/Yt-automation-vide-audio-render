@@ -1,4 +1,13 @@
 import ffmpeg from "fluent-ffmpeg";
+import { execSync } from "child_process";
+
+// Auto-detect ffmpeg path
+try {
+  const ffmpegPath = execSync("which ffmpeg", { encoding: "utf8" }).trim();
+  const ffprobePath = execSync("which ffprobe", { encoding: "utf8" }).trim();
+  if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
+  if (ffprobePath) ffmpeg.setFfprobePath(ffprobePath);
+} catch {}
 import path from "path";
 import fs from "fs";
 import { addLog } from "./data.js";

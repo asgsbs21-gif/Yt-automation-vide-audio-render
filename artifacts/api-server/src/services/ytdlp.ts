@@ -22,12 +22,18 @@ function ensureYtDlpBinary(): void {
 
 function getDurationFfprobe(audioPath: string): number {
   try {
-    const result = execSync(
-      `ffprobe -v quiet -show_entries format=duration -of csv=p=0 "${audioPath}"`,
-      { encoding: "utf8", timeout: 10000 }
-    ).trim();
-    const d = parseFloat(result);
-    return isNaN(d) ? 0 : d;
+    const bins = ["ffprobe", "/usr/bin/ffprobe", "/usr/local/bin/ffprobe"];
+    for (const bin of bins) {
+      try {
+        const result = execSync(
+          `${bin} -v quiet -show_entries format=duration -of csv=p=0 "${audioPath}"`,
+          { encoding: "utf8", timeout: 10000 }
+        ).trim();
+        const d = parseFloat(result);
+        if (!isNaN(d) && d > 0) return d;
+      } catch {}
+    }
+    return 0;
   } catch { return 0; }
 }
 
