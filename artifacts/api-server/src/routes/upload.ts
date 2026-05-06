@@ -209,12 +209,25 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
   const title = (req.body.title as string)?.trim() || path.parse(file.originalname).name;
   const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
 
+  let audioDuration = 0;
+  try {
+    const { execSync } = await import("child_process");
+    const bins = ["/home/runner/workspace/bin/ffprobe", "/usr/bin/ffprobe", "ffprobe"];
+    for (const bin of bins) {
+      try {
+        const r = execSync(`"${bin}" -v quiet -show_entries format=duration -of csv=p=0 "${file.path}"`, {encoding:"utf8",timeout:8000}).trim();
+        const d = parseFloat(r);
+        if (!isNaN(d) && d > 0) { audioDuration = d; break; }
+      } catch {}
+    }
+  } catch {}
+
   const audio = addAudio({
     driveId: file.path,
     title,
     description: "",
     tags: [],
-    duration: 0,
+    duration: audioDuration,
     category,
     uploader: null,
     used: false,
