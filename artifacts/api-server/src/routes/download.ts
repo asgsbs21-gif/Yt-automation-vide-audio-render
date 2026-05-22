@@ -4,7 +4,6 @@ import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { addVideo, addAudio, addLog, getSettings } from "../services/data.js";
-import { downloadKuaishouVideo } from "../services/kuaishou.js";
 import { downloadVideoWithYtDlp, downloadAudio } from "../services/ytdlp.js";
 import { getVideoDuration } from "../services/ffmpeg.js";
 import { uploadFileToDriveWithSpeed } from "../services/drive.js";
@@ -25,16 +24,6 @@ function moveFile(src: string, dest: string): void {
   } catch {
     fs.copyFileSync(src, dest);
     try { fs.unlinkSync(src); } catch {}
-  }
-}
-
-function isKuaishouUrl(url: string): boolean {
-  try {
-    const h = new URL(url).hostname.toLowerCase();
-    return h.includes("kuaishou") || h.includes("kwai") || h.includes("gifshow");
-  } catch {
-    const l = url.toLowerCase();
-    return l.includes("kuaishou") || l.includes("kwai");
   }
 }
 
@@ -63,14 +52,13 @@ router.post("/download/video", async (req, res) => {
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i];
       const jobId = `${batchId}_${i}`;
-      const kuaishou = isKuaishouUrl(url);
 
-      addLog("download_video", "info", `[${i + 1}/${urls.length}] ${kuaishou ? "Kuaishou→Puppeteer" : "yt-dlp"}: ${url}`);
+      addLog("download_video", "info", `[${i + 1}/${urls.length}] yt-dlp: ${url}`);
       emitJobUpdate({
         jobId,
         jobType: "download_video",
         status: "running",
-        message: `[${i + 1}/${urls.length}] ${kuaishou ? "Launching browser…" : "Starting yt-dlp…"}`,
+        message: `[${i + 1}/${urls.length}] Starting yt-dlp…`,
         progress: 0,
       });
 
@@ -84,18 +72,14 @@ router.post("/download/video", async (req, res) => {
         fs.mkdirSync(tmpDir, { recursive: true });
 
         try {
-          let downloadedPath: string | null = null;
-
-          if (kuaishou) {
-            const filename = `kuaishou_${Date.now()}.mp4`;
-            downloadedPath = await downloadKuaishouVideo(url, tmpDir, filename, jobId, (p, m) => {
+          const downloadedPath = await downloadVideoWithYtDlp(
+            url,
+            tmpDir,
+            `dl_${Date.now()}`,
+            (p, m) => {
               emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: m, progress: p });
-            });
-          } else {
-            downloadedPath = await downloadVideoWithYtDlp(url, tmpDir, `dl_${Date.now()}`, (p, m) => {
-              emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: m, progress: p });
-            });
-          }
+            }
+          );
 
           if (!downloadedPath) {
             if (attempt < maxRetries) {
@@ -112,9 +96,7 @@ router.post("/download/video", async (req, res) => {
           const fileSizeBytes = fs.statSync(downloadedPath).size;
 
           if (hasDrive) {
-            // ── Stream directly to Google Drive ─────────────────────────────
             emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: "Streaming to Google Drive…", progress: 95 });
-
             try {
               const auth = createAuthenticatedClient(tokens!);
               const driveFile = await uploadFileToDriveWithSpeed(
@@ -124,21 +106,14 @@ router.post("/download/video", async (req, res) => {
                 "video/mp4",
                 filename,
                 (_pct, _mbps, msg) => {
-                  emitJobUpdate({
-                    jobId,
-                    jobType: "download_video",
-                    status: "running",
-                    message: `Drive: ${msg}`,
-                    progress: 95,
-                  });
+                  emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: `Drive: ${msg}`, progress: 95 });
                 }
               );
 
-              // Delete tmp file — Drive is now primary storage
               try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
 
               addVideo({
-                driveId: driveFile.id,   // Drive file ID — process.ts recognises non-"/" prefix
+                driveId: driveFile.id,
                 filename,
                 category: category || "Uncategorized",
                 duration: probedDuration,
@@ -161,11 +136,9 @@ router.post("/download/video", async (req, res) => {
 
             } catch (driveErr) {
               addLog("download_video", "warn", `Drive upload failed for ${filename}, falling back to local`, String(driveErr));
-              // Fall through to local storage below
             }
           }
 
-          // ── Save locally (no Drive or Drive failed) ──────────────────────
           emitJobUpdate({ jobId, jobType: "download_video", status: "running", message: "Saving to library…", progress: 97 });
 
           const destPath = path.join(VIDEO_DIR, filename);
@@ -261,9 +234,7 @@ router.post("/download/audio", async (req, res) => {
           const ext = path.extname(audioPath) || ".mp3";
 
           if (hasDrive) {
-            // ── Stream directly to Google Drive ─────────────────────────────
             emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message: "Streaming to Google Drive…", progress: 94 });
-
             try {
               const auth = createAuthenticatedClient(tokens!);
               const driveFilename = `${metadata.title}${ext}`.replace(/[/\\?%*:|"<>]/g, "_");
@@ -274,13 +245,7 @@ router.post("/download/audio", async (req, res) => {
                 "audio/mpeg",
                 driveFilename,
                 (_pct, _mbps, msg) => {
-                  emitJobUpdate({
-                    jobId,
-                    jobType: "download_audio",
-                    status: "running",
-                    message: `Drive: ${msg}`,
-                    progress: 95,
-                  });
+                  emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message: `Drive: ${msg}`, progress: 95 });
                 }
               );
 
@@ -313,7 +278,6 @@ router.post("/download/audio", async (req, res) => {
             }
           }
 
-          // ── Save locally ─────────────────────────────────────────────────
           emitJobUpdate({ jobId, jobType: "download_audio", status: "running", message: "Saving to library…", progress: 97 });
 
           const destPath = path.join(AUDIO_DIR, metadata.filename);

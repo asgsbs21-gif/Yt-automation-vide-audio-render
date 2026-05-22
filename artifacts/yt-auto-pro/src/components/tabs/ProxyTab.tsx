@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, ShieldCheck, ShieldOff, Zap, Trash2, RefreshCw,
   CheckCircle2, XCircle, Loader2, Globe, Info, ChevronRight,
+  Cookie, Upload, FileX,
 } from "lucide-react";
 
 interface ProxyStatus {
@@ -23,6 +23,12 @@ interface TestResult {
   ip?: string;
   latency_ms?: number;
   error?: string;
+}
+
+interface CookiesStatus {
+  exists: boolean;
+  size: number;
+  lines: number;
 }
 
 interface BulkJob {
@@ -51,25 +57,36 @@ const MODE_LABELS: Record<string, string> = {
 
 export function ProxyTab() {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const [proxyStatus, setProxyStatus] = useState<ProxyStatus | null>(null);
-  const [testResult, setTestResult]   = useState<TestResult | null>(null);
-  const [vmessInput, setVmessInput]   = useState("");
-  const [saving, setSaving]     = useState(false);
-  const [testing, setTesting]   = useState(false);
-  const [removing, setRemoving] = useState(false);
+  const [proxyStatus, setProxyStatus]   = useState<ProxyStatus | null>(null);
+  const [testResult, setTestResult]     = useState<TestResult | null>(null);
+  const [vmessInput, setVmessInput]     = useState("");
+  const [saving, setSaving]             = useState(false);
+  const [testing, setTesting]           = useState(false);
+  const [removing, setRemoving]         = useState(false);
 
-  const [urlsText, setUrlsText]   = useState("");
-  const [mode, setMode]           = useState<"video_audio" | "audio" | "video">("video_audio");
+  const [cookiesStatus, setCookiesStatus] = useState<CookiesStatus | null>(null);
+  const [cookiesUploading, setCookiesUploading] = useState(false);
+  const [cookiesDeleting, setCookiesDeleting]   = useState(false);
+  const cookiesInputRef = useRef<HTMLInputElement>(null);
+
+  const [urlsText, setUrlsText]     = useState("");
+  const [mode, setMode]             = useState<"video_audio" | "audio" | "video">("video_audio");
   const [submitting, setSubmitting] = useState(false);
-  const [jobs, setJobs]           = useState<BulkJob[]>([]);
+  const [jobs, setJobs]             = useState<BulkJob[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchStatus = async () => {
     try {
       const r = await fetch("/api/proxy/status");
       if (r.ok) setProxyStatus(await r.json() as ProxyStatus);
+    } catch {}
+  };
+
+  const fetchCookiesStatus = async () => {
+    try {
+      const r = await fetch("/api/proxy/cookies");
+      if (r.ok) setCookiesStatus(await r.json() as CookiesStatus);
     } catch {}
   };
 
@@ -85,6 +102,7 @@ export function ProxyTab() {
 
   useEffect(() => {
     void fetchStatus();
+    void fetchCookiesStatus();
     void fetchJobs();
     pollRef.current = setInterval(() => { void fetchJobs(); }, 3000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
@@ -107,8 +125,8 @@ export function ProxyTab() {
       toast({ title: "Proxy saved", description: data.message });
       setVmessInput("");
       await fetchStatus();
-    } catch (e: any) {
-      toast({ title: "Save failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Save failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -122,8 +140,8 @@ export function ProxyTab() {
       setTestResult(null);
       toast({ title: "Proxy removed" });
       await fetchStatus();
-    } catch (e: any) {
-      toast({ title: "Remove failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Remove failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
     } finally {
       setRemoving(false);
     }
@@ -137,14 +155,46 @@ export function ProxyTab() {
       const data = await r.json() as TestResult;
       setTestResult(data);
       if (data.ok) {
-        toast({ title: `Proxy working`, description: `IP: ${data.ip} | ${data.latency_ms}ms` });
+        toast({ title: "Proxy working", description: `IP: ${data.ip} | ${data.latency_ms}ms` });
       } else {
         toast({ title: "Proxy test failed", description: data.error, variant: "destructive" });
       }
-    } catch (e: any) {
-      toast({ title: "Test error", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Test error", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
     } finally {
       setTesting(false);
+    }
+  };
+
+  const handleCookiesUpload = async (file: File) => {
+    setCookiesUploading(true);
+    try {
+      const form = new FormData();
+      form.append("cookies", file);
+      const r = await fetch("/api/proxy/cookies", { method: "POST", body: form });
+      const data = await r.json() as { ok?: boolean; message?: string; error?: string };
+      if (!r.ok) throw new Error(data.error || "Upload failed");
+      toast({ title: "Cookies saved", description: data.message });
+      await fetchCookiesStatus();
+    } catch (e: unknown) {
+      toast({ title: "Upload failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+    } finally {
+      setCookiesUploading(false);
+      if (cookiesInputRef.current) cookiesInputRef.current.value = "";
+    }
+  };
+
+  const handleCookiesDelete = async () => {
+    setCookiesDeleting(true);
+    try {
+      const r = await fetch("/api/proxy/cookies", { method: "DELETE" });
+      if (!r.ok) throw new Error("Delete failed");
+      toast({ title: "Cookies deleted" });
+      await fetchCookiesStatus();
+    } catch (e: unknown) {
+      toast({ title: "Delete failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+    } finally {
+      setCookiesDeleting(false);
     }
   };
 
@@ -165,8 +215,8 @@ export function ProxyTab() {
       toast({ title: "Bulk job started", description: `Job ID: ${data.jobId}` });
       setUrlsText("");
       await fetchJobs();
-    } catch (e: any) {
-      toast({ title: "Failed", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -186,7 +236,7 @@ export function ProxyTab() {
     <div className="space-y-6 max-w-3xl">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Config</h2>
-        <p className="text-muted-foreground">VMess/VLESS/Trojan/SOCKS5 proxy for yt-dlp + bulk YouTube download.</p>
+        <p className="text-muted-foreground">Proxy + cookies for bot-detection bypass. Works for Videos, Audio, and Bulk download tabs.</p>
       </div>
 
       {/* Proxy Status Card */}
@@ -241,11 +291,11 @@ export function ProxyTab() {
         </CardContent>
       </Card>
 
-      {/* Save Proxy Card */}
+      {/* Set Proxy Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Shield className="w-4 h-4" /> Set Proxy Link</CardTitle>
-          <CardDescription>Paste a vmess://, vless://, trojan://, ss://, or socks5:// link.</CardDescription>
+          <CardDescription>Paste a vmess://, vless://, trojan://, ss://, or socks5:// link. Applied to all yt-dlp downloads.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-muted/50 border border-border p-3 space-y-1.5">
@@ -274,11 +324,87 @@ export function ProxyTab() {
         </CardContent>
       </Card>
 
+      {/* Cookies Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Cookie className="w-4 h-4" /> Browser Cookies</CardTitle>
+          <CardDescription>
+            Upload a Netscape-format cookies.txt — used by yt-dlp to bypass bot detection on YouTube, Instagram, and other sites.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Status row */}
+          <div className="flex items-center gap-3 flex-wrap">
+            {cookiesStatus?.exists ? (
+              <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20 gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                cookies.txt active — {cookiesStatus.lines} entries, {(cookiesStatus.size / 1024).toFixed(1)} KB
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="bg-muted text-muted-foreground gap-1.5">
+                <XCircle className="w-3.5 h-3.5" />
+                No cookies file
+              </Badge>
+            )}
+          </div>
+
+          {/* How-to note */}
+          <div className="rounded-lg bg-muted/50 border border-border p-3 space-y-1.5">
+            <p className="text-xs font-semibold flex items-center gap-1.5"><Info className="w-3.5 h-3.5 text-blue-500" /> How to export cookies</p>
+            <ol className="text-xs text-muted-foreground list-decimal list-inside space-y-0.5">
+              <li>Install <strong>Get cookies.txt LOCALLY</strong> extension in Chrome/Firefox</li>
+              <li>Log in to YouTube / Instagram in your browser</li>
+              <li>Click the extension → Export cookies for this site</li>
+              <li>Upload the downloaded <code className="font-mono">.txt</code> file here</li>
+            </ol>
+          </div>
+
+          {/* Upload / Delete buttons */}
+          <div className="flex gap-2 flex-wrap">
+            <input
+              ref={cookiesInputRef}
+              type="file"
+              accept=".txt,text/plain"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void handleCookiesUpload(f);
+              }}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={cookiesUploading}
+              onClick={() => cookiesInputRef.current?.click()}
+            >
+              {cookiesUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+              {cookiesUploading ? "Uploading…" : cookiesStatus?.exists ? "Replace cookies.txt" : "Upload cookies.txt"}
+            </Button>
+
+            {cookiesStatus?.exists && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-destructive hover:text-destructive"
+                disabled={cookiesDeleting}
+                onClick={() => void handleCookiesDelete()}
+              >
+                {cookiesDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileX className="w-3.5 h-3.5" />}
+                Delete
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Bulk Download Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Globe className="w-4 h-4" /> Bulk YouTube Download</CardTitle>
-          <CardDescription>Paste YouTube URLs (one per line). Downloads via proxy using 5 client strategies.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><Globe className="w-4 h-4" /> Bulk Download</CardTitle>
+          <CardDescription>
+            YouTube, Instagram, TikTok — one URL per line. Proxy + cookies applied automatically.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
@@ -294,7 +420,7 @@ export function ProxyTab() {
           </div>
 
           <Textarea
-            placeholder={"https://youtube.com/shorts/abc\nhttps://youtube.com/shorts/xyz\n…"}
+            placeholder={"https://youtube.com/shorts/abc\nhttps://www.instagram.com/reel/xyz/\n…"}
             value={urlsText}
             onChange={(e) => setUrlsText(e.target.value)}
             rows={5}
@@ -340,7 +466,6 @@ export function ProxyTab() {
                   </button>
                 </div>
 
-                {/* Progress bar */}
                 {job.status === "running" && (
                   <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
                     <div
@@ -350,7 +475,6 @@ export function ProxyTab() {
                   </div>
                 )}
 
-                {/* Items */}
                 <div className="space-y-1 max-h-40 overflow-y-auto">
                   {job.items.map((item) => (
                     <div key={item.index} className="flex items-start gap-2 text-xs">

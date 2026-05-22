@@ -191,7 +191,8 @@ function runYtdlpOnce(
 ): Promise<{ stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
     addLog("download_video", "info", `yt-dlp bulk: ${args.slice(-3).join(" ")}`);
-    const proc = spawn("yt-dlp", args, { stdio: ["ignore", "pipe", "pipe"] });
+    const py3 = process.env["PYTHON3_BIN"] || "python3";
+    const proc = spawn(py3, ["-m", "yt_dlp", ...args], { stdio: ["ignore", "pipe", "pipe"] });
     trackProc(jobId, proc);
 
     let stderrBuf = "", stdoutBuf = "", done = false;
@@ -230,7 +231,8 @@ async function fetchMetadata(url: string, jobId: string): Promise<Record<string,
     url,
   ];
   return new Promise((resolve, reject) => {
-    const proc = spawn("yt-dlp", args, { stdio: ["ignore", "pipe", "pipe"] });
+    const py3b = process.env["PYTHON3_BIN"] || "python3";
+    const proc = spawn(py3b, ["-m", "yt_dlp", ...args], { stdio: ["ignore", "pipe", "pipe"] });
     trackProc(jobId, proc);
     let stdout = "", stderr = "";
     proc.stdout.on("data", (d: Buffer) => stdout += d.toString());

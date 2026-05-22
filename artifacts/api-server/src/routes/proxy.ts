@@ -1,9 +1,26 @@
 import { Router } from "express";
+import path from "path";
+import fs from "fs";
+import multer from "multer";
 import { getSettings, saveSettings } from "../services/data.js";
 import { startXray, stopXray, testProxy, getProxyStatus, decodeLink, isXrayInstalled } from "../services/xray.js";
 import { createBulkJob, getBulkJob, listBulkJobs, deleteBulkJob } from "../services/jobManager-bulk.js";
 
 const router = Router();
+
+const COOKIES_PATH = path.resolve(process.cwd(), "data", "cookies.txt");
+
+const cookiesUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      const dir = path.resolve(process.cwd(), "data");
+      fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
+    },
+    filename: (_req, _file, cb) => cb(null, "cookies.txt"),
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 // ── Proxy config ───────────────────────────────────────────────────────────────
 
@@ -26,22 +43,18 @@ router.post("/proxy/save", (req, res) => {
   }
 
   try {
-    // Validate link before saving
     decodeLink(vmessLink.trim());
   } catch (e) {
     res.status(400).json({ error: e instanceof Error ? e.message : "Invalid proxy link" });
     return;
   }
 
-  // Persist in settings.json
   const settings = getSettings();
   (settings as any).vmessLink = vmessLink.trim();
   saveSettings(settings);
 
-  // Set env var + restart xray
   process.env["VMESS_LINK"] = vmessLink.trim();
 
-  // Give xray 500ms to start, then respond
   const ok = startXray(vmessLink.trim());
   setTimeout(() => {
     res.json({ ok, proxy: process.env["YTDLP_PROXY"] || null, message: ok ? "Proxy started" : "Saved (xray binary not found — yt-dlp will try direct)" });
@@ -69,6 +82,57 @@ router.post("/proxy/test", async (_req, res) => {
     res.json(result);
   } catch (e) {
     res.status(500).json({ ok: false, error: e instanceof Error ? e.message : "Test failed" });
+  }
+});
+
+// ── Cookies management ─────────────────────────────────────────────────────────
+
+// GET /api/proxy/cookies
+router.get("/proxy/cookies", (_req, res) => {
+  const exists = fs.existsSync(COOKIES_PATH);
+  if (!exists) {
+    res.json({ exists: false, size: 0, lines: 0 });
+    return;
+  }
+  try {
+    const content = fs.readFileSync(COOKIES_PATH, "utf-8");
+    const lines = content.split("\n").filter((l) => l.trim() && !l.startsWith("#")).length;
+    res.json({ exists: true, size: fs.statSync(COOKIES_PATH).size, lines });
+  } catch {
+    res.json({ exists: true, size: 0, lines: 0 });
+  }
+});
+
+// POST /api/proxy/cookies  (multipart: field "cookies")
+router.post("/proxy/cookies", cookiesUpload.single("cookies"), (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: "No file uploaded (field: cookies)" });
+    return;
+  }
+  try {
+    const content = fs.readFileSync(COOKIES_PATH, "utf-8").trim();
+    if (
+      !content.startsWith("# Netscape HTTP Cookie File") &&
+      !content.startsWith("# HTTP Cookie File")
+    ) {
+      fs.unlinkSync(COOKIES_PATH);
+      res.status(400).json({ error: "Invalid Netscape cookie file format. Export from your browser using a cookie export extension." });
+      return;
+    }
+    const lines = content.split("\n").filter((l) => l.trim() && !l.startsWith("#")).length;
+    res.json({ ok: true, message: `Cookies saved (${lines} entries)`, lines });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
+
+// DELETE /api/proxy/cookies
+router.delete("/proxy/cookies", (_req, res) => {
+  try {
+    if (fs.existsSync(COOKIES_PATH)) fs.unlinkSync(COOKIES_PATH);
+    res.json({ ok: true, message: "Cookies deleted" });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
   }
 });
 

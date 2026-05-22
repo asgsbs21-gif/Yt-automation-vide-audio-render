@@ -1,5 +1,533 @@
 [
   {
+    "id": "f7ae614b-da0d-4ff6-a0d3-cecd91676c1c",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-22T12:25:07.449Z"
+  },
+  {
+    "id": "ce0cee38-2fa2-4575-b26d-6ac6410a7ed4",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "yt-dlp installed successfully",
+    "details": null,
+    "createdAt": "2026-05-22T12:25:07.391Z"
+  },
+  {
+    "id": "31fdd9e2-ea41-4fda-accb-71ce8c7628b2",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Installing yt-dlp via pip…",
+    "details": null,
+    "createdAt": "2026-05-22T12:25:05.208Z"
+  },
+  {
+    "id": "b1612a75-201c-4535-983c-a78dee9fe195",
+    "jobType": "download_video",
+    "level": "success",
+    "message": "Downloaded: dl_1779452438541.mp4",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.971Z"
+  },
+  {
+    "id": "6b4fa44d-5ebe-41eb-af95-b61ea044d602",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Deleting original file /tmp/video_9e49cc08-f936-4dda-bb9f-de6423b5ff7d/dl_1779452438541.f140.m4a (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.867Z"
+  },
+  {
+    "id": "0c587dac-26b5-4806-a21c-3794dfc39fc5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Deleting original file /tmp/video_9e49cc08-f936-4dda-bb9f-de6423b5ff7d/dl_1779452438541.f399.mp4 (pass -k to keep)",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.864Z"
+  },
+  {
+    "id": "0e93940f-2097-4fd0-be3c-f0e04a112fdb",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[Merger] Merging formats into \"/tmp/video_9e49cc08-f936-4dda-bb9f-de6423b5ff7d/dl_1779452438541.mp4\"",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.701Z"
+  },
+  {
+    "id": "afa24db9-6d74-4c4c-bf60-714118283ba8",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100% of  479.76KiB in 00:00:00 at 24.50MiB/s",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.698Z"
+  },
+  {
+    "id": "017b85a1-d438-4013-9172-72c5bdc905d0",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100.0% of  479.76KiB at  115.65MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.696Z"
+  },
+  {
+    "id": "439287ec-c443-49b9-90b3-a9368132c63b",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  53.2% of  479.76KiB at   74.66MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.694Z"
+  },
+  {
+    "id": "7515b6f3-6f1f-4a06-9ebf-f096d1537576",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  26.5% of  479.76KiB at   44.51MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.692Z"
+  },
+  {
+    "id": "e42fbb4a-fd5d-4b0d-a98a-5d18f66f103a",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  13.1% of  479.76KiB at   29.74MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.690Z"
+  },
+  {
+    "id": "d345cede-5d3d-46c8-8602-b8b4cfcb661c",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   6.5% of  479.76KiB at   19.13MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.688Z"
+  },
+  {
+    "id": "1ecbc761-f0e8-423f-9152-013bc1e582c3",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   3.1% of  479.76KiB at   12.20MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.686Z"
+  },
+  {
+    "id": "9769208b-d3f7-4fcc-8342-2365487d8bc4",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   1.5% of  479.76KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.684Z"
+  },
+  {
+    "id": "4f257da8-6998-4221-baba-77c07ac5f10d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.6% of  479.76KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.682Z"
+  },
+  {
+    "id": "0e1c9215-2ca5-4d56-9fae-b7a6f61cdef6",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.2% of  479.76KiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.678Z"
+  },
+  {
+    "id": "6e8a9718-fbc4-4f49-bb6d-653c086f05af",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] Destination: /tmp/video_9e49cc08-f936-4dda-bb9f-de6423b5ff7d/dl_1779452438541.f140.m4a",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.676Z"
+  },
+  {
+    "id": "176640d8-ec5e-441e-b1a8-43af90520b7e",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100% of   11.19MiB in 00:00:00 at 33.80MiB/s",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.662Z"
+  },
+  {
+    "id": "99a981ab-d66a-4a41-b46a-c596bbab30f3",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] 100.0% of   11.19MiB at   66.78MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.550Z"
+  },
+  {
+    "id": "956be4ff-895e-4780-bbc9-11eb3949cba2",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  94.3% of   11.19MiB at   44.52MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.547Z"
+  },
+  {
+    "id": "a06ab426-7bb9-414b-8dbd-b8e47b73e5e6",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  89.8% of   11.19MiB at   25.93MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.544Z"
+  },
+  {
+    "id": "5a11f5c2-ce93-4b1a-b760-bc6a3f8c59a1",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  87.6% of   11.19MiB at   93.59MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.540Z"
+  },
+  {
+    "id": "4c79ca91-71c2-47f0-9323-37f157fc96cd",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  86.5% of   11.19MiB at   55.98MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.538Z"
+  },
+  {
+    "id": "7ad38280-4c4d-404f-8c68-12e18e253154",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.9% of   11.19MiB at   34.96MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.536Z"
+  },
+  {
+    "id": "28ba242b-5150-4661-99fc-73bfd6070229",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.6% of   11.19MiB at   22.93MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.534Z"
+  },
+  {
+    "id": "b60241c6-4fd5-4a13-aefc-b2fba3593a25",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.5% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.532Z"
+  },
+  {
+    "id": "f6ee7182-bdbb-440d-b14a-053cc46ebfaf",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.4% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.530Z"
+  },
+  {
+    "id": "49116fc1-a188-4563-ba12-53abfb911ffc",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.4% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.527Z"
+  },
+  {
+    "id": "fdf8ac55-6569-4c77-9689-616917dba1c0",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.4% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.525Z"
+  },
+  {
+    "id": "990c29c9-01c6-4e70-8440-bcb33181fe78",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  85.4% of   11.19MiB at   66.76MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.520Z"
+  },
+  {
+    "id": "b2378702-becd-4514-998e-72991bb1b912",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  71.5% of   11.19MiB at   65.81MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.500Z"
+  },
+  {
+    "id": "7af0cf71-69e5-4706-b1cf-212909375386",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  35.7% of   11.19MiB at   78.06MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.497Z"
+  },
+  {
+    "id": "0c285013-5718-4478-b7fc-0df13680ffae",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]  17.9% of   11.19MiB at  100.37MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.495Z"
+  },
+  {
+    "id": "1ea74e66-d269-41a1-8b3c-ef1d5ca578c0",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   8.9% of   11.19MiB at   66.00MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.492Z"
+  },
+  {
+    "id": "3fe29374-0751-4367-b33d-85e8631091c5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   4.5% of   11.19MiB at   49.23MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.490Z"
+  },
+  {
+    "id": "65bf9cd0-cab1-42ca-8f45-9640b13ff552",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   2.2% of   11.19MiB at   33.67MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.481Z"
+  },
+  {
+    "id": "2e735068-8231-4776-91f0-0c188f173b78",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   1.1% of   11.19MiB at   22.60MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.477Z"
+  },
+  {
+    "id": "29c70a30-a4e7-4548-9d3f-0e3e4b2c3590",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.5% of   11.19MiB at   17.83MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.402Z"
+  },
+  {
+    "id": "b0f90127-f900-4e8e-8c37-93c89e24203a",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.3% of   11.19MiB at   19.74MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.400Z"
+  },
+  {
+    "id": "33dfb0cb-6204-4cd0-b271-50c00a016b8f",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.1% of   11.19MiB at   13.08MiB/s ETA 00:00",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.389Z"
+  },
+  {
+    "id": "1ec45729-c709-42d4-b393-c25b6977ea01",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.1% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.387Z"
+  },
+  {
+    "id": "d2ca56fe-f680-439c-b69a-730aa6bfcf26",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.384Z"
+  },
+  {
+    "id": "f8008247-ea9b-4d41-aa38-684bbee046e9",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download]   0.0% of   11.19MiB at  Unknown B/s ETA Unknown",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.381Z"
+  },
+  {
+    "id": "01f561dc-bf46-4eea-90c1-9ccc5ed51d72",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[download] Destination: /tmp/video_9e49cc08-f936-4dda-bb9f-de6423b5ff7d/dl_1779452438541.f399.mp4",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.378Z"
+  },
+  {
+    "id": "25cd012c-bd38-41ca-aa51-3f3da57cccd5",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[info] 9a7S_9tmVNY: Downloading 1 format(s): 399+140",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:41.186Z"
+  },
+  {
+    "id": "08f33fd1-54de-40cd-b16f-d8a6f476738d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] 9a7S_9tmVNY: Downloading android vr player API JSON",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:40.710Z"
+  },
+  {
+    "id": "bcf70120-9129-4fe3-a427-b74f350321a0",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] 9a7S_9tmVNY: Downloading webpage",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:39.539Z"
+  },
+  {
+    "id": "df3edada-5493-4dbb-9412-5213a6c8afd4",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[youtube] Extracting URL: https://youtube.com/shorts/9a7S_9tmVNY?si=07Bcva_fDueTQtzC",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:39.536Z"
+  },
+  {
+    "id": "cb1c4ac2-536c-4467-8b2e-3e58aa3a6d66",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
+    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_9e49cc08-f936-4dda-bb9f-de6423b5ff7d/dl_1779452438541.%(ext)s https://youtube.com/shorts/9a7S_9tmVNY?si=07Bcva_fDueTQtzC",
+    "createdAt": "2026-05-22T12:20:38.546Z"
+  },
+  {
+    "id": "79abd583-1b19-4baf-9071-6373133e380c",
+    "jobType": "download_video",
+    "level": "warn",
+    "message": "cookies.txt invalid format — skipping",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:38.544Z"
+  },
+  {
+    "id": "a020079d-cbfb-4cde-9c62-7243a25b1f1d",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/9a7S_9tmVNY?si=07Bcva_fDueTQtzC",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:38.541Z"
+  },
+  {
+    "id": "9869585f-5b48-4dc9-b3da-16703f5af0a9",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "[1/1] yt-dlp: https://youtube.com/shorts/9a7S_9tmVNY?si=07Bcva_fDueTQtzC",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:38.531Z"
+  },
+  {
+    "id": "06a930a8-4f5e-4831-a005-edcf83e4eab1",
+    "jobType": "download_video",
+    "level": "info",
+    "message": "Batch ccda938d-698c-4434-855f-3b6082acf584: 1 video URL(s)",
+    "details": null,
+    "createdAt": "2026-05-22T12:20:38.528Z"
+  },
+  {
+    "id": "e29de7d6-405f-4f0c-b15b-49276c662ea9",
+    "jobType": "process",
+    "level": "success",
+    "message": "Complete: \"No Copyright Hindi Song _ No Copyright Song Hindi  Kabhi Tumhe  No Copyright Songs 1 Music World\" → output_6d4a1483-fdd5-4743-8bf0-6459e67f921f.mp4",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:40.763Z"
+  },
+  {
+    "id": "d81645dc-9ed4-449d-966e-4a1d993546ed",
+    "jobType": "process",
+    "level": "success",
+    "message": "Merge complete → output_6d4a1483-fdd5-4743-8bf0-6459e67f921f.mp4",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:40.758Z"
+  },
+  {
+    "id": "76b85593-f933-4f1d-85c3-4a36d76cc15f",
+    "jobType": "process",
+    "level": "info",
+    "message": "FFmpeg started",
+    "details": "ffmpeg -i /tmp/process_6d4a1483-fdd5-4743-8bf0-6459e67f921f/v0_dl_1778055089346.mp4 -i /tmp/process_6d4a1483-fdd5-4743-8bf0-6459e67f921f/v1_dl_1778055144594.mp4 -i /tmp/process_6d4a1483-fdd5-4743-8bf0-6459e67f921f/v2_dl_1778055089346.mp4 -i /tmp/process_6d4a1483-fdd5-4743-8bf0-6459e67f921f/v3_dl_1778055144594.mp4 -i /tmp/process_6d4a1483-fdd5-4743-8bf0-6459e67f921f/v4_dl_1778055089346.mp4 -i /tmp/",
+    "createdAt": "2026-05-22T12:15:08.702Z"
+  },
+  {
+    "id": "0f1953d9-2856-462b-9953-6aae384a575a",
+    "jobType": "process",
+    "level": "info",
+    "message": "Merging 5 clip(s) with audio (target 116.0s, speed=1x, watermark=false, loudnorm=false)",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:08.412Z"
+  },
+  {
+    "id": "b11affca-c297-4e24-96bd-52de83e09485",
+    "jobType": "process",
+    "level": "info",
+    "message": "Coverage: 128.6s for 116.0s (5 clips)",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:08.404Z"
+  },
+  {
+    "id": "9f5ae325-0c1c-4943-99bb-e2934c585aec",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 5: dl_1778055089346.mp4 — 25.7s",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:08.400Z"
+  },
+  {
+    "id": "acbb4020-724b-423a-8381-f5dfa1411aac",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 4: dl_1778055144594.mp4 — 25.7s",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:08.232Z"
+  },
+  {
+    "id": "2c0c333d-f523-4134-8b92-ac6b4d3323fb",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 3: dl_1778055089346.mp4 — 25.7s",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:08.068Z"
+  },
+  {
+    "id": "4bd5a445-a774-4cdb-ba92-6d8585642bc0",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 2: dl_1778055144594.mp4 — 25.7s",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:07.885Z"
+  },
+  {
+    "id": "0a83eeed-4291-41cd-9ea2-88c89acf922a",
+    "jobType": "process",
+    "level": "info",
+    "message": "Clip 1: dl_1778055089346.mp4 — 25.7s",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:07.435Z"
+  },
+  {
+    "id": "d2642734-dc9d-4609-90e4-0cdfeaf6bb37",
+    "jobType": "process",
+    "level": "info",
+    "message": "Process [6d4a1483-fdd5-4743-8bf0-6459e67f921f]: 5 clip(s) + \"No Copyright Hindi Song _ No Copyright Song Hindi  Kabhi Tumhe  No Copyright Songs 1 Music World\" (116.0s, speed=1x, wm=false, loudnorm=false)",
+    "details": null,
+    "createdAt": "2026-05-22T12:15:07.232Z"
+  },
+  {
+    "id": "194ee3ff-38c3-4095-af18-1f2abba0426b",
+    "jobType": "download_audio",
+    "level": "info",
+    "message": "Device upload received: No Copyright Hindi Song _ No Copyright Song Hindi  Kabhi Tumhe  No Copyright Songs 1 Music World.mp3 (1.7 MB)",
+    "details": null,
+    "createdAt": "2026-05-22T12:14:58.652Z"
+  },
+  {
     "id": "0dcb2853-06e2-4b7a-b425-17974790ffec",
     "jobType": "schedule",
     "level": "info",
@@ -3470,533 +3998,5 @@
     "message": "[youtube] MvWjV_up8Gs: Downloading initial data API JSON",
     "details": null,
     "createdAt": "2026-05-03T11:50:13.291Z"
-  },
-  {
-    "id": "c6495a4d-9d12-4c1a-b02c-344e8ab0ae2e",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:12.110Z"
-  },
-  {
-    "id": "16073a74-6592-47c1-8337-a1c061daed34",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:12.108Z"
-  },
-  {
-    "id": "c97c1dd5-c9b2-41a3-a45a-d264ca322c84",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_5aec075f-2a88-4571-851a-a26d85e5381f/%(id)s.%(ext)s https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "createdAt": "2026-05-03T11:50:11.239Z"
-  },
-  {
-    "id": "680b896d-4298-4aee-9899-d7d739e479ba",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Starting audio download: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:11.237Z"
-  },
-  {
-    "id": "65212195-0c50-434c-b609-795c7df9a7b0",
-    "jobType": "download_audio",
-    "level": "error",
-    "message": "yt-dlp audio download failed: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": "Error: yt-dlp exited with code 1:\nERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies",
-    "createdAt": "2026-05-03T11:50:11.235Z"
-  },
-  {
-    "id": "dbc29ebb-5c98-44d2-a85d-e3559f2c6f78",
-    "jobType": "download_audio",
-    "level": "error",
-    "message": "yt-dlp stderr: ERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extract",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:11.136Z"
-  },
-  {
-    "id": "ce659996-cb3f-47ac-bcc4-72951d9a0220",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:11.035Z"
-  },
-  {
-    "id": "8f6eeed3-9d55-4db3-9458-ded7f0a9465f",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading initial data API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:10.410Z"
-  },
-  {
-    "id": "64258280-5ed0-4266-aba3-5653a92978cb",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:09.213Z"
-  },
-  {
-    "id": "d9fedd3d-4ae2-4f2e-9787-8d28b0879c80",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:09.210Z"
-  },
-  {
-    "id": "3da8715c-a705-4668-9d2e-3dd822727842",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_b11ee7ee-80e5-408f-9321-415d9d308412/%(id)s.%(ext)s https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "createdAt": "2026-05-03T11:50:08.322Z"
-  },
-  {
-    "id": "5f18be8e-5bf6-4438-a8d6-b2c79d897044",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Starting audio download: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:08.320Z"
-  },
-  {
-    "id": "f9a97175-4613-45cc-946c-59d4773c9d3f",
-    "jobType": "download_audio",
-    "level": "error",
-    "message": "yt-dlp audio download failed: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": "Error: yt-dlp exited with code 1:\nERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies",
-    "createdAt": "2026-05-03T11:50:08.317Z"
-  },
-  {
-    "id": "8d1ba8c6-0464-47db-b1d4-16056ae3eaf4",
-    "jobType": "download_audio",
-    "level": "error",
-    "message": "yt-dlp stderr: ERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extract",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:08.205Z"
-  },
-  {
-    "id": "34593951-d45d-4a09-ac57-fdef90e98d9a",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:08.101Z"
-  },
-  {
-    "id": "a3637d2f-057e-43c9-8600-5981c65a66dc",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading initial data API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:07.137Z"
-  },
-  {
-    "id": "8022a69a-30b1-40e1-b4ec-73d5cc9c8cd1",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:05.952Z"
-  },
-  {
-    "id": "a1bc56a7-fc21-463a-9ac5-79770f04f32a",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:05.950Z"
-  },
-  {
-    "id": "402f047d-99bc-4c5a-bcd2-fc792d9b6dd2",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "--extract-audio --audio-format mp3 --audio-quality 0 --write-info-json --no-playlist --newline --no-warnings -o /tmp/audio_e8367ac2-5a12-45bf-a4b4-8049c2a73e12/%(id)s.%(ext)s https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "createdAt": "2026-05-03T11:50:05.086Z"
-  },
-  {
-    "id": "68e6a42d-e78c-402d-b0b3-fe5812cbc8c6",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Starting audio download: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:05.077Z"
-  },
-  {
-    "id": "ec2a4bda-abee-4649-8294-5ad15e7fcbd6",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Batch a1bd6207-6cbd-4448-82c9-3c580a8f7f01: 1 audio URL(s)",
-    "details": null,
-    "createdAt": "2026-05-03T11:50:05.073Z"
-  },
-  {
-    "id": "87de84e4-81d2-47a9-a07e-b32064913212",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "Attempt 3/3 for https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": "Error: Download returned no file",
-    "createdAt": "2026-05-03T11:46:34.810Z"
-  },
-  {
-    "id": "31eeecd2-104d-4415-8109-075d0c44409c",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "yt-dlp video download failed: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": "Error: yt-dlp exited with code 1:\nERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies",
-    "createdAt": "2026-05-03T11:46:34.807Z"
-  },
-  {
-    "id": "cce66b4d-2651-43f2-ab73-88b5219d0137",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "yt-dlp stderr: ERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extract",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:34.705Z"
-  },
-  {
-    "id": "6fef0c49-ba5f-478b-a858-c87216eb3f38",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:34.594Z"
-  },
-  {
-    "id": "29e5cfdb-5009-490f-bce3-8c27907e63a3",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading initial data API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:33.737Z"
-  },
-  {
-    "id": "b3539768-ac91-4fd7-aa03-49a56cf387ec",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:32.581Z"
-  },
-  {
-    "id": "a984f3eb-11f6-4e89-941b-edefb4599678",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:32.578Z"
-  },
-  {
-    "id": "283c6f02-911d-4cc8-9921-792d1a90c09a",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_1ee002dd-376a-4e4f-a7ce-60846f8f99f5/dl_1777808791616.%(ext)s https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "createdAt": "2026-05-03T11:46:31.619Z"
-  },
-  {
-    "id": "ae2c0eca-72ea-4f3b-96be-8a09ec51d06e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:31.617Z"
-  },
-  {
-    "id": "f85ace9e-9b7e-4a60-8c83-d907e338244e",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "yt-dlp video download failed: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": "Error: yt-dlp exited with code 1:\nERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies",
-    "createdAt": "2026-05-03T11:46:31.614Z"
-  },
-  {
-    "id": "4bd3e37e-03ae-4417-8836-dba15ce9102f",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "yt-dlp stderr: ERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extract",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:31.467Z"
-  },
-  {
-    "id": "77f9e1d1-1f18-408d-8217-cf0ae5a6042b",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:31.351Z"
-  },
-  {
-    "id": "6d34c5cc-7f9a-4e71-9606-426a206b60cb",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading initial data API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:30.276Z"
-  },
-  {
-    "id": "f4b02041-e33a-421e-8bdb-0bf20fc81097",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:29.169Z"
-  },
-  {
-    "id": "34fe8f51-9c8a-41ae-8ac4-5a864431d897",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:29.167Z"
-  },
-  {
-    "id": "851e48f8-7a6e-40fd-b19c-7741f908c81d",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_0ba1eddf-8630-4172-bcf2-21c3f60e6dae/dl_1777808788237.%(ext)s https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "createdAt": "2026-05-03T11:46:28.240Z"
-  },
-  {
-    "id": "6ab94373-1b22-440d-bd51-961daf135e4d",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:28.237Z"
-  },
-  {
-    "id": "cc38c0c4-77b0-4e0a-93fe-8549d84f4019",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "yt-dlp video download failed: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": "Error: yt-dlp exited with code 1:\nERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies",
-    "createdAt": "2026-05-03T11:46:28.235Z"
-  },
-  {
-    "id": "2c7b8596-8c81-40d9-b485-941def1602a8",
-    "jobType": "download_video",
-    "level": "error",
-    "message": "yt-dlp stderr: ERROR: [youtube] MvWjV_up8Gs: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extract",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:28.111Z"
-  },
-  {
-    "id": "a8ed87d2-67f5-416e-8e5b-73328f913575",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading android vr player API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:27.925Z"
-  },
-  {
-    "id": "3e051f86-f851-42ee-bb7d-783ab8a06015",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading initial data API JSON",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:26.986Z"
-  },
-  {
-    "id": "a198b1c6-be73-4824-9e5d-bc6eda608d16",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] MvWjV_up8Gs: Downloading webpage",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:26.016Z"
-  },
-  {
-    "id": "3c01e408-4848-4ff1-8b48-15dd832bdaba",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[youtube] Extracting URL: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:26.013Z"
-  },
-  {
-    "id": "131dafc5-1ee7-45d7-afc0-202023c4fa14",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "yt-dlp /home/runner/workspace/bin/yt-dlp-linux",
-    "details": "-f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --merge-output-format mp4 --no-playlist --newline --no-warnings -o /tmp/video_f807d628-0a13-47f2-a421-4380080410ea/dl_1777808784429.%(ext)s https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "createdAt": "2026-05-03T11:46:24.433Z"
-  },
-  {
-    "id": "ee20a8fa-b6a5-4a48-a054-840a56cd3458",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Downloading video via yt-dlp: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:24.430Z"
-  },
-  {
-    "id": "faad250e-4510-4413-abee-ac9f351996f8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "[1/1] yt-dlp: https://youtube.com/shorts/MvWjV_up8Gs?si=nxDDscHsJtDxNEEU",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:24.358Z"
-  },
-  {
-    "id": "6108760c-0df2-44f1-8663-bbb430052463",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Batch 951f73be-1511-4346-89ed-868daa80275e: 1 video URL(s)",
-    "details": null,
-    "createdAt": "2026-05-03T11:46:24.355Z"
-  },
-  {
-    "id": "4ce8525d-f180-4f4b-8f72-eac7e6f245e5",
-    "jobType": "upload",
-    "level": "warn",
-    "message": "Duplicate skip: \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts\" was already uploaded recently",
-    "details": null,
-    "createdAt": "2026-05-03T11:29:13.548Z"
-  },
-  {
-    "id": "26c21a66-8b67-48dc-9848-78492856079c",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Immediate upload requested [1a2f04ec-d1df-4efd-bd77-954a771f77db]",
-    "details": null,
-    "createdAt": "2026-05-03T11:29:13.546Z"
-  },
-  {
-    "id": "8b5b1db3-f51a-4629-969b-2c6affb0e4a5",
-    "jobType": "upload",
-    "level": "warn",
-    "message": "Duplicate skip: \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts\" was already uploaded recently",
-    "details": null,
-    "createdAt": "2026-05-03T11:28:57.175Z"
-  },
-  {
-    "id": "8825be7e-3325-4a5a-92d5-5dcba43b5b34",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Immediate upload requested [7ab05d40-aac3-4fa9-986a-0da163d7c78b]",
-    "details": null,
-    "createdAt": "2026-05-03T11:28:57.168Z"
-  },
-  {
-    "id": "c0545bea-6fb5-43a3-8bea-2c03397f2948",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Deleted audio: Beginning of the S-Rank Raid 🤯✨ I Solo Leveling Ragnarok #sololeveling #anime #manhwa",
-    "details": null,
-    "createdAt": "2026-05-03T11:07:58.860Z"
-  },
-  {
-    "id": "a75db959-e87b-451b-b2f2-defb9361a6d3",
-    "jobType": "download_audio",
-    "level": "info",
-    "message": "Deleted audio: Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts",
-    "details": null,
-    "createdAt": "2026-05-03T11:07:55.305Z"
-  },
-  {
-    "id": "a1ccdaa5-8e75-4df0-9eae-fc019ca9e0f8",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleted video: dl_1777799607703.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T11:07:51.129Z"
-  },
-  {
-    "id": "7982b5b5-8918-4d4e-99fd-957d93ba028e",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleted video: video_1777793638939_a70ce7f6.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T11:07:50.464Z"
-  },
-  {
-    "id": "c064a909-924b-4a9d-91ce-5a5fa5ec44ca",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleted video: dl_1777788915466.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T11:07:49.617Z"
-  },
-  {
-    "id": "ef8e1a27-2551-4b10-a0a1-4292beed0002",
-    "jobType": "download_video",
-    "level": "info",
-    "message": "Deleted video: dl_1777788886557.mp4",
-    "details": null,
-    "createdAt": "2026-05-03T11:07:48.882Z"
-  },
-  {
-    "id": "83dd70c5-8e8e-4a73-b4cd-4fd3f1d5f5b7",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Telegram notification sent",
-    "details": null,
-    "createdAt": "2026-05-03T11:04:47.037Z"
-  },
-  {
-    "id": "e642da41-fe55-4991-9415-4b63d082da7c",
-    "jobType": "upload",
-    "level": "success",
-    "message": "Uploaded: Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts → https://www.youtube.com/watch?v=mm02Pzu400g",
-    "details": null,
-    "createdAt": "2026-05-03T11:04:46.254Z"
-  },
-  {
-    "id": "90d77a11-9ab5-43ef-b589-04c7b93c2206",
-    "jobType": "upload",
-    "level": "success",
-    "message": "Uploaded to YouTube: https://www.youtube.com/watch?v=mm02Pzu400g",
-    "details": null,
-    "createdAt": "2026-05-03T11:04:46.252Z"
-  },
-  {
-    "id": "7d65b108-2518-448a-84f8-aae2d4f4fcdd",
-    "jobType": "upload",
-    "level": "info",
-    "message": "YouTube upload payload: \"Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts #Shorts\"",
-    "details": "TITLE (67 chars): Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts #Shorts\n\nDESCRIPTION (513 chars):\nEdit Made By [Jin Him]\n🎞️ Anime: [Solo Leveling]\n🎧 Music: [Canta lala]\n\n⚠️ Copyright Disclaimer:\nI do not own the anime, images, or music used in th\n\n##short ##viral ##viralshorts ##anime ##animeshorts ##animeedit ##edit ##solo leveling ##solo leveling shorts ##solo leveling english dub ##solo leveling season 2 ##solo leveling edit ##jin woo solo leveling ##sung jin woo ##jin woo ##jinwoo ##kihoon son ##jin woo saves hunters guild ##jin woo saves hunters ##jin woo vs kargalgan ##kargalgan ##jin him\n#Shorts\n\nTAGS (22): #short, #viral, #viralshorts, #anime, #animeshorts, #animeedit, #edit, #solo leveling, #solo leveling shorts, #solo leveling english dub, #solo leveling season 2, #solo leveling edit, #jin woo solo leveling, #sung jin woo, #jin woo, #jinwoo, #kihoon son, #jin woo saves hunters guild, #jin woo saves hunters, #jin woo vs kargalgan, #kargalgan, #jin him\n\nCATEGORY ID: 22\n\nPRIVACY: public",
-    "createdAt": "2026-05-03T11:04:43.006Z"
-  },
-  {
-    "id": "f57ea700-fe84-4f9c-91eb-b164e0ddce13",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Starting upload: Jinwoo Saves Kihoon From Kargalgan! | Solo Leveling #shorts",
-    "details": null,
-    "createdAt": "2026-05-03T11:04:42.622Z"
-  },
-  {
-    "id": "9e046785-51e3-4f06-b6f6-ff25da3b17c2",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Immediate upload requested [3399f9c9-7cb1-48f5-935e-dfb83208a3ca]",
-    "details": null,
-    "createdAt": "2026-05-03T11:04:42.618Z"
-  },
-  {
-    "id": "f72ac249-c1d0-4ec6-80a6-49e16194530c",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Telegram notification sent",
-    "details": null,
-    "createdAt": "2026-05-03T11:03:47.692Z"
-  },
-  {
-    "id": "10fd8264-dd8f-40e6-8ebf-c6e0e589be01",
-    "jobType": "upload",
-    "level": "success",
-    "message": "Uploaded: Beginning of the S-Rank Raid 🤯✨ I Solo Leveling Ragnarok #sololeveling #anime #manhwa → https://www.youtube.com/watch?v=_knCk8m5k_0",
-    "details": null,
-    "createdAt": "2026-05-03T11:03:46.887Z"
   }
 ]
