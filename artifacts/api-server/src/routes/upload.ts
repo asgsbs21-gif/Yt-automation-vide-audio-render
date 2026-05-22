@@ -227,7 +227,7 @@ router.post("/upload/audio", audioUpload.single("file"), async (req, res) => {
     title,
     description: "",
     tags: [],
-    duration: audioDuration,
+    duration: audioDuration || Number(req.body.duration) || 0,
     category,
     uploader: null,
     used: false,

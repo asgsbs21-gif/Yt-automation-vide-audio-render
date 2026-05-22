@@ -1,5 +1,45 @@
 [
   {
+    "id": "c21b94b5-fa4c-410c-a2c3-61b06aee6ec4",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-22T11:39:55.882Z"
+  },
+  {
+    "id": "fb4ee342-2376-417f-900e-fc4b0fbe4069",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-19T18:01:35.700Z"
+  },
+  {
+    "id": "945b6cb0-d85f-42ba-a9f3-11054c5d2e56",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-16T05:33:49.728Z"
+  },
+  {
+    "id": "ac482850-17ca-4451-b39d-14c390575d24",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-07T09:35:01.476Z"
+  },
+  {
+    "id": "29fa51cb-3978-417a-86c2-d87fb4dbe309",
+    "jobType": "schedule",
+    "level": "info",
+    "message": "Scheduler started",
+    "details": null,
+    "createdAt": "2026-05-07T00:47:19.919Z"
+  },
+  {
     "id": "fb6ab049-62b8-4743-a960-f55f836d774a",
     "jobType": "download_video",
     "level": "success",
@@ -3958,45 +3998,5 @@
     "message": "YouTube upload payload: \"Beginning of the S-Rank Raid 🤯✨ I Solo Leveling Ragnarok #s #Shorts\"",
     "details": "TITLE (68 chars): Beginning of the S-Rank Raid 🤯✨ I Solo Leveling Ragnarok #s #Shorts\n\nDESCRIPTION (501 chars):\nSolo Leveling Ragnarok \nManhwa Chapter - 64\n\n#sololeveling #sololevelingragnarok #manhwa #manhwaedit #webtoon #fyp #edit #shorts #manhwareccomendation\n\n#Beginning of the S-Rank Raid 🤯✨ #Beru #Igris #Solo Leveling Ragnarok #Solo leveling #Sololevelingedit #Anime #animeedit #manhwa #manhwaedit #Solo leveling anime #Solo leveling manhwa chapter 64 #sololeveling #sololevelingragnarok #webtoon #fyp #edit #shorts #manhwareccomendation #mangaedit #trending #manga #manhua #amv #anime #sungjinwoo\n#Shorts\n\nTAGS (26): Beginning of the S-Rank Raid 🤯✨, Beru, Igris, Solo Leveling Ragnarok, Solo leveling, Sololevelingedit, Anime, animeedit, manhwa, manhwaedit, Solo leveling anime, Solo leveling manhwa chapter 64, sololeveling, sololevelingragnarok, webtoon, fyp, edit, shorts, manhwareccomendation, mangaedit, trending, manga, manhua, amv, anime, sungjinwoo\n\nCATEGORY ID: 22\n\nPRIVACY: public",
     "createdAt": "2026-05-03T11:03:43.849Z"
-  },
-  {
-    "id": "ef86c130-71f6-4612-ab7a-98b7ebba7424",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Starting upload: Beginning of the S-Rank Raid 🤯✨ I Solo Leveling Ragnarok #sololeveling #anime #manhwa",
-    "details": null,
-    "createdAt": "2026-05-03T11:03:43.818Z"
-  },
-  {
-    "id": "11ccd199-660a-4ad3-b9b7-4416dcefd3a1",
-    "jobType": "upload",
-    "level": "info",
-    "message": "Immediate upload requested [49310792-90bd-480b-bcc9-46b27e018afb]",
-    "details": null,
-    "createdAt": "2026-05-03T11:03:43.808Z"
-  },
-  {
-    "id": "328f7fe0-9a70-439f-8a8c-debb28f4a44c",
-    "jobType": "upload",
-    "level": "success",
-    "message": "User authenticated: tanjinaashraf0@gmail.com",
-    "details": null,
-    "createdAt": "2026-05-03T11:03:05.645Z"
-  },
-  {
-    "id": "3b4c99c4-5bf4-4337-9b86-bab33e03d383",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T10:44:56.803Z"
-  },
-  {
-    "id": "608d2e11-bb88-4542-8ed6-cc8bb34df0a4",
-    "jobType": "schedule",
-    "level": "info",
-    "message": "Scheduler started",
-    "details": null,
-    "createdAt": "2026-05-03T10:41:22.877Z"
   }
 ]

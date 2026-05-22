@@ -179,7 +179,7 @@ export function AudioTab() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const uploadOne = useCallback((item: AudioUploadItem): Promise<void> =>
+  const uploadOne = useCallback(async (item: AudioUploadItem): Promise<void> =>
     new Promise((resolve) => {
       updateQueueItem(item.id, { status: "uploading", progress: 0 });
 
@@ -188,6 +188,16 @@ export function AudioTab() {
       form.append("file", item.file);
       form.append("category", item.category);
       form.append("title", item.title.trim() || item.file.name.replace(/\.[^.]+$/, ""));
+      // Get duration via browser Audio API
+      try {
+        const dur = await new Promise<number>((resolve) => {
+          const a = document.createElement("audio");
+          a.onloadedmetadata = () => resolve(a.duration || 0);
+          a.onerror = () => resolve(0);
+          a.src = URL.createObjectURL(item.file);
+        });
+        if (dur > 0) form.append("duration", String(dur));
+      } catch {}
 
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
