@@ -1,4 +1,3 @@
-import puppeteer from "puppeteer";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
@@ -38,6 +37,34 @@ function findChromium(): string {
   return "chromium";
 }
 
+// ── Lazy Puppeteer import (avoids loading Chromium on Railway if not needed) ──
+
+async function launchBrowser() {
+  // Dynamic import so Puppeteer is only loaded when actually needed.
+  // On Railway without Chromium this import succeeds but launch() will fail —
+  // the caller handles that gracefully.
+  const { default: puppeteer } = await import("puppeteer");
+  const executablePath = findChromium();
+  addLog("download_video", "info", `Launching browser: ${executablePath}`);
+
+  return puppeteer.launch({
+    headless: true,
+    executablePath,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--disable-background-networking",
+      "--disable-default-apps",
+      "--disable-extensions",
+      "--mute-audio",
+      "--no-first-run",
+      "--single-process",
+    ],
+  });
+}
+
 // ── Extract video URL from Kuaishou page ──────────────────────────────────────
 
 export async function extractKuaishouVideoUrl(
@@ -45,25 +72,7 @@ export async function extractKuaishouVideoUrl(
 ): Promise<string | null> {
   let browser;
   try {
-    const executablePath = findChromium();
-    addLog("download_video", "info", `Launching browser: ${executablePath}`);
-
-    browser = await puppeteer.launch({
-      headless: true,
-      executablePath,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-background-networking",
-        "--disable-default-apps",
-        "--disable-extensions",
-        "--mute-audio",
-        "--no-first-run",
-        "--single-process",
-      ],
-    });
+    browser = await launchBrowser();
 
     const page = await browser.newPage();
     await page.setUserAgent(USER_AGENT);
@@ -179,3 +188,6 @@ export async function downloadKuaishouVideo(
   addLog(jobType, "success", `Downloaded: ${filename}`);
   return destPath;
 }
+
+// Unused but kept for external callers
+export { emitJobUpdate };

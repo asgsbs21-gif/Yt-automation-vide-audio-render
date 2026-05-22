@@ -179,25 +179,27 @@ export function AudioTab() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const uploadOne = useCallback(async (item: AudioUploadItem): Promise<void> =>
-    new Promise((resolve) => {
-      updateQueueItem(item.id, { status: "uploading", progress: 0 });
+  const uploadOne = useCallback(async (item: AudioUploadItem): Promise<void> => {
+    updateQueueItem(item.id, { status: "uploading", progress: 0 });
 
+    const form = new FormData();
+    form.append("file", item.file);
+    form.append("category", item.category);
+    form.append("title", item.title.trim() || item.file.name.replace(/\.[^.]+$/, ""));
+
+    // Get duration via browser Audio API
+    try {
+      const dur = await new Promise<number>((resolve) => {
+        const a = document.createElement("audio");
+        a.onloadedmetadata = () => resolve(a.duration || 0);
+        a.onerror = () => resolve(0);
+        a.src = URL.createObjectURL(item.file);
+      });
+      if (dur > 0) form.append("duration", String(dur));
+    } catch {}
+
+    return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
-      const form = new FormData();
-      form.append("file", item.file);
-      form.append("category", item.category);
-      form.append("title", item.title.trim() || item.file.name.replace(/\.[^.]+$/, ""));
-      // Get duration via browser Audio API
-      try {
-        const dur = await new Promise<number>((resolve) => {
-          const a = document.createElement("audio");
-          a.onloadedmetadata = () => resolve(a.duration || 0);
-          a.onerror = () => resolve(0);
-          a.src = URL.createObjectURL(item.file);
-        });
-        if (dur > 0) form.append("duration", String(dur));
-      } catch {}
 
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
@@ -223,8 +225,8 @@ export function AudioTab() {
 
       xhr.open("POST", "/api/upload/audio");
       xhr.send(form);
-    }),
-  [updateQueueItem]);
+    });
+  }, [updateQueueItem]);
 
   const handleUploadAll = async () => {
     const pending = uploadQueue.filter((x) => x.status === "pending");

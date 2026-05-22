@@ -11,6 +11,7 @@ import statusRouter from "./status.js";
 import logsRouter from "./logs.js";
 import uploadRouter from "./upload.js";
 import statsRouter from "./stats.js";
+import proxyRouter from "./proxy.js";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(statusRouter);
 router.use(logsRouter);
 router.use(uploadRouter);
 router.use(statsRouter);
+router.use(proxyRouter);
 
 export default router;

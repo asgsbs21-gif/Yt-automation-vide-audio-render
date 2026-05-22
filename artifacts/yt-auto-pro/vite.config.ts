@@ -22,7 +22,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 8084,
+    port: process.env["PORT"] ? parseInt(process.env["PORT"]) : 8084,
     strictPort: true,
     host: "0.0.0.0",
     allowedHosts: true,
@@ -31,7 +31,7 @@ export default defineConfig({
     },
   },
   preview: {
-    port: 8084,
+    port: process.env["PORT"] ? parseInt(process.env["PORT"]) : 8084,
     host: "0.0.0.0",
     allowedHosts: true,
   },

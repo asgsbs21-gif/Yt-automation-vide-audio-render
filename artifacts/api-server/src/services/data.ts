@@ -113,6 +113,7 @@ export interface AppSettings {
   autoRetryEnabled: boolean;
   googleClientId: string;
   googleClientSecret: string;
+  vmessLink: string | null;
 }
 
 export type LogLevel = "info" | "warn" | "error" | "success";
@@ -160,6 +161,7 @@ const defaultSettings: AppSettings = {
   autoRetryEnabled: false,
   googleClientId: "",
   googleClientSecret: "",
+  vmessLink: null,
 };
 
 // ── Auto-cycle category rotation state ───────────────────────────────────────

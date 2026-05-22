@@ -4,6 +4,8 @@ import app from "./app.js";
 import { setIO } from "./lib/socket.js";
 import { startScheduler } from "./services/scheduler.js";
 import { logger } from "./lib/logger.js";
+import { getSettings } from "./services/data.js";
+import { startXray } from "./services/xray.js";
 
 const rawPort = process.env["PORT"];
 
@@ -37,4 +39,12 @@ io.on("connection", (socket) => {
 httpServer.listen(port, () => {
   logger.info({ port }, "Server listening");
   startScheduler();
+
+  // Auto-start xray proxy if vmessLink is saved in settings
+  const settings = getSettings();
+  const vmessLink = (settings as any).vmessLink as string | null | undefined;
+  if (vmessLink) {
+    process.env["VMESS_LINK"] = vmessLink;
+    startXray(vmessLink);
+  }
 });
