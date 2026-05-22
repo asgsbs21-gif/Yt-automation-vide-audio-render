@@ -1,5 +1,5 @@
 lockfileVersion: '9.0'
-
+pnpm install --no-frozen-lockfile
 settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
