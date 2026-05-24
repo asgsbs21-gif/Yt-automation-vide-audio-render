@@ -26,6 +26,20 @@ export function isXrayInstalled(): boolean {
   return fs.existsSync(XRAY_BIN);
 }
 
+// অটোমেটিক এক্সরে ইন্সটলেশন ফাংশন
+export async function installXray(): Promise<boolean> {
+  if (isXrayInstalled()) return true;
+  try {
+    const url = "https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip";
+    execSync(`curl -L "${url}" -o /tmp/xray.zip && unzip -o /tmp/xray.zip xray -d /usr/local/bin && chmod +x /usr/local/bin/xray && rm /tmp/xray.zip`, { stdio: "inherit" });
+    logger.info("xray installed successfully");
+    return true;
+  } catch (e) {
+    logger.error(`xray install failed: ${e}`);
+    return false;
+  }
+}
+
 // ---------- Link decoders ----------
 
 interface DecodedVmess {
@@ -213,7 +227,7 @@ export function stopXray(): void {
   }
 }
 
-export function startXray(vmessLink?: string): boolean {
+export async function startXray(vmessLink?: string): Promise<boolean> {
   const link = vmessLink || process.env["VMESS_LINK"] || process.env["PROXY_LINK"] || "";
   if (!link) {
     logger.info("xray: no proxy link set — running direct");
@@ -229,9 +243,13 @@ export function startXray(vmessLink?: string): boolean {
       return true;
     }
 
+    // আপডেটেড চেক এবং অটো-ইন্সটলেশন লজিক
     if (!isXrayInstalled()) {
-      logger.warn(`xray binary not found at ${XRAY_BIN} — VMess/VLESS support disabled`);
-      return false;
+      const installed = await installXray();
+      if (!installed) {
+        logger.warn("xray install failed — VMess/VLESS disabled");
+        return false;
+      }
     }
 
     stopXray();
