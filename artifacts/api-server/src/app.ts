@@ -4,6 +4,8 @@ import session from "express-session";
 import pinoHttp from "pino-http";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app: Express = express();
 
@@ -41,5 +43,14 @@ app.use(
 );
 
 app.use("/api", router);
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const frontendDist = path.resolve(__dirname, "../../../yt-auto-pro/dist/public");
+
+app.use(express.static(frontendDist));
+
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(frontendDist, "index.html"));
+});
 
 export default app;
