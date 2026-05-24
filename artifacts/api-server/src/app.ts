@@ -46,7 +46,7 @@ app.use("/api", router);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendDist = path.resolve(__dirname, "..", "..", "..", "yt-auto-pro", "dist", "public");
-
+console.log("Frontend path:", frontendDist);
 app.use(express.static(frontendDist));
 
 app.get("/{*path}", (_req, res) => {
