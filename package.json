@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npm install -g pnpm && npx pnpm install --no-frozen-lockfile && npx pnpm --filter @workspace/api-server run build",
-    "start": "node --enable-source-maps ./artifacts/api-server/dist/index.mjs",
+    "start": "node --enable-source-maps --experimental-global-webcrypto ./artifacts/api-server/dist/index.mjs",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
